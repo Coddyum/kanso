@@ -4,19 +4,18 @@ package rates
 
 import (
 	"encoding/json"
-	"io"
 	"log"
-	"math"
-	"net/http"
 	"os"
 	"path/filepath"
 	"regexp"
 	"strconv"
 	"sync"
 	"time"
+
+	"github.com/coddyum/kanso/internal/netgate"
 )
 
-const ecbURL = "https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml"
+const ecbURL = "https://" + netgate.ECBHost + "/stats/eurofxref/eurofxref-daily.xml"
 
 // Rates are the euro reference rates: 1 EUR = PerEUR[currency].
 type Rates struct {
@@ -36,14 +35,6 @@ func (r Rates) ToEUR(amount float64, currency string) (float64, bool) {
 	return 0, false
 }
 
-// USDToEUR is what one dollar costs in euros, to 4 decimals; 0 when unknown.
-func (r Rates) USDToEUR() float64 {
-	if usd := r.PerEUR["USD"]; usd > 0 {
-		return math.Round(10000/usd) / 10000
-	}
-	return 0
-}
-
 var (
 	reECBTime = regexp.MustCompile(`time='(\d{4}-\d{2}-\d{2})'`)
 	reECBRate = regexp.MustCompile(`currency='([A-Z]{3})' rate='([\d.]+)'`)
@@ -52,6 +43,7 @@ var (
 // Source keeps the rates in memory and in a cache file: the last ones saved serve offline.
 type Source struct {
 	file string
+	gate *netgate.Gate
 
 	mu       sync.Mutex
 	mem      Rates
@@ -60,9 +52,9 @@ type Source struct {
 	fetching bool
 }
 
-// NewSource keeps its cache in cacheDir.
-func NewSource(cacheDir string) *Source {
-	return &Source{file: filepath.Join(cacheDir, "rates.json")}
+// NewSource keeps its cache in cacheDir and downloads through gate.
+func NewSource(cacheDir string, gate *netgate.Gate) *Source {
+	return &Source{file: filepath.Join(cacheDir, "rates.json"), gate: gate}
 }
 
 // Get returns the rates. Rates older than 12 hours are refreshed in the
@@ -96,7 +88,7 @@ func (s *Source) Get() Rates {
 
 // refresh downloads the rates and saves them; a failure keeps the old ones.
 func (s *Source) refresh() {
-	fresh, ok := fetchECB()
+	fresh, ok := s.fetch()
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	s.fetching = false
@@ -117,15 +109,9 @@ func (s *Source) refresh() {
 	}
 }
 
-func fetchECB() (Rates, bool) {
-	client := &http.Client{Timeout: 6 * time.Second}
-	resp, err := client.Get(ecbURL)
+func (s *Source) fetch() (Rates, bool) {
+	body, err := s.gate.Get(netgate.Rates(), ecbURL, 64<<10)
 	if err != nil {
-		return Rates{}, false
-	}
-	defer resp.Body.Close()
-	body, err := io.ReadAll(io.LimitReader(resp.Body, 64<<10))
-	if err != nil || resp.StatusCode != http.StatusOK {
 		return Rates{}, false
 	}
 	return parseECB(body)

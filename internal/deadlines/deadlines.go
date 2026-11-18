@@ -3,12 +3,11 @@
 package deadlines
 
 import (
-	"fmt"
 	"sort"
-	"strings"
 	"time"
 
 	"github.com/coddyum/kanso/internal/day"
+	"github.com/coddyum/kanso/internal/i18n"
 )
 
 // Settings says which administrative due dates apply to the business.
@@ -32,20 +31,11 @@ type Deadline struct {
 	Kind   string `json:"kind"` // urssaf | cfe | ir
 	Date   string `json:"date"`
 	Title  string `json:"title"`
+	Short  string `json:"short"` // the title in a word or two, for a small space
 	Detail string `json:"detail"`
 	URL    string `json:"url"`
 	Approx bool   `json:"approx,omitempty"` // a forecast: the official date is not published yet
 	Status string `json:"status"`           // todo | done | past
-}
-
-var monthNames = []string{"janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"}
-
-// fromMonth writes « de mars », « d'avril » (m from 0).
-func fromMonth(m int) string {
-	if strings.ContainsRune("aeiouéè", []rune(monthNames[m])[0]) {
-		return "d'" + monthNames[m]
-	}
-	return "de " + monthNames[m]
 }
 
 func lastDayOf(y int, m time.Month) time.Time {
@@ -58,10 +48,12 @@ func lastDayOf(y int, m time.Month) time.Time {
 //   - the CFE, to pay by 15 December;
 //   - the yearly income tax return (2042-C-PRO), around the end of May: a forecast.
 //
-// A key in done is ticked; an unticked one before today is past.
-func List(s Settings, done map[string]bool, from, to, today time.Time) []Deadline {
+// A key in done is ticked; an unticked one before today is past. The texts
+// are in tr's language; the rules stay French whatever the language.
+func List(s Settings, done map[string]bool, from, to, today time.Time, tr i18n.Lang) []Deadline {
 	out := []Deadline{}
-	add := func(kind string, d time.Time, title, detail, url string, approx bool) {
+	months, monthsFrom := tr.List("date.months"), tr.List("date.monthsFrom")
+	add := func(kind string, d time.Time, detail, url string, approx bool) {
 		if d.Before(from) || d.After(to) {
 			return
 		}
@@ -73,7 +65,10 @@ func List(s Settings, done map[string]bool, from, to, today time.Time) []Deadlin
 		case d.Before(today):
 			status = "past"
 		}
-		out = append(out, Deadline{Key: key, Kind: kind, Date: d.Format(day.Format), Title: title, Detail: detail, URL: url, Approx: approx, Status: status})
+		out = append(out, Deadline{
+			Key: key, Kind: kind, Date: d.Format(day.Format), Title: tr.T("deadline." + kind + ".title"), Short: tr.T("deadline." + kind + ".short"),
+			Detail: detail, URL: url, Approx: approx, Status: status,
+		})
 	}
 	const urssafURL = "https://www.autoentrepreneur.urssaf.fr"
 	for y := from.Year() - 1; y <= to.Year(); y++ {
@@ -82,23 +77,23 @@ func List(s Settings, done map[string]bool, from, to, today time.Time) []Deadlin
 			for q := 0; q < 4; q++ {
 				first := time.Month(3*q + 1)
 				due := workingDay(lastDayOf(y, first+3))
-				detail := fmt.Sprintf("chiffre d'affaires %s à %s %d, à déclarer même s'il est à 0\u00a0€", fromMonth(3*q), monthNames[3*q+2], y)
-				add("urssaf", due, "Déclaration URSSAF", detail, urssafURL, false)
+				detail := tr.T("deadline.urssaf.quarter", "from", monthsFrom[3*q], "to", months[3*q+2], "year", y)
+				add("urssaf", due, detail, urssafURL, false)
 			}
 		case "monthly":
 			for m := time.January; m <= time.December; m++ {
 				due := workingDay(lastDayOf(y, m+1))
-				detail := fmt.Sprintf("chiffre d'affaires %s %d, à déclarer même s'il est à 0\u00a0€", fromMonth(int(m)-1), y)
-				add("urssaf", due, "Déclaration URSSAF", detail, urssafURL, false)
+				detail := tr.T("deadline.urssaf.month", "from", monthsFrom[m-1], "year", y)
+				add("urssaf", due, detail, urssafURL, false)
 			}
 		}
 		if s.CFE {
-			detail := fmt.Sprintf("payer l'avis dans ton espace professionnel impots.gouv (en ligne début novembre) · rien à payer si ton chiffre d'affaires de %d ne dépasse pas 5\u00a0000\u00a0€", y-2)
-			add("cfe", time.Date(y, time.December, 15, 0, 0, 0, 0, time.Local), "CFE à payer", detail, "https://www.impots.gouv.fr/professionnel", false)
+			detail := tr.T("deadline.cfe.detail", "year", y-2)
+			add("cfe", time.Date(y, time.December, 15, 0, 0, 0, 0, time.Local), detail, "https://www.impots.gouv.fr/professionnel", false)
 		}
 		if s.IR {
-			detail := fmt.Sprintf("déclarer le chiffre d'affaires de %d sur la 2042-C-PRO · date limite entre fin mai et début juin selon ton département", y-1)
-			add("ir", time.Date(y, time.May, 20, 0, 0, 0, 0, time.Local), "Déclaration de revenus", detail, "https://www.impots.gouv.fr", true)
+			detail := tr.T("deadline.ir.detail", "year", y-1)
+			add("ir", time.Date(y, time.May, 20, 0, 0, 0, 0, time.Local), detail, "https://www.impots.gouv.fr", true)
 		}
 	}
 	sort.SliceStable(out, func(i, j int) bool { return out[i].Date < out[j].Date })

@@ -1,0 +1,482 @@
+{
+    "common": {
+        "add": "Añadir",
+        "ignore": "Ignorar",
+        "edit": "editar",
+        "unknownVendor": "Proveedor desconocido",
+        "showInFinder": "Mostrar en Finder",
+        "delete": "Eliminar",
+        "cancel": "Cancelar",
+        "save": "Guardar",
+        "create": "Crear",
+        "close": "Cerrar",
+        "ok": "OK"
+    },
+    "calendar": {
+        "zeroDay": "reserva a 0",
+        "more_one": "+ {{count}} más",
+        "more_other": "+ {{count}} más",
+        "auto": "auto",
+        "autoTitle": "Añadido a partir de tus facturas",
+        "variable": "variable",
+        "lastInvoice": "última factura el {{date}}",
+        "left": "quedan {{amount}}",
+        "todo": "por hacer",
+        "tab": {
+            "upcoming": "Próximos",
+            "subs": "Suscripciones",
+            "reserve": "Reserva",
+            "stopped": "Detenidas"
+        },
+        "balanceOn": "{{amount}} al {{date}}",
+        "runsOut": "llega a 0 el {{date}}",
+        "holds": "aguanta más de 3 años",
+        "upcomingSum": "Próximos 45 días · {{total}}",
+        "perMonth": "{{total}} al mes",
+        "stoppedSum": "Sin facturas desde hace 3 meses",
+        "noUpcoming": "Nada previsto.",
+        "noSubs": "Ninguna suscripción.",
+        "noPayment": "Ningún pago previsto.",
+        "reserveIntro": "Introduce el saldo de la cuenta profesional: la app resta cada pago previsto en su fecha y te muestra el día en que llega a cero.",
+        "reserveSet": "Introducir la reserva",
+        "kpi": {
+            "deadlines": "Trámites",
+            "nothingPlanned": "nada previsto",
+            "nextDeadline": "Próximo trámite",
+            "reserve": "Reserva",
+            "reserveSet": "haz clic para introducirla",
+            "monthTotal": "Total de {{month}}",
+            "nothingThisMonth": "nada este mes",
+            "subs": "Suscripciones",
+            "subsActive_one": "al mes · {{count}} activa",
+            "subsActive_other": "al mes · {{count}} activas",
+            "missing": "Facturas por recuperar",
+            "seeList": "ver la lista",
+            "allThere": "no falta nada"
+        },
+        "monthPart": {
+            "matched": "{{amount}} pagado",
+            "missing": "{{amount}} por recuperar",
+            "upcoming": "{{amount}} por venir"
+        },
+        "prevMonth": "Mes anterior",
+        "today": "Hoy",
+        "nextMonth": "Mes siguiente",
+        "newPayment": "Pago",
+        "legend": {
+            "upcoming": "próximo",
+            "matched": "factura encontrada",
+            "missing": "por recuperar",
+            "invoice": "fuera de suscripción",
+            "deadline": "trámite pendiente"
+        }
+    },
+    "cycle": {
+        "long": {
+            "once": "Una sola vez",
+            "weekly": "Cada semana",
+            "monthly": "Cada mes",
+            "quarterly": "Cada trimestre",
+            "yearly": "Cada año"
+        },
+        "short": {
+            "once": "puntual",
+            "weekly": "semanal",
+            "monthly": "mensual",
+            "quarterly": "trimestral",
+            "yearly": "anual"
+        },
+        "word": {
+            "monthly": "Suscripción mensual",
+            "yearly": "Suscripción anual",
+            "quarterly": "Suscripción trimestral",
+            "weekly": "Suscripción semanal",
+            "once": "Compra puntual",
+            "none": "Factura fuera de suscripción"
+        }
+    },
+    "kind": {
+        "invoice": "Factura",
+        "receipt": "Recibo",
+        "order": "Pedido",
+        "statement": "Extracto",
+        "document": "Documento",
+        "file": "Archivo"
+    },
+    "amountKind": {
+        "invoice": "factura",
+        "estimate": "factura por recuperar · importe estimado",
+        "planned": "previsto"
+    },
+    "status": {
+        "sentence": {
+            "upcoming": "próximo",
+            "today": "hoy",
+            "matched": "factura encontrada",
+            "missing": "factura por recuperar",
+            "skipped": "sin factura",
+            "paid": "pagado",
+            "invoice": "factura fuera de suscripción"
+        },
+        "tag": {
+            "matched": "Factura encontrada",
+            "missing": "Por recuperar",
+            "upcoming": "Próximo",
+            "today": "Hoy",
+            "paid": "Pagado",
+            "skipped": "Sin factura",
+            "invoice": "Fuera de suscripción"
+        }
+    },
+    "deadlineState": {
+        "todo": "Pendiente",
+        "done": "Hecho",
+        "past": "Pasado"
+    },
+    "size": {
+        "bytes": "{{n}} B",
+        "kilo": "{{n}} KB",
+        "mega": "{{n}} MB"
+    },
+    "analytics": {
+        "title": "Análisis",
+        "sub": "Lo que cuesta el negocio, en euros: por mes, por proyecto, por servicio.",
+        "over12": "en 12 meses",
+        "sinceStart": "desde el principio",
+        "inYear": "en {{year}}",
+        "period12": "12 meses",
+        "periodAll": "Todo",
+        "kpi": {
+            "spent": "Gastado",
+            "guessed": "de ellos, {{amount}} estimados",
+            "average": "Media",
+            "perMonthOver_one": "al mes, en {{count}} mes",
+            "perMonthOver_other": "al mes, en {{count}} meses",
+            "subs": "Suscripciones",
+            "subsSub": "al mes, durante el próximo año",
+            "toPay": "Por pagar",
+            "toPaySub": "en los próximos 3 meses"
+        },
+        "barTitle": "{{month}}: {{spent}} pagados",
+        "barTitlePlanned": "{{month}}: {{spent}} pagados, {{plan}} previstos",
+        "chart": {
+            "title": "Gastos por mes",
+            "sub": "en euros · haz clic en un mes para ver su detalle",
+            "paid": "pagado",
+            "planned": "previsto"
+        },
+        "services_one": "{{count}} servicio",
+        "services_other": "{{count}} servicios",
+        "percent": "{{n}} %",
+        "editProject": "Editar el proyecto",
+        "projects": "Proyectos",
+        "newProject": "Proyecto",
+        "noProject": "Crea un proyecto (una app, un cliente, el negocio) para clasificar en él tus servicios y tus facturas.",
+        "ideas": "Detectados en tus suscripciones:",
+        "autoProject": "Auto: {{name}}",
+        "unfiled": "Sin clasificar",
+        "noneProject": "Sin proyecto",
+        "project": "Proyecto",
+        "noSpend": "Ningún gasto en este periodo.",
+        "payments_one": "{{count}} pago",
+        "payments_other": "{{count}} pagos",
+        "aboutPerMonth": "≈ {{amount}} al mes",
+        "wholePeriod": "Volver a todo el periodo",
+        "allProjects": "Todos los proyectos",
+        "tab": {
+            "services": "Por servicio",
+            "ledger": "Todos los gastos"
+        },
+        "ratesNote": "Divisas convertidas al tipo del Banco Central Europeo del {{date}} ({{rates}}).",
+        "noAmountNote_one": "{{count}} factura sin importe legible, dejada de lado: corrígela en Facturas.",
+        "noAmountNote_other": "{{count}} facturas sin importe legible, dejadas de lado: corrígelas en Facturas."
+    },
+    "invoices": {
+        "title": "Facturas",
+        "number": "n.º {{n}}",
+        "editedTitle": "Corregida a mano",
+        "edited": "corregida",
+        "noAmount": "¿importe?",
+        "fix": "Corregir",
+        "noMatch": "Ninguna factura coincide.",
+        "count_one": "{{count}} factura",
+        "count_other": "{{count}} facturas",
+        "shownTotal": "Total mostrado",
+        "read_one": "{{count}} gasto leído en la carpeta",
+        "read_other": "{{count}} gastos leídos en la carpeta",
+        "merged_one": "{{count}} duplicado agrupado (factura + recibo…)",
+        "merged_other": "{{count}} duplicados agrupados (factura + recibo…)",
+        "noReader": "lectura de PDF desactivada",
+        "search": "Buscar…",
+        "allYears": "Todos los años",
+        "allVendors": "Todos los proveedores"
+    },
+    "missing": {
+        "title": "Por recuperar",
+        "filedIn": "Guardada en {{path}}",
+        "dueOn": "vencimiento del {{date}}",
+        "drop": "Soltar",
+        "noInvoice": "Sin factura",
+        "lastInvoice": "última factura recibida el {{date}}",
+        "noneReceived": "ninguna factura recibida",
+        "next": "la próxima el {{date}}",
+        "invoices": "Facturas",
+        "toFetch_one": "{{count}} por recuperar",
+        "toFetch_other": "{{count}} por recuperar",
+        "billingTitle": "Páginas de facturación",
+        "billingSub": "dónde recuperar cada factura, en un clic",
+        "done": "Hecho",
+        "intro_one": "{{count}} factura esperada según tus suscripciones, no encontrada en la carpeta. Arrastra el PDF a su fila y se guarda solo.",
+        "intro_other": "{{count}} facturas esperadas según tus suscripciones, no encontradas en la carpeta. Arrastra el PDF a su fila y se guarda solo.",
+        "nothing": "No falta nada según tus suscripciones.",
+        "startTitle": "Empieza por tus suscripciones en el Calendario",
+        "startText": "(o acepta las detectadas en tu carpeta). Cada vencimiento pasado sin factura llega aquí, con una zona donde soltar el PDF: se guarda solo en {{layout}}.",
+        "layout": "Año / Proveedor / Mes",
+        "allThere": "No falta nada",
+        "allThereText": "Cada vencimiento pasado tiene su factura.",
+        "todoTitle": "Pendientes",
+        "todoSub": "lo que hay que ir a buscar fuera de las suscripciones",
+        "todoPlaceholder": "Ej.: factura de la luz de octubre"
+    },
+    "files": {
+        "markInvoice": "Es una factura",
+        "rename": "Renombrar",
+        "openNative": "Abrir con la app del Mac",
+        "items_one": "{{count}} elemento",
+        "items_other": "{{count}} elementos",
+        "title": "Carpeta {{name}}",
+        "sub": "La misma carpeta que en Finder: lo que añades aquí aparece allí, y al revés.",
+        "newFolder": "Nueva carpeta",
+        "import": "Importar",
+        "openInFinder": "Abrir en Finder",
+        "empty": "Carpeta vacía: arrastra archivos aquí.",
+        "dropHint": "Arrastra aquí archivos desde Finder para añadirlos, o sobre una carpeta de la lista para guardarlos en ella.",
+        "inFolder": "En {{name}}",
+        "newName": "Nuevo nombre"
+    },
+    "popover": {
+        "estimated": "estimado según la última factura",
+        "dropIn": "para soltar en «Por recuperar»",
+        "reserveThatEvening": "Reserva prevista al final de ese día"
+    },
+    "payment": {
+        "found_one": "Detectado en tu carpeta: {{count}} factura, la última el {{date}}.",
+        "found_other": "Detectado en tu carpeta: {{count}} facturas, la última el {{date}}.",
+        "autoAdded": "Añadido automáticamente a partir de tus facturas. Si lo eliminas, no volverá.",
+        "intro": "Una suscripción o un gasto previsto. Sus vencimientos pasados sin factura irán a «Por recuperar».",
+        "variableNote": "Importe variable. Últimas 3 facturas: {{amounts}}. Los próximos vencimientos usan la última; la reserva cuenta la más alta.",
+        "manualNote": "Importe escrito a mano: se usa hasta la próxima factura, que toma el relevo.",
+        "new": "Nuevo pago",
+        "name": "Nombre",
+        "namePlaceholder": "Render, Claude Max, Apple Developer…",
+        "amount": "Importe",
+        "amountVariable": "Importe (variable)",
+        "amountHint": "si lo cambias aquí, se usa hasta la próxima factura",
+        "currency": "Divisa",
+        "cycle": "Frecuencia",
+        "start": "Primer vencimiento",
+        "vendor": "Nombre en las facturas",
+        "vendorPlaceholder": "si es distinto del nombre",
+        "vendorHint": "para encontrar sus facturas en la carpeta",
+        "domain": "Sitio web, para el logo",
+        "end": "Fin (opcional)",
+        "match": "Palabra en sus facturas (opcional)",
+        "matchPlaceholder": "misitio.es",
+        "matchHint": "para distinguir dos suscripciones del mismo proveedor",
+        "billing": "Página de facturas",
+        "billingKnown": "vacío: la página conocida del proveedor, en gris arriba",
+        "billingHint": "donde se descarga cada factura",
+        "note": "Nota",
+        "expectInvoice": "Espero una factura en cada vencimiento",
+        "added": "Pago añadido",
+        "saved": "Pago modificado"
+    },
+    "project": {
+        "new": "Nuevo proyecto",
+        "intro": "Una app, un cliente, el propio negocio: cada gasto puede clasificarse en él.",
+        "name": "Nombre",
+        "namePlaceholder": "Web personal, Cliente A…",
+        "color": "Color",
+        "keywords": "Palabras que clasifican solas (opcional)",
+        "keywordsPlaceholder": "misitio.es, tienda",
+        "keywordsHint": "Un gasto cuyo servicio, palabra en sus facturas o concepto contenga el nombre del proyecto o una de estas palabras va ahí solo. Sepáralas con comas.",
+        "created": "Proyecto creado",
+        "saved": "Proyecto modificado"
+    },
+    "invoice": {
+        "title": "Corregir la factura",
+        "vendor": "Proveedor",
+        "label": "Concepto",
+        "date": "Fecha",
+        "amount": "Importe con IVA",
+        "notInvoice": "No es una factura profesional: quitarla de la lista",
+        "reset": "Volver a la lectura automática",
+        "saved": "Factura corregida"
+    },
+    "reserve": {
+        "rates": "Los importes en otra divisa se convierten al tipo del Banco Central Europeo del {{date}}: {{rates}}.",
+        "noRates": "Tipos de cambio no disponibles: los importes en otra divisa no se cuentan.",
+        "title": "Reserva de la cuenta profesional",
+        "intro": "El saldo de la cuenta en una fecha. La app resta cada pago previsto en su fecha y muestra el día en que la reserva llega a cero.",
+        "balance": "Saldo (€)",
+        "date": "A fecha de",
+        "clear": "Quitar"
+    },
+    "deadlines": {
+        "approx": "fecha estimada",
+        "openSite": "Abrir la web",
+        "done": "Hecho",
+        "urssaf": {
+            "quarterly": "Cada trimestre",
+            "monthly": "Cada mes",
+            "off": "Sin declaración"
+        },
+        "title": "Trámites administrativos",
+        "intro": "Las fechas límite oficiales, aplazadas al siguiente día hábil cuando caen en fin de semana o festivo. Marca lo que esté hecho.",
+        "none": "Ningún trámite en seguimiento.",
+        "urssafLabel": "Declaración URSSAF",
+        "reminders": "Recordatorios",
+        "cfe": "CFE, a pagar antes del 15 de diciembre",
+        "ir": "Declaración de la renta, a finales de mayo",
+        "saved": "Trámites actualizados"
+    },
+    "toast": {
+        "dismissed": "Vencimiento marcado como «sin factura»",
+        "markedInvoice": "Añadido a las facturas",
+        "paymentDeleted": "Pago eliminado",
+        "projectCreated": "Proyecto «{{name}}» creado",
+        "projectDeleted": "Proyecto eliminado",
+        "moved": "Movido a {{name}}",
+        "dropWhere": "Suelta los archivos en «Carpeta» o sobre una factura por recuperar.",
+        "folderGone": "«{{name}}» ya no existe",
+        "autoAdded_one": "{{count}} suscripción añadida a partir de tus facturas: {{names}}",
+        "autoAdded_other": "{{count}} suscripciones añadidas a partir de tus facturas: {{names}}",
+        "filed_one": "{{count}} archivo guardado en {{name}}",
+        "filed_other": "{{count}} archivos guardados en {{name}}"
+    },
+    "nav": {
+        "synced": "Sincronizado con {{path}}",
+        "calendar": "Calendario",
+        "analytics": "Análisis",
+        "invoices": "Facturas",
+        "missing": "Por recuperar",
+        "files": "Carpeta",
+        "folder": "Carpeta {{name}}",
+        "loading": "Leyendo la carpeta…"
+    },
+    "rates": {
+        "one": "1 {{code}} = {{eur}} €"
+    },
+    "day": {
+        "today": "hoy",
+        "tomorrow": "mañana",
+        "inDays_one": "en {{count}} día",
+        "inDays_other": "en {{count}} días",
+        "daysAgo_one": "hace {{count}} día",
+        "daysAgo_other": "hace {{count}} días"
+    },
+    "date": {
+        "months": [
+            "enero",
+            "febrero",
+            "marzo",
+            "abril",
+            "mayo",
+            "junio",
+            "julio",
+            "agosto",
+            "septiembre",
+            "octubre",
+            "noviembre",
+            "diciembre"
+        ],
+        "monthsShort": [
+            "ene",
+            "feb",
+            "mar",
+            "abr",
+            "may",
+            "jun",
+            "jul",
+            "ago",
+            "sept",
+            "oct",
+            "nov",
+            "dic"
+        ],
+        "monthsFrom": [
+            "enero",
+            "febrero",
+            "marzo",
+            "abril",
+            "mayo",
+            "junio",
+            "julio",
+            "agosto",
+            "septiembre",
+            "octubre",
+            "noviembre",
+            "diciembre"
+        ]
+    },
+    "format": {
+        "decimal": ",",
+        "group": ".",
+        "money": "{{n}} {{sym}}",
+        "shortDate": "{{day}} {{month}}"
+    },
+    "deadline": {
+        "urssaf": {
+            "title": "Declaración URSSAF",
+            "short": "URSSAF",
+            "quarter": "ingresos de {{from}} a {{to}} de {{year}}, a declarar aunque sean 0 €",
+            "month": "ingresos de {{from}} de {{year}}, a declarar aunque sean 0 €"
+        },
+        "cfe": {
+            "title": "CFE a pagar",
+            "short": "CFE a pagar",
+            "detail": "pagar el aviso en tu espacio profesional de impots.gouv (disponible a principios de noviembre) · nada que pagar si tus ingresos de {{year}} no superan 5000 €"
+        },
+        "ir": {
+            "title": "Declaración de la renta",
+            "short": "Impuestos",
+            "detail": "declarar los ingresos de {{year}} en el 2042-C-PRO · fecha límite entre finales de mayo y principios de junio según tu departamento"
+        }
+    },
+    "reminder": {
+        "reserveTitle": "Reserva a 0 el {{date}}",
+        "reserveBody_one": "Los pagos previstos vacían la cuenta profesional en {{count}} día: acuérdate de recargarla.",
+        "reserveBody_other": "Los pagos previstos vacían la cuenta profesional en {{count}} días: acuérdate de recargarla.",
+        "tomorrowOne": "Mañana: {{name}}",
+        "tomorrowMany_one": "Mañana: {{count}} pago",
+        "tomorrowMany_other": "Mañana: {{count}} pagos",
+        "deadlineIn7": "{{title}} en 7 días, el {{date}}",
+        "deadlineTomorrow": "{{title}} mañana",
+        "approx": "{{detail}} (fecha estimada)",
+        "missing_one": "{{count}} factura por recuperar",
+        "missing_other": "{{count}} facturas por recuperar"
+    },
+    "error": {
+        "paymentFields": "nombre, importe, frecuencia y fecha son obligatorios",
+        "unknownCurrency": "divisa desconocida",
+        "paymentNotFound": "pago no encontrado",
+        "emptyText": "texto vacío",
+        "missingKey": "falta la clave",
+        "missingFile": "falta el archivo",
+        "projectName": "el proyecto necesita un nombre",
+        "projectExists": "ya hay un proyecto con ese nombre",
+        "projectNotFound": "proyecto no encontrado",
+        "missingRef": "falta el servicio o la factura",
+        "missingDeadline": "falta la fecha límite",
+        "unknownRhythm": "periodicidad URSSAF desconocida",
+        "badPath": "ruta rechazada: {{path}}",
+        "badName": "nombre no válido",
+        "renameRefused": "cambio de nombre rechazado",
+        "moveRefused": "traslado rechazado",
+        "intoItself": "una carpeta no puede ir dentro de sí misma",
+        "tooBig": "archivo de más de 500 MB",
+        "noTargetDir": "carpeta de destino no encontrada",
+        "unknownLang": "idioma desconocido",
+        "exists": "«{{path}}» ya existe"
+    }
+}

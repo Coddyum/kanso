@@ -1,0 +1,462 @@
+{
+    "common": {
+        "add": "添加",
+        "ignore": "忽略",
+        "edit": "编辑",
+        "unknownVendor": "未知供应商",
+        "showInFinder": "在 Finder 中显示",
+        "delete": "删除",
+        "cancel": "取消",
+        "save": "保存",
+        "create": "创建",
+        "close": "关闭",
+        "ok": "OK"
+    },
+    "calendar": {
+        "zeroDay": "余额归零",
+        "more_other": "另 {{count}} 项",
+        "auto": "自动",
+        "autoTitle": "根据你的发票添加",
+        "variable": "浮动",
+        "lastInvoice": "上一张发票：{{date}}",
+        "left": "剩余 {{amount}}",
+        "todo": "待办",
+        "tab": {
+            "upcoming": "近期",
+            "subs": "订阅",
+            "reserve": "余额",
+            "stopped": "已停止"
+        },
+        "balanceOn": "截至 {{date}}：{{amount}}",
+        "runsOut": "{{date}} 归零",
+        "holds": "3 年以上不会用完",
+        "upcomingSum": "未来 45 天 · {{total}}",
+        "perMonth": "每月 {{total}}",
+        "stoppedSum": "已 3 个月没有发票",
+        "noUpcoming": "暂无计划。",
+        "noSubs": "暂无订阅。",
+        "noPayment": "暂无预计付款。",
+        "reserveIntro": "输入业务账户余额：应用会在每笔预计付款的日期将其扣除，并显示余额归零的那一天。",
+        "reserveSet": "输入余额",
+        "kpi": {
+            "deadlines": "事务",
+            "nothingPlanned": "暂无计划",
+            "nextDeadline": "下一项事务",
+            "reserve": "余额",
+            "reserveSet": "点击输入",
+            "monthTotal": "{{month}}合计",
+            "nothingThisMonth": "本月无支出",
+            "subs": "订阅",
+            "subsActive_other": "每月 · {{count}} 项生效中",
+            "missing": "待获取的发票",
+            "seeList": "查看列表",
+            "allThere": "全部齐全"
+        },
+        "monthPart": {
+            "matched": "已付 {{amount}}",
+            "missing": "待获取 {{amount}}",
+            "upcoming": "待付 {{amount}}"
+        },
+        "prevMonth": "上个月",
+        "today": "今天",
+        "nextMonth": "下个月",
+        "newPayment": "付款",
+        "legend": {
+            "upcoming": "待付",
+            "matched": "已找到发票",
+            "missing": "待获取",
+            "invoice": "非订阅",
+            "deadline": "待办事务"
+        }
+    },
+    "cycle": {
+        "long": {
+            "once": "仅一次",
+            "weekly": "每周",
+            "monthly": "每月",
+            "quarterly": "每季度",
+            "yearly": "每年"
+        },
+        "short": {
+            "once": "一次性",
+            "weekly": "周付",
+            "monthly": "月付",
+            "quarterly": "季付",
+            "yearly": "年付"
+        },
+        "word": {
+            "monthly": "按月订阅",
+            "yearly": "按年订阅",
+            "quarterly": "按季订阅",
+            "weekly": "按周订阅",
+            "once": "一次性购买",
+            "none": "非订阅发票"
+        }
+    },
+    "kind": {
+        "invoice": "发票",
+        "receipt": "收据",
+        "order": "订单",
+        "statement": "对账单",
+        "document": "文档",
+        "file": "文件"
+    },
+    "amountKind": {
+        "invoice": "发票",
+        "estimate": "待获取发票 · 估算金额",
+        "planned": "预计"
+    },
+    "status": {
+        "sentence": {
+            "upcoming": "待付",
+            "today": "今天",
+            "matched": "已找到发票",
+            "missing": "发票待获取",
+            "skipped": "无发票",
+            "paid": "已付款",
+            "invoice": "非订阅发票"
+        },
+        "tag": {
+            "matched": "已找到发票",
+            "missing": "待获取",
+            "upcoming": "待付",
+            "today": "今天",
+            "paid": "已付款",
+            "skipped": "无发票",
+            "invoice": "非订阅"
+        }
+    },
+    "deadlineState": {
+        "todo": "待办",
+        "done": "已完成",
+        "past": "已过期"
+    },
+    "size": {
+        "bytes": "{{n}} B",
+        "kilo": "{{n}} KB",
+        "mega": "{{n}} MB"
+    },
+    "analytics": {
+        "title": "分析",
+        "sub": "你的业务开支（欧元）：按月、按项目、按服务。",
+        "over12": "近 12 个月",
+        "sinceStart": "自开始以来",
+        "inYear": "{{year}} 年",
+        "period12": "12 个月",
+        "periodAll": "全部",
+        "kpi": {
+            "spent": "已支出",
+            "guessed": "其中 {{amount}} 为估算",
+            "average": "平均",
+            "perMonthOver_other": "每月（共 {{count}} 个月）",
+            "subs": "订阅",
+            "subsSub": "每月，未来一年",
+            "toPay": "待付款",
+            "toPaySub": "未来 3 个月内"
+        },
+        "barTitle": "{{month}}：已付 {{spent}}",
+        "barTitlePlanned": "{{month}}：已付 {{spent}}，预计 {{plan}}",
+        "chart": {
+            "title": "每月支出",
+            "sub": "欧元 · 点击月份查看详情",
+            "paid": "已付",
+            "planned": "预计"
+        },
+        "services_other": "{{count}} 项服务",
+        "percent": "{{n}}%",
+        "editProject": "编辑项目",
+        "projects": "项目",
+        "newProject": "项目",
+        "noProject": "创建一个项目（一个应用、一位客户或公司本身），用来归类你的服务和发票。",
+        "ideas": "从你的订阅中发现：",
+        "autoProject": "自动：{{name}}",
+        "unfiled": "未分类",
+        "noneProject": "无项目",
+        "project": "项目",
+        "noSpend": "此期间没有支出。",
+        "payments_other": "{{count}} 笔付款",
+        "aboutPerMonth": "每月 ≈ {{amount}}",
+        "wholePeriod": "返回整个期间",
+        "allProjects": "所有项目",
+        "tab": {
+            "services": "按服务",
+            "ledger": "全部支出"
+        },
+        "ratesNote": "外币按欧洲中央银行 {{date}} 的汇率换算（{{rates}}）。",
+        "noAmountNote_other": "{{count}} 张发票无法识别金额，已略过：请在“发票”中更正。"
+    },
+    "invoices": {
+        "title": "发票",
+        "number": "编号 {{n}}",
+        "editedTitle": "已手动更正",
+        "edited": "已更正",
+        "noAmount": "金额？",
+        "fix": "更正",
+        "noMatch": "没有匹配的发票。",
+        "count_other": "{{count}} 张发票",
+        "shownTotal": "显示合计",
+        "read_other": "从文件夹读取了 {{count}} 笔支出",
+        "merged_other": "合并了 {{count}} 个重复项（发票 + 收据…）",
+        "noReader": "PDF 读取已停用",
+        "search": "搜索…",
+        "allYears": "所有年份",
+        "allVendors": "所有供应商"
+    },
+    "missing": {
+        "title": "待获取",
+        "filedIn": "已归入 {{path}}",
+        "dueOn": "{{date}} 到期",
+        "drop": "放入",
+        "noInvoice": "无发票",
+        "lastInvoice": "上次收到发票：{{date}}",
+        "noneReceived": "未收到任何发票",
+        "next": "下次 {{date}}",
+        "invoices": "发票",
+        "toFetch_other": "{{count}} 张待获取",
+        "billingTitle": "账单页面",
+        "billingSub": "一键前往获取每张发票的地方",
+        "done": "完成",
+        "intro_other": "根据你的订阅，应有 {{count}} 张发票，但在文件夹中找不到。把 PDF 拖到对应的行上，它会自动归档。",
+        "nothing": "根据你的订阅，没有缺少的发票。",
+        "startTitle": "先在“日历”中添加你的订阅",
+        "startText": "（或接受在文件夹中发现的订阅）。每个已过期但没有发票的付款都会出现在这里，并附有放入 PDF 的区域：PDF 会自动按 {{layout}} 归档。",
+        "layout": "年份 / 供应商 / 月份",
+        "allThere": "全部齐全",
+        "allThereText": "每个已过期的付款都有对应的发票。",
+        "todoTitle": "备忘",
+        "todoSub": "订阅以外需要去获取的发票",
+        "todoPlaceholder": "例如：10 月电费账单"
+    },
+    "files": {
+        "markInvoice": "标记为发票",
+        "rename": "重命名",
+        "openNative": "用 Mac 应用打开",
+        "items_other": "{{count}} 项",
+        "title": "{{name}} 文件夹",
+        "sub": "与 Finder 中的文件夹相同：在这里添加的内容会出现在 Finder 中，反之亦然。",
+        "newFolder": "新建文件夹",
+        "import": "导入",
+        "openInFinder": "在 Finder 中打开",
+        "empty": "文件夹为空：把文件拖到这里。",
+        "dropHint": "从 Finder 把文件拖到这里即可添加，拖到列表中的文件夹上即可归入该文件夹。",
+        "inFolder": "在 {{name}} 中",
+        "newName": "新名称"
+    },
+    "popover": {
+        "estimated": "根据上一张发票估算",
+        "dropIn": "放入“待获取”",
+        "reserveThatEvening": "当晚预计余额"
+    },
+    "payment": {
+        "found_other": "在你的文件夹中找到：{{count}} 张发票，最近一张为 {{date}}。",
+        "autoAdded": "根据你的发票自动添加。删除后不会再出现。",
+        "intro": "一项订阅或预计支出。已过期但没有发票的付款会进入“待获取”。",
+        "variableNote": "金额可变。最近 3 张发票：{{amounts}}。之后的付款沿用最近一张的金额；余额按最高金额计算。",
+        "manualNote": "手动输入的金额：在下一张发票到来前使用，之后以发票金额为准。",
+        "new": "新付款",
+        "name": "名称",
+        "namePlaceholder": "Render, Claude Max, Apple Developer…",
+        "amount": "金额",
+        "amountVariable": "金额（可变）",
+        "amountHint": "在此修改后，沿用至下一张发票",
+        "currency": "币种",
+        "cycle": "频率",
+        "start": "首次付款日",
+        "vendor": "发票上的名称",
+        "vendorPlaceholder": "如与名称不同",
+        "vendorHint": "用于在文件夹中找到它的发票",
+        "domain": "网站（用于显示标志）",
+        "end": "结束（可选）",
+        "match": "发票上的关键词（可选）",
+        "matchPlaceholder": "mysite.com",
+        "matchHint": "用于区分同一供应商的两项订阅",
+        "billing": "发票页面",
+        "billingKnown": "留空：使用上方灰色显示的供应商已知页面",
+        "billingHint": "每张发票的下载位置",
+        "note": "备注",
+        "expectInvoice": "每次付款都应收到发票",
+        "added": "已添加付款",
+        "saved": "已更新付款"
+    },
+    "project": {
+        "new": "新项目",
+        "intro": "一个应用、一位客户或公司本身：每笔支出都可以归入其中。",
+        "name": "名称",
+        "namePlaceholder": "个人网站、客户 A…",
+        "color": "颜色",
+        "keywords": "自动归类关键词（可选）",
+        "keywordsPlaceholder": "mysite.com, 商店",
+        "keywordsHint": "若支出的服务名、发票关键词或摘要中包含项目名称或其中任一关键词，会自动归入该项目。用逗号分隔。",
+        "created": "已创建项目",
+        "saved": "已更新项目"
+    },
+    "invoice": {
+        "title": "更正发票",
+        "vendor": "供应商",
+        "label": "摘要",
+        "date": "日期",
+        "amount": "含税金额",
+        "notInvoice": "这不是业务发票：从列表中移除",
+        "reset": "恢复自动识别",
+        "saved": "已更正发票"
+    },
+    "reserve": {
+        "rates": "其他币种的金额按欧洲中央银行 {{date}} 的汇率换算：{{rates}}。",
+        "noRates": "汇率不可用：其他币种的金额未计入。",
+        "title": "业务账户余额",
+        "intro": "某一日期的账户余额。应用会在每笔预计付款的日期将其扣除，并显示余额归零的那一天。",
+        "balance": "余额（€）",
+        "date": "截至日期",
+        "clear": "清除"
+    },
+    "deadlines": {
+        "approx": "预计日期",
+        "openSite": "打开网站",
+        "done": "已完成",
+        "urssaf": {
+            "quarterly": "每季度",
+            "monthly": "每月",
+            "off": "不申报"
+        },
+        "title": "行政事务",
+        "intro": "官方截止日期，如遇周末或节假日则顺延至下一个工作日。勾选已完成的事项。",
+        "none": "没有跟踪的事务。",
+        "urssafLabel": "URSSAF 申报",
+        "reminders": "提醒",
+        "cfe": "CFE，须在 12 月 15 日前缴纳",
+        "ir": "个人所得税申报，5 月底",
+        "saved": "已更新事务"
+    },
+    "toast": {
+        "dismissed": "已将该付款标记为“无发票”",
+        "markedInvoice": "已添加到发票",
+        "paymentDeleted": "已删除付款",
+        "projectCreated": "已创建项目“{{name}}”",
+        "projectDeleted": "已删除项目",
+        "moved": "已移至 {{name}}",
+        "dropWhere": "请把文件放入“文件夹”，或放到某张待获取的发票上。",
+        "folderGone": "“{{name}}”已不存在",
+        "autoAdded_other": "根据你的发票添加了 {{count}} 项订阅：{{names}}",
+        "filed_other": "已将 {{count}} 个文件归入 {{name}}"
+    },
+    "nav": {
+        "synced": "已与 {{path}} 同步",
+        "calendar": "日历",
+        "analytics": "分析",
+        "invoices": "发票",
+        "missing": "待获取",
+        "files": "文件夹",
+        "folder": "{{name}} 文件夹",
+        "loading": "正在读取文件夹…"
+    },
+    "rates": {
+        "one": "1 {{code}} = {{eur}} €"
+    },
+    "day": {
+        "today": "今天",
+        "tomorrow": "明天",
+        "inDays_other": "{{count}} 天后",
+        "daysAgo_other": "{{count}} 天前"
+    },
+    "date": {
+        "months": [
+            "1月",
+            "2月",
+            "3月",
+            "4月",
+            "5月",
+            "6月",
+            "7月",
+            "8月",
+            "9月",
+            "10月",
+            "11月",
+            "12月"
+        ],
+        "monthsShort": [
+            "1月",
+            "2月",
+            "3月",
+            "4月",
+            "5月",
+            "6月",
+            "7月",
+            "8月",
+            "9月",
+            "10月",
+            "11月",
+            "12月"
+        ],
+        "monthsFrom": [
+            "1月",
+            "2月",
+            "3月",
+            "4月",
+            "5月",
+            "6月",
+            "7月",
+            "8月",
+            "9月",
+            "10月",
+            "11月",
+            "12月"
+        ]
+    },
+    "format": {
+        "decimal": ".",
+        "group": ",",
+        "money": "{{sym}}{{n}}",
+        "shortDate": "{{month}}{{day}}日"
+    },
+    "deadline": {
+        "urssaf": {
+            "title": "URSSAF 申报",
+            "short": "URSSAF",
+            "quarter": "{{year}}年{{from}}至{{to}}的营业额，即使为 0 € 也须申报",
+            "month": "{{year}}年{{from}}的营业额，即使为 0 € 也须申报"
+        },
+        "cfe": {
+            "title": "缴纳 CFE",
+            "short": "缴纳 CFE",
+            "detail": "在 impots.gouv 的专业人士空间支付缴税通知（11 月初上线）· 如果你 {{year}} 年的营业额不超过 5,000 €，则无需缴纳"
+        },
+        "ir": {
+            "title": "个人所得税申报",
+            "short": "税务",
+            "detail": "在 2042-C-PRO 表上申报 {{year}} 年的营业额 · 截止日期因所在省（département）而异，在 5 月底至 6 月初之间"
+        }
+    },
+    "reminder": {
+        "reserveTitle": "余额将于 {{date}} 归零",
+        "reserveBody_other": "预计付款将在 {{count}} 天后用完业务账户的余额：记得及时补充资金。",
+        "tomorrowOne": "明天：{{name}}",
+        "tomorrowMany_other": "明天：{{count}} 笔付款",
+        "deadlineIn7": "{{title}}：7 天后（{{date}}）",
+        "deadlineTomorrow": "{{title}}：明天",
+        "approx": "{{detail}}（预计日期）",
+        "missing_other": "{{count}} 张发票待获取"
+    },
+    "error": {
+        "paymentFields": "名称、金额、频率和日期为必填项",
+        "unknownCurrency": "未知币种",
+        "paymentNotFound": "找不到付款",
+        "emptyText": "文本为空",
+        "missingKey": "缺少键",
+        "missingFile": "缺少文件",
+        "projectName": "项目需要名称",
+        "projectExists": "已有同名项目",
+        "projectNotFound": "找不到项目",
+        "missingRef": "缺少服务或发票",
+        "missingDeadline": "缺少办理期限",
+        "unknownRhythm": "未知的 URSSAF 申报频率",
+        "badPath": "路径被拒绝：{{path}}",
+        "badName": "名称无效",
+        "renameRefused": "重命名被拒绝",
+        "moveRefused": "移动被拒绝",
+        "intoItself": "文件夹不能移入自身",
+        "tooBig": "文件超过 500 MB",
+        "noTargetDir": "找不到目标文件夹",
+        "unknownLang": "未知语言",
+        "exists": "“{{path}}”已存在"
+    }
+}

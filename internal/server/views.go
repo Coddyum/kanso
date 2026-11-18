@@ -21,7 +21,7 @@ func (s *Server) handleState(w http.ResponseWriter, r *http.Request) {
 		Root      string `json:"root"`
 		Extractor bool   `json:"extractor"` // the PDF reader is there
 		ledger.State
-	}{s.root.Dir(), s.index.CanReadPDF(), m.State(s.rates.Get())})
+	}{s.root.Dir(), s.index.CanReadPDF(), m.State(s.rates.Get(), s.tr(r))})
 }
 
 // handleCalendar returns the events between ?from= and ?to=, at most 400 days apart.
@@ -29,7 +29,7 @@ func (s *Server) handleCalendar(w http.ResponseWriter, r *http.Request) {
 	from, ok1 := day.Parse(r.URL.Query().Get("from"))
 	to, ok2 := day.Parse(r.URL.Query().Get("to"))
 	if !ok1 || !ok2 || to.Before(from) || to.Sub(from) > 400*24*time.Hour {
-		fail(w, http.StatusBadRequest, errors.New("from/to invalides"))
+		fail(w, http.StatusBadRequest, errors.New("from and to must be days at most 400 days apart"))
 		return
 	}
 	m, err := s.model()
@@ -37,7 +37,7 @@ func (s *Server) handleCalendar(w http.ResponseWriter, r *http.Request) {
 		fail(w, http.StatusInternalServerError, err)
 		return
 	}
-	writeJSON(w, m.Calendar(from, to))
+	writeJSON(w, m.Calendar(from, to, s.tr(r)))
 }
 
 func (s *Server) handleAnalytics(w http.ResponseWriter, r *http.Request) {
@@ -46,7 +46,7 @@ func (s *Server) handleAnalytics(w http.ResponseWriter, r *http.Request) {
 		fail(w, http.StatusInternalServerError, err)
 		return
 	}
-	writeJSON(w, m.Analytics(s.rates.Get()))
+	writeJSON(w, m.Analytics(s.rates.Get(), s.tr(r)))
 }
 
 // handleReminders lists the notifications the Mac app schedules.
@@ -56,7 +56,7 @@ func (s *Server) handleReminders(w http.ResponseWriter, r *http.Request) {
 		fail(w, http.StatusInternalServerError, err)
 		return
 	}
-	writeJSON(w, m.Reminders(s.rates.Get(), s.now()))
+	writeJSON(w, m.Reminders(s.rates.Get(), s.now(), s.tr(r)))
 }
 
 // handleSig is polled by the page: a new folder signature means reload the

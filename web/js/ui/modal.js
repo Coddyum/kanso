@@ -2,6 +2,7 @@
 // the sheet closes when it succeeds, and shows the error when it fails.
 
 import { $, esc } from "../dom.js";
+import { t } from "../i18n.js";
 import { toast } from "./toast.js";
 
 export function openModal(html, onSubmit) {
@@ -38,7 +39,7 @@ export function promptModal(title, label, value, onOk) {
         `<form class="form">
         <h2>${esc(title)}</h2>
         <div class="grid2"><label class="f span2">${esc(label)}<input name="value" value="${esc(value)}" required autofocus></label></div>
-        <footer><span class="grow"></span><button type="button" class="btn ghost" data-action="close">Annuler</button><button class="btn primary">OK</button></footer>
+        <footer><span class="grow"></span><button type="button" class="btn ghost" data-action="close">${t("common.cancel")}</button><button class="btn primary">${t("common.ok")}</button></footer>
     </form>`,
         (data) => onOk(data.value.trim()),
     );

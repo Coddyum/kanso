@@ -21,7 +21,8 @@ type DB struct {
 	Projects  []Project           `json:"projects"`
 	Assign    map[string]string   `json:"assign"` // « svc:<service> » or « inv:<invoice id> » → project id, « - » for none
 	Admin     *deadlines.Settings `json:"admin,omitempty"`
-	Done      map[string]bool     `json:"done"` // administrative due dates ticked as done
+	Done      map[string]bool     `json:"done"`           // administrative due dates ticked as done
+	Lang      string              `json:"lang,omitempty"` // the language chosen in the app; empty: the Mac's
 }
 
 // Fill gives every list and map a value: the front reads [] and {}, never null.

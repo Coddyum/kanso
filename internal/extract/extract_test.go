@@ -115,6 +115,18 @@ func TestDetectAmount(t *testing.T) {
 		{"Total articles 3\nTotal £12.00", 12, "GBP"},
 		{"€19.08 due December 1, 2026", 19.08, "EUR"},
 		{"49,00 € prélevés le 5 novembre", 49, "EUR"},
+		{"Total CHF 49.00", 49, "CHF"},
+		{"Amount paid CA$12.50", 12.50, "CAD"},
+		{"Amount paid A$ 30.00", 30, "AUD"},
+		{"Total ¥1,200", 1200, "JPY"},
+		{"Total 3,300円", 3300, "JPY"},
+		{"Total TTC : 1 250,00 SEK", 1250, "SEK"},
+		{"Amount due 99.00 PLN", 99, "PLN"},
+		{"Total 120,00 zł", 120, "PLN"},
+		{"Total: $ CAD 15.00", 15, "CAD"},
+		{"Total ₹4,999.00", 4999, "INR"},
+		{"TOTAL. INCLUDING TAXES $USD8.89", 8.89, "USD"},
+		{"Montant dû : 12,00 €, ils seront prélevés", 12, "EUR"},
 	}
 	for _, c := range cases {
 		lines := splitLines(c.text)

@@ -1,0 +1,27 @@
+/* L'écran Dossier. */
+
+/* ---------- dossier ---------- */
+.crumbs { display: flex; align-items: center; gap: 2px; flex-wrap: wrap; font-size: 13px; margin: -8px 0 14px; }
+.crumbs a { text-decoration: none; color: var(--ink-2); padding: 3px 7px; border-radius: 6px; cursor: pointer; }
+.crumbs a:hover { background: var(--hover); color: var(--ink); }
+.crumbs a:last-child { color: var(--ink); font-weight: 500; }
+.crumbs .sep { color: var(--ink-3); }
+.files { overflow: hidden; position: relative; }
+.frow {
+    display: grid; grid-template-columns: 22px minmax(0, 1fr) 96px 80px 110px 120px;
+    align-items: center; gap: 14px; padding: 9px 16px; border-top: 1px solid var(--line);
+}
+.frow:first-child { border-top: 0; }
+.frow:hover { background: var(--hover); }
+.frow.is-dir { cursor: pointer; }
+.frow.drop-target { background: rgba(76, 195, 138, 0.08); box-shadow: inset 2px 0 0 var(--ok); }
+.frow .fi { color: var(--ink-3); }
+.frow .fname { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.frow.is-dir .fname { font-weight: 500; }
+.frow .fname a { text-decoration: none; }
+.frow .fname a:hover { text-decoration: underline; text-underline-offset: 2px; }
+.frow .fmeta { color: var(--ink-3); font-size: 12px; font-variant-numeric: tabular-nums; }
+.frow .fkind { display: flex; }
+.files-empty { padding: 50px 20px; text-align: center; color: var(--ink-3); }
+.dropzone-hint { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 14px; color: var(--ink-3); font-size: 12.5px; }
+.main.dragging .files { border-color: var(--ok); }

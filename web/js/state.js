@@ -2,6 +2,7 @@
 // is replaced whole at every load; the rest is what the screens remember.
 
 import { firstOfMonth, iso, parseISO, totals } from "./format.js";
+import { t } from "./i18n.js";
 import { PER_MONTH } from "./words.js";
 
 export const S = {
@@ -20,6 +21,9 @@ export const S = {
     an: { period: "12m", project: "all", month: "", tab: "services", data: null },
 };
 
+// rootName is the name of the synced folder: « Inc », « Factures »…
+export const rootName = () => S.st.root.split("/").filter(Boolean).pop() || "/";
+
 export const VIEW_NAMES = ["calendar", "analytics", "invoices", "missing", "files"];
 
 // readHash picks the screen from the address: #calendar, #files/2026/Mars…
@@ -32,18 +36,23 @@ export function readHash() {
 export const findInvoice = (id) => S.st.invoices.find((i) => i.id === id);
 export const projectById = (id) => S.an.data?.projects.find((p) => p.id === id) || S.st.projects.find((p) => p.id === id);
 export const toneOf = (id) => (id ? `c-${projectById(id)?.color || "none"}` : "c-none");
-export const projectName = (id) => (id ? projectById(id)?.name || "?" : "Non classé");
+export const projectName = (id) => (id ? projectById(id)?.name || "?" : t("analytics.unfiled"));
 
 export const daysFromToday = (s) => Math.round((parseISO(s) - parseISO(S.st.today)) / 86400000);
 export const relDay = (s) => {
     const n = daysFromToday(s);
-    if (n === 0) return "aujourd'hui";
-    if (n === 1) return "demain";
-    return n > 0 ? `dans ${n} jours` : `il y a ${-n} jours`;
+    if (n === 0) return t("day.today");
+    if (n === 1) return t("day.tomorrow");
+    return n > 0 ? t("day.inDays", { count: n }) : t("day.daysAgo", { count: -n });
 };
 
-// eurOf converts an amount into euros with the server's rate; only dollars are converted.
-export const eurOf = (amount, cur) => (amount == null ? 0 : cur === "USD" ? amount * (S.st.forecast.usdToEur || 1) : amount);
+// eurOf converts an amount into euros with the ECB rates the server sends; 0 when its currency has no known rate.
+export const eurOf = (amount, cur) => {
+    if (amount == null) return 0;
+    if (!cur || cur === "EUR") return amount;
+    const rate = S.st.forecast.perEUR?.[cur];
+    return rate ? amount / rate : 0;
+};
 
 // balanceOn is the reserve left at the end of a day, or null before it was written.
 export function balanceOn(date) {

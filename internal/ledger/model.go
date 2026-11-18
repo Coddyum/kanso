@@ -7,6 +7,7 @@ import (
 
 	"github.com/coddyum/kanso/internal/deadlines"
 	"github.com/coddyum/kanso/internal/folder"
+	"github.com/coddyum/kanso/internal/i18n"
 	"github.com/coddyum/kanso/internal/store"
 	"github.com/coddyum/kanso/internal/vendor"
 )
@@ -151,8 +152,8 @@ func paidHistory(dues map[string]dueState, byID map[string]*Invoice) map[string]
 }
 
 // Deadlines are the administrative due dates between from and to.
-func (m *Model) Deadlines(from, to time.Time) []deadlines.Deadline {
-	return deadlines.List(m.DB.Settings(), m.DB.Done, from, to, m.Today)
+func (m *Model) Deadlines(from, to time.Time, tr i18n.Lang) []deadlines.Deadline {
+	return deadlines.List(m.DB.Settings(), m.DB.Done, from, to, m.Today, tr)
 }
 
 // Describe fills, for the files of a folder view, what the app read in them

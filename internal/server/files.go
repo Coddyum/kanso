@@ -12,12 +12,12 @@ import (
 	"github.com/coddyum/kanso/internal/folder"
 )
 
-// failFolder answers a failed folder operation: 400 for a refused path or
-// name, code for what the disk refused.
-func failFolder(w http.ResponseWriter, err error, code int) {
+// failFolder answers a failed folder operation: 400 and the user's language
+// for a refused path or name, code for what the disk refused.
+func (s *Server) failFolder(w http.ResponseWriter, r *http.Request, err error, code int) {
 	var refused folder.Refused
 	if errors.As(err, &refused) {
-		fail(w, http.StatusBadRequest, err)
+		http.Error(w, s.tr(r).T(refused.Key, "path", refused.Path), http.StatusBadRequest)
 		return
 	}
 	fail(w, code, err)
@@ -85,7 +85,7 @@ func (s *Server) handleMkdir(w http.ResponseWriter, r *http.Request) {
 	}
 	p, err := s.root.Mkdir(req.Path, req.Name)
 	if err != nil {
-		failFolder(w, err, http.StatusConflict)
+		s.failFolder(w, r, err, http.StatusConflict)
 		return
 	}
 	writeJSON(w, map[string]string{"path": p})
@@ -98,7 +98,7 @@ func (s *Server) handleRename(w http.ResponseWriter, r *http.Request) {
 	}
 	p, err := s.root.Rename(req.Path, req.Name)
 	if err != nil {
-		failFolder(w, err, http.StatusConflict)
+		s.failFolder(w, r, err, http.StatusConflict)
 		return
 	}
 	writeJSON(w, map[string]string{"path": p})
@@ -111,7 +111,7 @@ func (s *Server) handleMove(w http.ResponseWriter, r *http.Request) {
 	}
 	p, err := s.root.Move(req.Path, req.ToDir)
 	if err != nil {
-		failFolder(w, err, http.StatusConflict)
+		s.failFolder(w, r, err, http.StatusConflict)
 		return
 	}
 	writeJSON(w, map[string]string{"path": p})
@@ -127,7 +127,7 @@ func (s *Server) open(w http.ResponseWriter, r *http.Request, reveal bool) {
 		return
 	}
 	if err := s.root.Open(req.Path, reveal); err != nil {
-		failFolder(w, err, http.StatusInternalServerError)
+		s.failFolder(w, r, err, http.StatusInternalServerError)
 		return
 	}
 	writeJSON(w, ok)
@@ -151,7 +151,7 @@ func (s *Server) handleUpload(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if st, err := os.Stat(dir); err != nil || !st.IsDir() {
-		fail(w, http.StatusBadRequest, errors.New("dossier de destination introuvable"))
+		http.Error(w, s.tr(r).T("error.noTargetDir"), http.StatusBadRequest)
 		return
 	}
 	mr, err := r.MultipartReader()

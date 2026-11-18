@@ -3,17 +3,19 @@ package ledger
 import (
 	"crypto/rand"
 	"encoding/hex"
-	"fmt"
 	"strings"
 	"time"
 
+	"github.com/coddyum/kanso/internal/currency"
 	"github.com/coddyum/kanso/internal/day"
 	"github.com/coddyum/kanso/internal/deadlines"
+	"github.com/coddyum/kanso/internal/i18n"
 	"github.com/coddyum/kanso/internal/vendor"
 )
 
 // Invalid is a refusal the user can fix: a missing name, an unknown project…
-// Any other error of an edit is the disk's.
+// It holds the key of its sentence in web/locales (error.*), which the server
+// writes in the user's language. Any other error of an edit is the disk's.
 type Invalid string
 
 func (e Invalid) Error() string { return string(e) }
@@ -41,8 +43,11 @@ func (b *Book) SavePayment(p Payment, amountChanged bool) (Payment, error) {
 	if p.Currency == "" {
 		p.Currency = "EUR"
 	}
+	if !currency.Known(p.Currency) {
+		return p, Invalid("error.unknownCurrency")
+	}
 	if _, ok := day.Parse(p.Start); !ok || p.Name == "" || !cycles[p.Cycle] || p.Amount < 0 {
-		return p, Invalid("nom, montant, fréquence et date sont requis")
+		return p, Invalid("error.paymentFields")
 	}
 	if _, ok := day.Parse(p.End); p.End != "" && !ok {
 		p.End = ""
@@ -66,7 +71,7 @@ func (b *Book) SavePayment(p Payment, amountChanged bool) (Payment, error) {
 				return nil
 			}
 		}
-		return Invalid(fmt.Sprintf("paiement %s introuvable", p.ID))
+		return Invalid("error.paymentNotFound")
 	})
 	return p, err
 }
@@ -111,7 +116,7 @@ func (b *Book) DeletePayment(id string) error {
 func (b *Book) SaveTodo(t Todo) (Todo, error) {
 	t.Text = strings.TrimSpace(t.Text)
 	if t.Text == "" {
-		return t, Invalid("texte vide")
+		return t, Invalid("error.emptyText")
 	}
 	err := b.store.Update(func(db *DB) error {
 		for i := range db.Todos {
@@ -144,7 +149,7 @@ func (b *Book) DeleteTodo(id string) error {
 // Dismiss marks a due date as « no invoice », or hides a suggestion; off undoes it.
 func (b *Book) Dismiss(key string, on bool) error {
 	if key == "" {
-		return Invalid("clé manquante")
+		return Invalid("error.missingKey")
 	}
 	return b.store.Update(func(db *DB) error {
 		if on {
@@ -159,13 +164,16 @@ func (b *Book) Dismiss(key string, on bool) error {
 // SetOverride saves the corrections of a file (by hash); nil resets it to what was read.
 func (b *Book) SetOverride(hash string, o *Override) error {
 	if hash == "" {
-		return Invalid("fichier manquant")
+		return Invalid("error.missingFile")
 	}
 	if o != nil {
 		if _, ok := day.Parse(o.Date); o.Date != "" && !ok {
 			o.Date = ""
 		}
 		o.Vendor, o.Label = strings.TrimSpace(o.Vendor), strings.TrimSpace(o.Label)
+		if o.Currency != "" && !currency.Known(o.Currency) {
+			return Invalid("error.unknownCurrency")
+		}
 	}
 	return b.store.Update(func(db *DB) error {
 		if o == nil {
@@ -203,7 +211,7 @@ func (b *Book) Link(dueKey, hash string) error {
 func (b *Book) SaveProject(p Project) (Project, error) {
 	p.Name = strings.TrimSpace(p.Name)
 	if p.Name == "" || p.Name == Unfiled {
-		return p, Invalid("le projet a besoin d'un nom")
+		return p, Invalid("error.projectName")
 	}
 	var kws []string
 	for _, k := range p.Keywords {
@@ -216,7 +224,7 @@ func (b *Book) SaveProject(p Project) (Project, error) {
 		used := map[string]bool{}
 		for _, other := range db.Projects {
 			if other.ID != p.ID && strings.EqualFold(other.Name, p.Name) {
-				return Invalid("un projet porte déjà ce nom")
+				return Invalid("error.projectExists")
 			}
 			used[other.Color] = true
 		}
@@ -240,7 +248,7 @@ func (b *Book) SaveProject(p Project) (Project, error) {
 				return nil
 			}
 		}
-		return Invalid("projet introuvable")
+		return Invalid("error.projectNotFound")
 	})
 	return p, err
 }
@@ -284,7 +292,7 @@ func (b *Book) Assign(kind, ref, project string) error {
 		key = "inv:" + strings.TrimSpace(ref)
 	}
 	if key == "" || strings.HasSuffix(key, ":") {
-		return Invalid("service ou facture manquant")
+		return Invalid("error.missingRef")
 	}
 	return b.store.Update(func(db *DB) error {
 		if project == "" {
@@ -292,7 +300,7 @@ func (b *Book) Assign(kind, ref, project string) error {
 			return nil
 		}
 		if project != Unfiled && !hasProject(db.Projects, project) {
-			return Invalid("projet introuvable")
+			return Invalid("error.projectNotFound")
 		}
 		db.Assign[key] = project
 		return nil
@@ -302,7 +310,7 @@ func (b *Book) Assign(kind, ref, project string) error {
 // SetDone ticks an administrative due date as done, or unticks it.
 func (b *Book) SetDone(key string, done bool) error {
 	if key == "" {
-		return Invalid("échéance manquante")
+		return Invalid("error.missingDeadline")
 	}
 	return b.store.Update(func(db *DB) error {
 		if done {
@@ -317,10 +325,24 @@ func (b *Book) SetDone(key string, done bool) error {
 // SetSettings saves which administrative due dates apply.
 func (b *Book) SetSettings(s deadlines.Settings) error {
 	if !s.Valid() {
-		return Invalid("rythme URSSAF inconnu")
+		return Invalid("error.unknownRhythm")
 	}
 	return b.store.Update(func(db *DB) error {
 		db.Admin = &s
+		return nil
+	})
+}
+
+// Lang is the language chosen in the app, "" when it follows the Mac.
+func (b *Book) Lang() string { return b.store.Snapshot().Lang }
+
+// SetLang chooses the app's language; "" follows the Mac again.
+func (b *Book) SetLang(code string) error {
+	if code != "" && !i18n.Known(code) {
+		return Invalid("error.unknownLang")
+	}
+	return b.store.Update(func(db *DB) error {
+		db.Lang = code
 		return nil
 	})
 }

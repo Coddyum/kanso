@@ -1,0 +1,49 @@
+/* La barre d'icônes, la page et son en-tête. */
+
+/* ---------- barre de gauche : des icônes seules ---------- */
+.app { display: grid; grid-template-columns: 56px 1fr; min-height: 100vh; }
+.rail {
+    position: sticky; top: 0; height: 100vh; z-index: 5;
+    display: flex; flex-direction: column; align-items: center; gap: 20px; padding: 16px 0 14px;
+    background: var(--rail); border-inline-end: 1px solid var(--line);
+}
+.mark { display: block; width: 28px; height: 28px; }
+.nav { display: flex; flex-direction: column; gap: 4px; }
+.nav a {
+    position: relative; display: grid; place-items: center; width: 36px; height: 36px; border-radius: 9px;
+    color: var(--ink-3); text-decoration: none; transition: color 0.12s, background 0.12s;
+}
+.nav a:hover { color: var(--ink); background: var(--hover); }
+.nav a.on { color: var(--ink); background: var(--active); }
+.tip {
+    position: absolute; inset-inline-start: 46px; top: 50%; transform: translateY(-50%); padding: 4px 9px; border-radius: 7px;
+    background: var(--panel-2); border: 1px solid var(--line-2); color: var(--ink); font-size: 12px; font-weight: 500;
+    white-space: nowrap; pointer-events: none; opacity: 0; transition: opacity 0.12s;
+}
+.nav a:hover .tip { opacity: 1; }
+.badge {
+    position: absolute; top: -3px; inset-inline-end: -6px; min-width: 15px; height: 15px; padding: 0 4px; border-radius: 99px;
+    background: var(--warn); color: #1a1204; font-size: 9.5px; font-weight: 700; line-height: 15px; text-align: center;
+    box-shadow: 0 0 0 2px var(--rail);
+}
+.badge:empty { display: none; }
+.rail-foot { margin-top: auto; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 8px; cursor: help; }
+.sync-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ok); }
+.sync-dot.pulse { animation: pulse 0.9s ease-out; }
+@keyframes pulse { 0% { box-shadow: 0 0 0 0 var(--ok); } 100% { box-shadow: 0 0 0 9px transparent; } }
+
+.main { padding: 30px 40px 64px; min-width: 0; }
+.main.fit { height: 100vh; display: flex; flex-direction: column; overflow: hidden; padding-top: 24px; padding-bottom: 22px; }
+.main.fit .cal-layout { flex: 1; min-height: 0; }
+.loading { color: var(--ink-3); padding: 60px 0; text-align: center; }
+
+/* ---------- haut de page ---------- */
+.head { display: flex; align-items: center; gap: 14px; margin-bottom: 26px; flex-wrap: wrap; min-height: 32px; }
+.head .ht { min-width: 0; }
+.head h1 { margin: 0; font-size: 20px; font-weight: 600; letter-spacing: -0.015em; line-height: 1.25; }
+.head h1 .soft { color: var(--ink-3); font-weight: 500; }
+.head p { margin: 3px 0 0; color: var(--ink-2); font-size: 13px; }
+.toolbar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.stitle { display: flex; align-items: baseline; gap: 10px; margin: 0 0 10px; margin-inline-start: 2px; color: var(--ink-2); font-size: 12.5px; font-weight: 500; }
+.stitle em { font-style: normal; color: var(--ink-3); }
+.stitle .sum { margin-inline-start: auto; color: var(--ink); font-variant-numeric: tabular-nums; }

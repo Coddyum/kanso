@@ -7,7 +7,6 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
-	"testing/fstest"
 )
 
 func newServer(t *testing.T) http.Handler {
@@ -18,7 +17,7 @@ func newServer(t *testing.T) http.Handler {
 	}
 	s, err := New(Config{
 		Root: root, CacheDir: t.TempDir(), Port: 4000,
-		Static: fstest.MapFS{"index.html": {Data: []byte("<!doctype html>")}},
+		Static: os.DirFS("../../web"),
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -48,6 +47,9 @@ func TestGuard(t *testing.T) {
 		{"page", "GET", "localhost:4000", "/", "", nil, 200},
 		{"another host (DNS rebinding)", "GET", "evil.example:4000", "/api/ls", "", nil, 403},
 		{"another port", "GET", "127.0.0.1:4001", "/api/ls", "", nil, 403},
+		{"an image of another website", "GET", "127.0.0.1:4000", "/api/logo?d=example.com", "", map[string]string{"Sec-Fetch-Site": "cross-site"}, 403},
+		{"the page itself", "GET", "127.0.0.1:4000", "/api/ls?dir=2026", "", map[string]string{"Sec-Fetch-Site": "same-origin"}, 200},
+		{"typed in the address bar", "GET", "127.0.0.1:4000", "/", "", map[string]string{"Sec-Fetch-Site": "none"}, 200},
 		{"write without the header (a form of another site)", "POST", "127.0.0.1:4000", "/api/todos", `{"text":"x"}`, nil, 403},
 		{"write with the header", "POST", "127.0.0.1:4000", "/api/todos", `{"text":"x"}`, inc, 200},
 		{"empty text", "POST", "127.0.0.1:4000", "/api/todos", `{"text":" "}`, inc, 400},

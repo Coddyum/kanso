@@ -1,0 +1,113 @@
+/* Le calendrier, sa colonne de droite et la bulle d'un jour. */
+
+/* ---------- calendrier : des logos seuls, le total du jour ---------- */
+.cal-layout { display: grid; grid-template-columns: minmax(0, 1fr) 290px; gap: 28px; }
+.cal { display: flex; flex-direction: column; min-height: 0; }
+.cal-dow, .cal-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); }
+.cal-dow div { padding: 0 10px 8px; font-size: 11.5px; font-weight: 500; color: var(--ink-3); }
+.cal-grid {
+    flex: 1; min-height: 0; grid-auto-rows: minmax(0, 1fr);
+    border-top: 1px solid var(--line); border-inline-start: 1px solid var(--line);
+}
+.day {
+    position: relative; min-height: 0; min-width: 0; overflow: hidden; padding: 8px 9px; cursor: pointer;
+    display: flex; flex-direction: column; gap: 8px;
+    border-inline-end: 1px solid var(--line); border-bottom: 1px solid var(--line); transition: background 0.12s;
+}
+.day:hover { background: var(--hover); }
+.day.weekend { background: rgba(255, 255, 255, 0.012); }
+.day.out .dnum { color: var(--ink-3); }
+.day.out .evs { opacity: 0.4; }
+.day.broke { background: rgba(242, 99, 99, 0.05); }
+.dhead { display: flex; align-items: center; gap: 6px; min-height: 22px; }
+.dnum {
+    display: grid; place-items: center; min-width: 22px; height: 22px; padding: 0 4px; border-radius: 99px;
+    color: var(--ink-2); font-size: 12px; font-weight: 500; font-variant-numeric: tabular-nums;
+}
+.day.today .dnum { background: var(--accent); color: #fff; font-weight: 600; }
+.day.broke .dnum { color: var(--danger); }
+.dsum { color: var(--ink-2); font-size: 11.5px; font-weight: 500; font-variant-numeric: tabular-nums; }
+.zero { color: var(--danger); font-size: 11px; font-weight: 500; white-space: nowrap; }
+.evs { display: flex; flex-wrap: wrap; align-content: flex-start; gap: 7px; min-height: 0; }
+.ev { position: relative; padding: 0; border: 0; background: none; border-radius: 50%; cursor: pointer; }
+.ev .logo { transition: transform 0.12s; }
+.ev:hover .logo { transform: scale(1.1); }
+/* Le point de l'état, posé sur le bord du logo. */
+.ev::after {
+    content: ""; position: absolute; inset-inline-end: -2px; bottom: -2px; width: 8px; height: 8px; border-radius: 50%;
+    background: var(--c); box-shadow: 0 0 0 2px var(--bg);
+}
+.day:hover .ev::after { box-shadow: 0 0 0 2px #141517; }
+.more {
+    align-self: center; padding: 1px 6px; border-radius: 99px; background: var(--active); color: var(--ink-2);
+    font-size: 11px; font-weight: 500; cursor: pointer;
+}
+.more:hover { color: var(--ink); }
+.legend { display: flex; gap: 18px; flex-wrap: wrap; padding: 12px 2px 0; color: var(--ink-3); font-size: 12px; }
+.legend span { display: inline-flex; align-items: center; gap: 7px; }
+
+/* ---------- colonne de droite ---------- */
+.aside { display: flex; flex-direction: column; gap: 12px; min-height: 0; }
+.tabs { display: flex; gap: 2px; flex: none; }
+.tabs button {
+    display: inline-flex; align-items: center; gap: 5px; height: 26px; padding: 0 9px; border: 0; border-radius: 6px;
+    background: none; color: var(--ink-3); font-size: 12.5px; font-weight: 500; cursor: pointer; white-space: nowrap;
+}
+.tabs button:hover { color: var(--ink); }
+.tabs button.on { background: var(--active); color: var(--ink); }
+.tabs em { font-style: normal; font-size: 11px; color: var(--ink-3); }
+.aside-sum { margin: 0 2px; color: var(--ink-3); font-size: 12px; flex: none; }
+.aside-sum b.warn { color: var(--danger); font-weight: 500; }
+.aside-sum a { color: var(--ink-2); cursor: pointer; margin-inline-start: 4px; text-decoration: underline; text-underline-offset: 2px; }
+.aside .plist { flex: 1; min-height: 0; overflow: hidden; }
+.plist { display: flex; flex-direction: column; gap: 1px; }
+.pitem {
+    display: flex; align-items: center; gap: 11px; padding: 8px 8px; border-radius: 8px; cursor: pointer;
+    border: 0; background: none; width: 100%; text-align: start;
+}
+.pitem:hover { background: var(--hover); }
+.pitem .pm { flex: 1; min-width: 0; }
+.pitem .pm b { display: block; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pitem .pm span { color: var(--ink-3); font-size: 12px; }
+.pitem .amt { font-weight: 500; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.pitem.neg .amt, .pitem.neg .pm span { color: var(--danger); }
+.datebadge { flex: none; width: 30px; display: flex; flex-direction: column; align-items: center; line-height: 1.1; }
+.datebadge b { order: 1; font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.datebadge small { order: 2; color: var(--ink-3); font-size: 10px; text-transform: uppercase; letter-spacing: 0.04em; }
+.empty-mini { color: var(--ink-3); font-size: 12.5px; padding: 4px 8px; }
+.sugg { display: flex; align-items: center; gap: 10px; padding: 9px 8px; }
+.sugg .pm { flex: 1; min-width: 0; }
+.sugg .pm b { display: block; font-weight: 500; }
+.sugg .pm span { color: var(--ink-3); font-size: 12px; }
+.sugg .acts { display: flex; gap: 4px; align-items: center; }
+.reserve-empty { padding: 8px; color: var(--ink-2); font-size: 13px; }
+.reserve-empty p { margin: 0 0 12px; }
+
+/* ---------- bulle d'un jour ---------- */
+.pop {
+    position: fixed; z-index: 15; width: 320px; padding: 12px 8px 8px;
+    background: #18191c; border: 1px solid var(--line-2); border-radius: 11px;
+    box-shadow: 0 16px 44px rgba(0, 0, 0, 0.55);
+}
+.pop::after {
+    content: ""; position: absolute; left: calc(var(--arrow, 50%) - 5px); bottom: -6px; width: 10px; height: 10px;
+    background: #18191c; border-right: 1px solid var(--line-2); border-bottom: 1px solid var(--line-2); transform: rotate(45deg);
+}
+.pop.below::after { bottom: auto; top: -6px; transform: rotate(225deg); }
+/* The strip between the day and its bubble belongs to the bubble: the mouse crosses it without closing it. */
+.pop::before { content: ""; position: absolute; left: 0; right: 0; bottom: -12px; height: 12px; }
+.pop.below::before { bottom: auto; top: -12px; }
+.pop header { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; padding: 0 6px 8px; margin-bottom: 4px; border-bottom: 1px solid var(--line); }
+.pop header b { font-size: 13px; font-weight: 600; }
+.pop header span { color: var(--ink-2); font-size: 12.5px; font-variant-numeric: tabular-nums; }
+.pop-item { display: flex; gap: 10px; align-items: flex-start; padding: 7px 6px; border-radius: 8px; cursor: pointer; }
+.pop-item:hover { background: var(--hover); }
+.pop-item .pm span.wrap { white-space: normal; }
+.pop-item .pm { flex: 1; min-width: 0; }
+.pop-item .pm b { display: block; font-size: 13px; font-weight: 500; }
+.pop-item .pm span { display: block; color: var(--ink-3); font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pop-r { text-align: end; display: flex; flex-direction: column; align-items: flex-end; gap: 3px; }
+.pop-r b { font-size: 13px; font-weight: 500; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.pop footer { display: flex; justify-content: space-between; margin: 4px 6px 2px; padding-top: 8px; border-top: 1px solid var(--line); color: var(--ink-3); font-size: 12px; }
+.pop footer b { color: var(--ink); font-weight: 500; font-variant-numeric: tabular-nums; }
+.pop footer.neg b { color: var(--danger); }

@@ -4,14 +4,15 @@
 // them up; nothing is stored here.
 
 import { esc } from "../dom.js";
-import { euros, eurosExact, fmtDay, groupBy, iso, money, monthLabel, MONTHS_SHORT, pad, parseISO } from "../format.js";
+import { euros, eurosExact, fmtDay, groupBy, iso, money, monthLabel, monthName, num, pad, parseISO } from "../format.js";
+import { t } from "../i18n.js";
 import { icon } from "../icons.js";
 import { eurOf, projectById, projectName, S, toneOf } from "../state.js";
-import { dateBadge, kpi, logo, pageHead } from "../ui/parts.js";
-import { CYCLE_WORD, KIND_WORD, PER_MONTH } from "../words.js";
+import { dateBadge, foreignIn, kpi, logo, pageHead, rateList } from "../ui/parts.js";
+import { amountKind, cycleWord, PER_MONTH } from "../words.js";
 
 const ym = (date) => date.slice(0, 7);
-const shortMonth = (key) => `${MONTHS_SHORT[Number(key.slice(5, 7)) - 1]}`;
+const shortMonth = (key) => monthName(Number(key.slice(5, 7)) - 1, true);
 const sumEur = (list) => list.reduce((t, s) => t + s.eur, 0);
 
 function monthsBetween(a, b) {
@@ -37,14 +38,14 @@ function anRange() {
     const p = S.an.period;
     if (p === "12m") {
         const first = addMonthsKey(now, -11);
-        return { months: monthsBetween(first, now), ahead: monthsBetween(addMonthsKey(now, 1), addMonthsKey(now, 3)), label: "sur 12 mois" };
+        return { months: monthsBetween(first, now), ahead: monthsBetween(addMonthsKey(now, 1), addMonthsKey(now, 3)), label: t("analytics.over12") };
     }
     if (p === "all") {
         const first = spend.length ? ym(spend[0].date) : now;
-        return { months: monthsBetween(first < now ? first : now, now), ahead: monthsBetween(addMonthsKey(now, 1), addMonthsKey(now, 3)), label: "depuis le début" };
+        return { months: monthsBetween(first < now ? first : now, now), ahead: monthsBetween(addMonthsKey(now, 1), addMonthsKey(now, 3)), label: t("analytics.sinceStart") };
     }
     const all = monthsBetween(`${p}-01`, `${p}-12`);
-    return { months: all.filter((k) => k <= now), ahead: all.filter((k) => k > now), label: `en ${p}` };
+    return { months: all.filter((k) => k <= now), ahead: all.filter((k) => k > now), label: t("analytics.inYear", { year: p }) };
 }
 
 const inProject = (s) => S.an.project === "all" || (S.an.project === "none" ? !s.project : s.project === S.an.project);
@@ -70,10 +71,10 @@ function anFigures() {
     const subs = sumEur(planned.filter((s) => s.cycle && s.cycle !== "once" && s.date <= yearAhead)) / 12;
     const soon = sumEur(planned.filter((s) => s.date <= in90));
     return `<div class="kpis">
-        ${kpi({ label: "Dépensé", value: euros(total), sub: `${label}${guessed >= 1 ? ` · dont ${euros(guessed)} estimés` : ""}` })}
-        ${kpi({ label: "Moyenne", value: euros(months.length ? total / months.length : 0), sub: `par mois, sur ${months.length} mois` })}
-        ${kpi({ label: "Abonnements", value: `≈ ${euros(subs)}`, sub: "par mois, sur l'année à venir" })}
-        ${kpi({ label: "À payer", value: euros(soon), sub: "dans les 3 prochains mois" })}
+        ${kpi({ label: t("analytics.kpi.spent"), value: euros(total), sub: `${label}${guessed >= 1 ? ` · ${t("analytics.kpi.guessed", { amount: euros(guessed) })}` : ""}` })}
+        ${kpi({ label: t("analytics.kpi.average"), value: euros(months.length ? total / months.length : 0), sub: t("analytics.kpi.perMonthOver", { count: months.length }) })}
+        ${kpi({ label: t("analytics.kpi.subs"), value: `≈ ${euros(subs)}`, sub: t("analytics.kpi.subsSub") })}
+        ${kpi({ label: t("analytics.kpi.toPay"), value: euros(soon), sub: t("analytics.kpi.toPaySub") })}
     </div>`;
 }
 
@@ -100,7 +101,7 @@ function anChart() {
             .slice(0, 4)
             .map(([name, v]) => `${name} ${euros(v)}`)
             .join(" · ");
-        const title = `${monthLabel(b.key)} : ${eurosExact(b.spent)} payés${b.plan ? `, ${eurosExact(b.plan)} prévus` : ""}${top3 ? `\n${top3}` : ""}`;
+        const title = [t(b.plan ? "analytics.barTitlePlanned" : "analytics.barTitle", { month: monthLabel(b.key), spent: eurosExact(b.spent), plan: eurosExact(b.plan) }), top3].filter(Boolean).join("\n");
         const stack = total
             ? `<span class="stack" style="height:${(total / top) * 100}%"><span class="val">${euros(total)}</span>${b.plan ? `<i class="plan" style="flex:${b.plan}"></i>` : ""}${b.spent ? `<i class="spent" style="flex:${b.spent}"></i>` : ""}</span>`
             : "";
@@ -113,11 +114,11 @@ function anChart() {
     };
     return `<section class="card an-chart">
         <header>
-            <b>Dépenses par mois</b><span>en euros · clique un mois pour son détail</span>
-            <span class="legend"><span><i class="dot ${tone}"></i>payé</span>${ahead.length || bars.some((b) => b.plan) ? '<span><i class="dot" style="--c:#3a3d43"></i>prévu</span>' : ""}</span>
+            <b>${t("analytics.chart.title")}</b><span>${t("analytics.chart.sub")}</span>
+            <span class="legend"><span><i class="dot ${tone}"></i>${t("analytics.chart.paid")}</span>${ahead.length || bars.some((b) => b.plan) ? `<span><i class="dot" style="--c:#3a3d43"></i>${t("analytics.chart.planned")}</span>` : ""}</span>
         </header>
         <div class="chart ${tone}">
-            <div class="axis"><span style="top:0">${euros(top)}</span><span style="top:50%">${euros(top / 2)}</span><span style="top:100%">0 €</span></div>
+            <div class="axis"><span style="top:0">${euros(top)}</span><span style="top:50%">${euros(top / 2)}</span><span style="top:100%">${euros(0)}</span></div>
             <div class="plot">
                 <i class="gl" style="top:0"></i><i class="gl" style="top:50%"></i><i class="gl" style="bottom:0"></i>
                 <div class="cols">${bars.map(col).join("")}</div>
@@ -143,10 +144,10 @@ function projectRows() {
         const p = projectById(r.id);
         return `<div class="lrow ${S.an.project === key ? "on" : ""}" data-action="an-project" data-id="${key}" role="button">
             <i class="dot ${toneOf(r.id)}"></i>
-            <span class="lm"><b>${esc(projectName(r.id))}</b><span>${r.services} service${r.services > 1 ? "s" : ""} · ${Math.round((r.sum / total) * 100)} %</span>
+            <span class="lm"><b>${esc(projectName(r.id))}</b><span>${t("analytics.services", { count: r.services })} · ${t("analytics.percent", { n: num((r.sum / total) * 100) })}</span>
                 <span class="share-line ${toneOf(r.id)}"><i style="width:${(r.sum / total) * 100}%"></i></span></span>
             <span class="lv"><b>${euros(r.sum)}</b></span>
-            ${p ? `<button class="btn ghost sm edit" data-action="edit-project" data-id="${p.id}" title="Modifier le projet">${icon("edit", 14)}</button>` : ""}
+            ${p ? `<button class="btn ghost sm edit" data-action="edit-project" data-id="${p.id}" title="${t("analytics.editProject")}">${icon("edit", 14)}</button>` : ""}
         </div>`;
     };
     return rows.map(row).join("");
@@ -167,27 +168,27 @@ function projectsCard() {
     const ideas = projectIdeas();
     const empty = !S.an.data.projects.length;
     return `<section>
-        <div class="list-head"><div class="stitle">Projets</div><span class="grow"></span>
-            <button class="btn sm" data-action="new-project">${icon("plus", 13)}Projet</button></div>
+        <div class="list-head"><div class="stitle">${t("analytics.projects")}</div><span class="grow"></span>
+            <button class="btn sm" data-action="new-project">${icon("plus", 13)}${t("analytics.newProject")}</button></div>
         <div class="card an-list">
-            ${empty ? '<div class="an-empty">Crée un projet (une app, un client, la boîte) pour y classer tes services et tes factures.</div>' : ""}
+            ${empty ? `<div class="an-empty">${t("analytics.noProject")}</div>` : ""}
             ${projectRows()}
-            ${ideas.length ? `<div class="list-foot"><small>Repérés dans tes abonnements :</small>${ideas.map((n) => `<button class="btn sm" data-action="quick-project" data-name="${esc(n)}">${icon("plus", 12)}${esc(n)}</button>`).join("")}</div>` : ""}
+            ${ideas.length ? `<div class="list-foot"><small>${t("analytics.ideas")}</small>${ideas.map((n) => `<button class="btn sm" data-action="quick-project" data-name="${esc(n)}">${icon("plus", 12)}${esc(n)}</button>`).join("")}</div>` : ""}
         </div>
     </section>`;
 }
 
 // projectSelect files a service or an invoice: « Auto » follows the keywords, « Aucun projet » overrides them.
-function projectSelect(kind, ref, value, auto, autoWord = "Auto") {
+function projectSelect(kind, ref, value, auto) {
     const projects = S.an.data.projects;
     if (!projects.length) return "";
     const shown = value === "-" ? "" : value || auto;
     const opts = [
-        `<option value="">${esc(auto ? `${autoWord} : ${projectName(auto)}` : "Non classé")}</option>`,
+        `<option value="">${esc(auto ? t("analytics.autoProject", { name: projectName(auto) }) : t("analytics.unfiled"))}</option>`,
         ...projects.map((p) => `<option value="${p.id}" ${value === p.id ? "selected" : ""}>${esc(p.name)}</option>`),
-        auto || value === "-" ? `<option value="-" ${value === "-" ? "selected" : ""}>Aucun projet</option>` : "",
+        auto || value === "-" ? `<option value="-" ${value === "-" ? "selected" : ""}>${t("analytics.noneProject")}</option>` : "",
     ];
-    return `<select class="select psel ${shown ? `set ${toneOf(shown)}` : ""}" data-assign="${kind}" data-ref="${esc(ref)}" title="Projet">${opts.join("")}</select>`;
+    return `<select class="select psel ${shown ? `set ${toneOf(shown)}` : ""}" data-assign="${kind}" data-ref="${esc(ref)}" title="${t("analytics.project")}">${opts.join("")}</select>`;
 }
 
 function serviceRows(scope) {
@@ -196,7 +197,7 @@ function serviceRows(scope) {
     const groups = Object.entries(groupBy(items, (s) => s.service))
         .map(([name, list]) => ({ name, list, sum: sumEur(list) }))
         .sort((a, b) => b.sum - a.sum);
-    if (!groups.length) return '<div class="an-empty">Aucune dépense sur cette période.</div>';
+    if (!groups.length) return `<div class="an-empty">${t("analytics.noSpend")}</div>`;
     return groups
         .map((g) => {
             const first = g.list[g.list.length - 1];
@@ -206,12 +207,12 @@ function serviceRows(scope) {
             const pays = S.st.payments.filter((p) => p.name === g.name && p.cycle !== "once" && (!p.end || p.end >= S.st.today));
             const monthly = pays.reduce((t, p) => t + eurOf(p.current, p.currentCurrency) * PER_MONTH[p.cycle], 0);
             const n = g.list.length;
-            const sub = [CYCLE_WORD[first.cycle || ""], `${n} paiement${n > 1 ? "s" : ""}`, monthly >= 0.5 ? `≈ ${euros(monthly)} par mois` : ""].filter(Boolean).join(" · ");
+            const sub = [cycleWord(first.cycle), t("analytics.payments", { count: n }), monthly >= 0.5 ? t("analytics.aboutPerMonth", { amount: euros(monthly) }) : ""].filter(Boolean).join(" · ");
             return `<div class="lrow">
                 ${logo(g.name, first.domain)}
                 <span class="lm"><b>${esc(g.name)}</b><span>${sub}</span></span>
                 ${projectSelect("service", g.name, value, auto)}
-                <span class="lv"><b>${euros(g.sum)}</b><small>${Math.round((g.sum / total) * 100)} %</small></span>
+                <span class="lv"><b>${euros(g.sum)}</b><small>${t("analytics.percent", { n: num((g.sum / total) * 100) })}</small></span>
             </div>`;
         })
         .join("");
@@ -219,7 +220,7 @@ function serviceRows(scope) {
 
 function ledgerRows(scope) {
     const list = [...scope].sort((a, b) => b.date.localeCompare(a.date));
-    if (!list.length) return '<div class="an-empty">Aucune dépense sur cette période.</div>';
+    if (!list.length) return `<div class="an-empty">${t("analytics.noSpend")}</div>`;
     const serviceProject = {};
     for (const s of S.an.data.spend) if (s.projectBy !== "invoice") serviceProject[s.service] ??= s.project;
     return list
@@ -233,7 +234,7 @@ function ledgerRows(scope) {
             const original = s.currency !== "EUR" ? `<small>${money(s.amount, s.currency)}</small>` : "";
             return `<div class="lrow">
                 ${dateBadge(s.date)}${logo(s.service, s.domain)}
-                <span class="lm"><b>${esc(s.service)}</b><span>${KIND_WORD[s.kind]}${s.label ? ` · ${esc(s.label)}` : ""}</span></span>
+                <span class="lm"><b>${esc(s.service)}</b><span>${amountKind(s.kind)}${s.label ? ` · ${esc(s.label)}` : ""}</span></span>
                 ${pick}
                 <span class="lv"><b>${s.kind === "estimate" ? "≈ " : ""}${eurosExact(s.eur)}</b>${original}</span>
             </div>`;
@@ -243,17 +244,14 @@ function ledgerRows(scope) {
 
 function listsCard() {
     const scope = anScope();
-    const tabs = [
-        ["services", "Par service"],
-        ["ledger", "Toutes les dépenses"],
-    ];
+    const tabs = ["services", "ledger"];
     const chips = [
-        S.an.month ? `<button class="btn sm" data-action="an-month" data-key="${S.an.month}" title="Revenir à toute la période">${monthLabel(S.an.month)}${icon("x", 12)}</button>` : "",
-        S.an.project !== "all" ? `<button class="btn sm" data-action="an-project" data-id="all" title="Tous les projets"><i class="dot ${toneOf(S.an.project === "none" ? "" : S.an.project)}"></i>${esc(projectName(S.an.project === "none" ? "" : S.an.project))}${icon("x", 12)}</button>` : "",
+        S.an.month ? `<button class="btn sm" data-action="an-month" data-key="${S.an.month}" title="${t("analytics.wholePeriod")}">${monthLabel(S.an.month)}${icon("x", 12)}</button>` : "",
+        S.an.project !== "all" ? `<button class="btn sm" data-action="an-project" data-id="all" title="${t("analytics.allProjects")}"><i class="dot ${toneOf(S.an.project === "none" ? "" : S.an.project)}"></i>${esc(projectName(S.an.project === "none" ? "" : S.an.project))}${icon("x", 12)}</button>` : "",
     ].join("");
     return `<section>
         <div class="list-head">
-            <div class="seg">${tabs.map(([k, label]) => `<button class="${S.an.tab === k ? "on" : ""}" data-action="an-tab" data-tab="${k}">${label}</button>`).join("")}</div>
+            <div class="seg">${tabs.map((k) => `<button class="${S.an.tab === k ? "on" : ""}" data-action="an-tab" data-tab="${k}">${t(`analytics.tab.${k}`)}</button>`).join("")}</div>
             <span class="grow"></span>${chips}
         </div>
         <div class="card an-list">${S.an.tab === "services" ? serviceRows(scope) : ledgerRows(scope)}</div>
@@ -263,15 +261,16 @@ function listsCard() {
 export function viewAnalytics() {
     const d = S.an.data;
     const years = [...new Set(d.spend.map((s) => s.date.slice(0, 4)))].filter((y) => y <= S.st.today.slice(0, 4)).sort().reverse();
-    const periods = [["12m", "12 mois"], ...years.map((y) => [y, y]), ["all", "Tout"]];
+    const periods = [["12m", t("analytics.period12")], ...years.map((y) => [y, y]), ["all", t("analytics.periodAll")]];
     if (!periods.some(([k]) => k === S.an.period)) S.an.period = "12m";
     const tools = `<div class="seg">${periods.map(([k, label]) => `<button class="${S.an.period === k ? "on" : ""}" data-action="an-period" data-p="${k}">${label}</button>`).join("")}</div>`;
+    const foreign = foreignIn(d.spend.map((s) => s.currency));
     const notes = [
-        d.usdToEur ? `Dollars convertis au taux de la Banque centrale européenne du ${fmtDay(d.rateDate)} (1 $ = ${d.usdToEur.toLocaleString("fr-FR")} €).` : "",
-        d.noAmount ? `${d.noAmount} facture${d.noAmount > 1 ? "s" : ""} sans montant lisible, laissée${d.noAmount > 1 ? "s" : ""} de côté : corrige-les dans Factures.` : "",
+        foreign.length && d.perEUR ? t("analytics.ratesNote", { date: fmtDay(d.rateDate), rates: rateList(d.perEUR, foreign) }) : "",
+        d.noAmount ? t("analytics.noAmountNote", { count: d.noAmount }) : "",
     ].filter(Boolean);
     return `
-    ${pageHead({ title: "Analyse", sub: "Ce que coûte la boîte, en euros : par mois, par projet, par service.", tools })}
+    ${pageHead({ title: t("analytics.title"), sub: t("analytics.sub"), tools })}
     ${anFigures()}
     ${anChart()}
     <div class="an-cols">${projectsCard()}${listsCard()}</div>

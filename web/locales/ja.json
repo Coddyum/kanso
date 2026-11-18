@@ -1,0 +1,462 @@
+{
+    "common": {
+        "add": "追加",
+        "ignore": "無視",
+        "edit": "編集",
+        "unknownVendor": "不明な取引先",
+        "showInFinder": "Finder で表示",
+        "delete": "削除",
+        "cancel": "キャンセル",
+        "save": "保存",
+        "create": "作成",
+        "close": "閉じる",
+        "ok": "OK"
+    },
+    "calendar": {
+        "zeroDay": "残高ゼロ",
+        "more_other": "他 {{count}} 件",
+        "auto": "自動",
+        "autoTitle": "請求書をもとに追加",
+        "variable": "変動",
+        "lastInvoice": "前回の請求書：{{date}}",
+        "left": "残り {{amount}}",
+        "todo": "要対応",
+        "tab": {
+            "upcoming": "予定",
+            "subs": "サブスク",
+            "reserve": "残高",
+            "stopped": "停止中"
+        },
+        "balanceOn": "{{date}}時点 {{amount}}",
+        "runsOut": "{{date}}にゼロ",
+        "holds": "3年以上は底をつかない",
+        "upcomingSum": "今後45日 · {{total}}",
+        "perMonth": "月額 {{total}}",
+        "stoppedSum": "3か月以上請求書なし",
+        "noUpcoming": "予定はありません。",
+        "noSubs": "サブスクはありません。",
+        "noPayment": "予定された支払いはありません。",
+        "reserveIntro": "事業用口座の残高を入力してください。予定された支払いをそれぞれの日付で差し引き、残高がゼロになる日を表示します。",
+        "reserveSet": "残高を入力",
+        "kpi": {
+            "deadlines": "手続き",
+            "nothingPlanned": "予定なし",
+            "nextDeadline": "次の手続き",
+            "reserve": "残高",
+            "reserveSet": "クリックして入力",
+            "monthTotal": "{{month}}の合計",
+            "nothingThisMonth": "今月はなし",
+            "subs": "サブスク",
+            "subsActive_other": "月あたり · 有効 {{count}} 件",
+            "missing": "未取得の請求書",
+            "seeList": "リストを見る",
+            "allThere": "すべて取得済み"
+        },
+        "monthPart": {
+            "matched": "支払済み {{amount}}",
+            "missing": "未取得 {{amount}}",
+            "upcoming": "予定 {{amount}}"
+        },
+        "prevMonth": "前月",
+        "today": "今日",
+        "nextMonth": "翌月",
+        "newPayment": "支払い",
+        "legend": {
+            "upcoming": "予定",
+            "matched": "請求書あり",
+            "missing": "未取得",
+            "invoice": "サブスク以外",
+            "deadline": "要対応の手続き"
+        }
+    },
+    "cycle": {
+        "long": {
+            "once": "1回のみ",
+            "weekly": "毎週",
+            "monthly": "毎月",
+            "quarterly": "四半期ごと",
+            "yearly": "毎年"
+        },
+        "short": {
+            "once": "単発",
+            "weekly": "週払い",
+            "monthly": "月払い",
+            "quarterly": "四半期払い",
+            "yearly": "年払い"
+        },
+        "word": {
+            "monthly": "月払いのサブスク",
+            "yearly": "年払いのサブスク",
+            "quarterly": "四半期払いのサブスク",
+            "weekly": "週払いのサブスク",
+            "once": "単発の購入",
+            "none": "サブスク以外の請求書"
+        }
+    },
+    "kind": {
+        "invoice": "請求書",
+        "receipt": "領収書",
+        "order": "注文",
+        "statement": "明細書",
+        "document": "書類",
+        "file": "ファイル"
+    },
+    "amountKind": {
+        "invoice": "請求書",
+        "estimate": "未取得の請求書 · 推定額",
+        "planned": "予定"
+    },
+    "status": {
+        "sentence": {
+            "upcoming": "予定",
+            "today": "今日",
+            "matched": "請求書あり",
+            "missing": "請求書未取得",
+            "skipped": "請求書なし",
+            "paid": "支払済み",
+            "invoice": "サブスク以外の請求書"
+        },
+        "tag": {
+            "matched": "請求書あり",
+            "missing": "未取得",
+            "upcoming": "予定",
+            "today": "今日",
+            "paid": "支払済み",
+            "skipped": "請求書なし",
+            "invoice": "サブスク以外"
+        }
+    },
+    "deadlineState": {
+        "todo": "未完了",
+        "done": "完了",
+        "past": "期限切れ"
+    },
+    "size": {
+        "bytes": "{{n}} B",
+        "kilo": "{{n}} KB",
+        "mega": "{{n}} MB"
+    },
+    "analytics": {
+        "title": "分析",
+        "sub": "事業にかかる費用（ユーロ）：月別、プロジェクト別、サービス別。",
+        "over12": "12か月間",
+        "sinceStart": "開始以来",
+        "inYear": "{{year}}年",
+        "period12": "12か月",
+        "periodAll": "すべて",
+        "kpi": {
+            "spent": "支出額",
+            "guessed": "うち推定 {{amount}}",
+            "average": "平均",
+            "perMonthOver_other": "月あたり（{{count}}か月）",
+            "subs": "サブスク",
+            "subsSub": "月あたり、今後1年間",
+            "toPay": "支払予定",
+            "toPaySub": "今後3か月"
+        },
+        "barTitle": "{{month}}：支払済み {{spent}}",
+        "barTitlePlanned": "{{month}}：支払済み {{spent}}、予定 {{plan}}",
+        "chart": {
+            "title": "月別の支出",
+            "sub": "ユーロ · 月をクリックすると詳細を表示",
+            "paid": "支払済み",
+            "planned": "予定"
+        },
+        "services_other": "{{count}} サービス",
+        "percent": "{{n}}%",
+        "editProject": "プロジェクトを編集",
+        "projects": "プロジェクト",
+        "newProject": "プロジェクト",
+        "noProject": "プロジェクト（アプリ、クライアント、事業全体など）を作成すると、サービスと請求書を分類できます。",
+        "ideas": "サブスクから見つかった候補：",
+        "autoProject": "自動：{{name}}",
+        "unfiled": "未分類",
+        "noneProject": "プロジェクトなし",
+        "project": "プロジェクト",
+        "noSpend": "この期間の支出はありません。",
+        "payments_other": "{{count}} 件の支払い",
+        "aboutPerMonth": "月あたり ≈ {{amount}}",
+        "wholePeriod": "全期間に戻る",
+        "allProjects": "すべてのプロジェクト",
+        "tab": {
+            "services": "サービス別",
+            "ledger": "すべての支出"
+        },
+        "ratesNote": "外貨は欧州中央銀行の{{date}}のレートで換算（{{rates}}）。",
+        "noAmountNote_other": "金額を読み取れない請求書 {{count}} 件を除外しました。「請求書」で修正してください。"
+    },
+    "invoices": {
+        "title": "請求書",
+        "number": "No. {{n}}",
+        "editedTitle": "手動で修正済み",
+        "edited": "修正済み",
+        "noAmount": "金額？",
+        "fix": "修正",
+        "noMatch": "一致する請求書はありません。",
+        "count_other": "{{count}} 件の請求書",
+        "shownTotal": "表示中の合計",
+        "read_other": "フォルダから {{count}} 件の支出を読み取り",
+        "merged_other": "重複 {{count}} 件をまとめました（請求書＋領収書…）",
+        "noReader": "PDF の読み取りは無効",
+        "search": "検索…",
+        "allYears": "すべての年",
+        "allVendors": "すべての取引先"
+    },
+    "missing": {
+        "title": "未取得",
+        "filedIn": "{{path}} に保存済み",
+        "dueOn": "期日 {{date}}",
+        "drop": "ドロップ",
+        "noInvoice": "請求書なし",
+        "lastInvoice": "前回の請求書の受領：{{date}}",
+        "noneReceived": "請求書の受領なし",
+        "next": "次回 {{date}}",
+        "invoices": "請求書",
+        "toFetch_other": "未取得 {{count}} 件",
+        "billingTitle": "請求書ページ",
+        "billingSub": "各請求書の入手先へワンクリックで",
+        "done": "完了",
+        "intro_other": "サブスクから見込まれる請求書 {{count}} 件がフォルダに見つかりません。PDF を該当する行にドラッグすると、自動で整理されます。",
+        "nothing": "サブスクに対して不足している請求書はありません。",
+        "startTitle": "まず「カレンダー」でサブスクを登録",
+        "startText": "（またはフォルダで見つかったものを承認）。請求書のない過去の期日はここに表示され、PDF をドロップする場所が用意されます。PDF は {{layout}} の形で自動的に整理されます。",
+        "layout": "年 / 取引先 / 月",
+        "allThere": "すべて取得済み",
+        "allThereText": "過去の期日すべてに請求書があります。",
+        "todoTitle": "メモ",
+        "todoSub": "サブスク以外で入手が必要なもの",
+        "todoPlaceholder": "例：10月の電気代の請求書"
+    },
+    "files": {
+        "markInvoice": "請求書として登録",
+        "rename": "名前を変更",
+        "openNative": "Mac のアプリで開く",
+        "items_other": "{{count}} 件",
+        "title": "{{name}} フォルダ",
+        "sub": "Finder と同じフォルダです。ここで追加したものは Finder にも表示され、その逆も同様です。",
+        "newFolder": "新規フォルダ",
+        "import": "インポート",
+        "openInFinder": "Finder で開く",
+        "empty": "フォルダは空です。ここにファイルをドラッグしてください。",
+        "dropHint": "Finder からファイルをここにドラッグすると追加され、リスト内のフォルダにドラッグするとそのフォルダに整理されます。",
+        "inFolder": "{{name}} 内",
+        "newName": "新しい名前"
+    },
+    "popover": {
+        "estimated": "前回の請求書から推定",
+        "dropIn": "「未取得」にドロップ",
+        "reserveThatEvening": "当日夜の残高見込み"
+    },
+    "payment": {
+        "found_other": "フォルダで見つかった請求書：{{count}} 件、最新は {{date}}。",
+        "autoAdded": "請求書をもとに自動で追加されました。削除すると、再び追加されることはありません。",
+        "intro": "サブスクまたは予定された支出。請求書のない過去の期日は「未取得」に入ります。",
+        "variableNote": "金額は変動します。直近3件の請求書：{{amounts}}。今後の期日には最新の金額を使い、残高の計算には最も高い金額を使います。",
+        "manualNote": "手入力の金額です。次の請求書が届くまで使われ、その後は請求書の金額に戻ります。",
+        "new": "新しい支払い",
+        "name": "名前",
+        "namePlaceholder": "Render, Claude Max, Apple Developer…",
+        "amount": "金額",
+        "amountVariable": "金額（変動）",
+        "amountHint": "ここで変更すると、次の請求書まで使われます",
+        "currency": "通貨",
+        "cycle": "頻度",
+        "start": "初回の期日",
+        "vendor": "請求書上の名前",
+        "vendorPlaceholder": "名前と異なる場合",
+        "vendorHint": "フォルダ内の請求書を見つけるため",
+        "domain": "サイト（ロゴ用）",
+        "end": "終了（任意）",
+        "match": "請求書に含まれる語（任意）",
+        "matchPlaceholder": "mysite.com",
+        "matchHint": "同じ取引先の2つのサブスクを区別するため",
+        "billing": "請求書ページ",
+        "billingKnown": "空欄の場合：上にグレーで表示されている取引先の既知のページ",
+        "billingHint": "各請求書をダウンロードする場所",
+        "note": "メモ",
+        "expectInvoice": "期日ごとに請求書を受け取る予定",
+        "added": "支払いを追加しました",
+        "saved": "支払いを更新しました"
+    },
+    "project": {
+        "new": "新しいプロジェクト",
+        "intro": "アプリ、クライアント、事業そのもの。各支出をプロジェクトに分類できます。",
+        "name": "名前",
+        "namePlaceholder": "個人サイト、クライアント A…",
+        "color": "色",
+        "keywords": "自動分類のキーワード（任意）",
+        "keywordsPlaceholder": "mysite.com, ショップ",
+        "keywordsHint": "サービス名、請求書の語、または摘要にプロジェクト名かこれらの語のいずれかを含む支出は、自動でこのプロジェクトに分類されます。カンマ区切り。",
+        "created": "プロジェクトを作成しました",
+        "saved": "プロジェクトを更新しました"
+    },
+    "invoice": {
+        "title": "請求書を修正",
+        "vendor": "取引先",
+        "label": "摘要",
+        "date": "日付",
+        "amount": "税込金額",
+        "notInvoice": "事業用の請求書ではない：リストから除外",
+        "reset": "自動読み取りに戻す",
+        "saved": "請求書を修正しました"
+    },
+    "reserve": {
+        "rates": "外貨の金額は欧州中央銀行の{{date}}のレートで換算されます：{{rates}}。",
+        "noRates": "為替レートを取得できません。外貨の金額は計算に含まれません。",
+        "title": "事業用口座の残高",
+        "intro": "ある日付時点の口座残高。予定された支払いをそれぞれの日付で差し引き、残高がゼロになる日を表示します。",
+        "balance": "残高（€）",
+        "date": "基準日",
+        "clear": "クリア"
+    },
+    "deadlines": {
+        "approx": "見込みの日付",
+        "openSite": "サイトを開く",
+        "done": "完了",
+        "urssaf": {
+            "quarterly": "四半期ごと",
+            "monthly": "毎月",
+            "off": "申告なし"
+        },
+        "title": "行政手続き",
+        "intro": "公式の期限です。週末や祝日に当たる場合は翌営業日に繰り下げています。完了したものにチェックを入れてください。",
+        "none": "追跡中の手続きはありません。",
+        "urssafLabel": "URSSAF 申告",
+        "reminders": "リマインダー",
+        "cfe": "CFE（12月15日までに納付）",
+        "ir": "所得税申告（5月末）",
+        "saved": "手続きを更新しました"
+    },
+    "toast": {
+        "dismissed": "期日を「請求書なし」にしました",
+        "markedInvoice": "請求書に追加しました",
+        "paymentDeleted": "支払いを削除しました",
+        "projectCreated": "プロジェクト「{{name}}」を作成しました",
+        "projectDeleted": "プロジェクトを削除しました",
+        "moved": "{{name}} に移動しました",
+        "dropWhere": "ファイルは「フォルダ」か、未取得の請求書の上にドロップしてください。",
+        "folderGone": "「{{name}}」はもう存在しません",
+        "autoAdded_other": "請求書をもとにサブスク {{count}} 件を追加しました：{{names}}",
+        "filed_other": "{{count}} 件のファイルを {{name}} に整理しました"
+    },
+    "nav": {
+        "synced": "{{path}} と同期中",
+        "calendar": "カレンダー",
+        "analytics": "分析",
+        "invoices": "請求書",
+        "missing": "未取得",
+        "files": "フォルダ",
+        "folder": "{{name}} フォルダ",
+        "loading": "フォルダを読み込み中…"
+    },
+    "rates": {
+        "one": "1 {{code}} = {{eur}} €"
+    },
+    "day": {
+        "today": "今日",
+        "tomorrow": "明日",
+        "inDays_other": "{{count}}日後",
+        "daysAgo_other": "{{count}}日前"
+    },
+    "date": {
+        "months": [
+            "1月",
+            "2月",
+            "3月",
+            "4月",
+            "5月",
+            "6月",
+            "7月",
+            "8月",
+            "9月",
+            "10月",
+            "11月",
+            "12月"
+        ],
+        "monthsShort": [
+            "1月",
+            "2月",
+            "3月",
+            "4月",
+            "5月",
+            "6月",
+            "7月",
+            "8月",
+            "9月",
+            "10月",
+            "11月",
+            "12月"
+        ],
+        "monthsFrom": [
+            "1月",
+            "2月",
+            "3月",
+            "4月",
+            "5月",
+            "6月",
+            "7月",
+            "8月",
+            "9月",
+            "10月",
+            "11月",
+            "12月"
+        ]
+    },
+    "format": {
+        "decimal": ".",
+        "group": ",",
+        "money": "{{sym}}{{n}}",
+        "shortDate": "{{month}}{{day}}日"
+    },
+    "deadline": {
+        "urssaf": {
+            "title": "URSSAF 申告",
+            "short": "URSSAF",
+            "quarter": "{{year}}年{{from}}〜{{to}}の売上（0 €でも申告が必要）",
+            "month": "{{year}}年{{from}}の売上（0 €でも申告が必要）"
+        },
+        "cfe": {
+            "title": "CFE 納付",
+            "short": "CFE 納付",
+            "detail": "impots.gouv の事業者用スペースで納付通知の支払い（11月初めに掲載）· {{year}}年の売上が 5,000 € 以下なら納付不要"
+        },
+        "ir": {
+            "title": "所得税申告",
+            "short": "税金",
+            "detail": "{{year}}年の売上を 2042-C-PRO で申告 · 期限は県（département）により5月末〜6月初め"
+        }
+    },
+    "reminder": {
+        "reserveTitle": "{{date}}に残高ゼロ",
+        "reserveBody_other": "予定された支払いにより、{{count}}日後に事業用口座が空になります。入金をお忘れなく。",
+        "tomorrowOne": "明日：{{name}}",
+        "tomorrowMany_other": "明日：支払い {{count}} 件",
+        "deadlineIn7": "{{title}}：7日後（{{date}}）",
+        "deadlineTomorrow": "{{title}}：明日",
+        "approx": "{{detail}}（日付は見込み）",
+        "missing_other": "未取得の請求書 {{count}} 件"
+    },
+    "error": {
+        "paymentFields": "名前、金額、頻度、日付は必須です",
+        "unknownCurrency": "不明な通貨",
+        "paymentNotFound": "支払いが見つかりません",
+        "emptyText": "テキストが空です",
+        "missingKey": "キーがありません",
+        "missingFile": "ファイルがありません",
+        "projectName": "プロジェクト名が必要です",
+        "projectExists": "同じ名前のプロジェクトが既にあります",
+        "projectNotFound": "プロジェクトが見つかりません",
+        "missingRef": "サービスまたは請求書がありません",
+        "missingDeadline": "手続きの期限がありません",
+        "unknownRhythm": "不明な URSSAF の申告頻度",
+        "badPath": "パスが拒否されました：{{path}}",
+        "badName": "無効な名前",
+        "renameRefused": "名前の変更が拒否されました",
+        "moveRefused": "移動が拒否されました",
+        "intoItself": "フォルダをそれ自体の中には移動できません",
+        "tooBig": "500 MB を超えるファイル",
+        "noTargetDir": "移動先のフォルダが見つかりません",
+        "unknownLang": "不明な言語",
+        "exists": "「{{path}}」は既に存在します"
+    }
+}

@@ -37,7 +37,4 @@ func TestToEUR(t *testing.T) {
 			t.Errorf("ToEUR(%v %s) = %v, %v; want %v, %v", c.amount, c.currency, got, ok, c.want, c.ok)
 		}
 	}
-	if got := r.USDToEUR(); got != 0.8621 {
-		t.Errorf("USDToEUR = %v, want 0.8621", got)
-	}
 }

@@ -25,12 +25,12 @@ func main() {
 	if err != nil {
 		log.Fatalf("home folder: %v", err)
 	}
-	port := flag.Int("port", 48219, "port HTTP (écoute sur 127.0.0.1 uniquement)")
-	root := flag.String("root", filepath.Join(home, "Documents", "Inc"), "dossier synchronisé avec l'app")
+	port := flag.Int("port", 48219, "HTTP port (listens on 127.0.0.1 only)")
+	root := flag.String("root", filepath.Join(home, "Documents", "Inc"), "the folder the app keeps in step")
 	flag.Parse()
 
 	if st, err := os.Stat(*root); err != nil || !st.IsDir() {
-		log.Fatalf("dossier introuvable : %s", *root)
+		log.Fatalf("folder not found: %s", *root)
 	}
 	pdftext := findPDFText()
 	srv, err := server.New(server.Config{
@@ -45,9 +45,9 @@ func main() {
 		Handler:           srv.Handler(),
 		ReadHeaderTimeout: 10 * time.Second,
 	}
-	log.Printf("%s → http://localhost:%d  (dossier : %s)", brand.ID, *port, *root)
+	log.Printf("%s → http://localhost:%d  (folder: %s)", brand.ID, *port, *root)
 	if pdftext == "" {
-		log.Printf("pdftext introuvable : les PDF seront listés sans montant (lance `make build`)")
+		log.Printf("pdftext not found: PDFs are listed without their amount (run `make build`)")
 	}
 
 	// The launcher stops the app with SIGTERM on an update: requests in flight finish first.

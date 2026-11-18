@@ -4,8 +4,10 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/coddyum/kanso/internal/currency"
 	"github.com/coddyum/kanso/internal/day"
 	"github.com/coddyum/kanso/internal/deadlines"
+	"github.com/coddyum/kanso/internal/i18n"
 	"github.com/coddyum/kanso/internal/rates"
 )
 
@@ -37,17 +39,18 @@ type State struct {
 	Projects    []Project            `json:"projects"`
 	Deadlines   []deadlines.Deadline `json:"deadlines"` // from 100 days back to a year ahead
 	Admin       deadlines.Settings   `json:"admin"`
-	Billing     []BillingLink        `json:"billing"` // where to fetch invoices, once per address
+	Billing     []BillingLink        `json:"billing"`    // where to fetch invoices, once per address
+	Currencies  []string             `json:"currencies"` // the codes a form offers
 }
 
 // State computes the main screens' data.
-func (m *Model) State(r rates.Rates) State {
+func (m *Model) State(r rates.Rates, tr i18n.Lang) State {
 	res := State{
 		Today: m.Today.Format(day.Format), Payments: []PaymentView{}, Invoices: m.Invoices, Todos: m.DB.Todos,
 		Missing: []DueItem{}, Upcoming: []DueItem{}, Suggestions: m.Suggestions, AutoAdded: m.Added,
 		Forecast: m.Forecast(r), Projects: m.DB.Projects,
-		Deadlines: m.Deadlines(m.Today.AddDate(0, 0, -100), m.Today.AddDate(1, 0, 0)), Admin: m.DB.Settings(),
-		Billing: m.billingLinks(),
+		Deadlines: m.Deadlines(m.Today.AddDate(0, 0, -100), m.Today.AddDate(1, 0, 0), tr), Admin: m.DB.Settings(),
+		Billing: m.billingLinks(), Currencies: currency.Codes,
 	}
 	if res.AutoAdded == nil {
 		res.AutoAdded = []string{}
@@ -122,5 +125,24 @@ func (m *Model) billingLinks() []BillingLink {
 		out = append(out, byURL[u].BillingLink)
 	}
 	sort.SliceStable(out, func(i, j int) bool { return strings.ToLower(out[i].Name) < strings.ToLower(out[j].Name) })
+	return out
+}
+
+// Domains are the sites the data names: payments, invoices, suggestions, billing pages.
+func (m *Model) Domains() map[string]bool {
+	out := map[string]bool{}
+	for _, p := range m.DB.Payments {
+		out[p.Domain] = true
+	}
+	for _, inv := range m.Invoices {
+		out[inv.Domain] = true
+	}
+	for _, sg := range m.Suggestions {
+		out[sg.Domain] = true
+	}
+	for _, b := range m.billingLinks() {
+		out[b.Domain] = true
+	}
+	delete(out, "")
 	return out
 }

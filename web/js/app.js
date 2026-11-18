@@ -3,7 +3,8 @@
 import { api, sendFiles } from "./api.js";
 import { $, $$ } from "./dom.js";
 import { iso } from "./format.js";
-import { S } from "./state.js";
+import { t } from "./i18n.js";
+import { rootName, S } from "./state.js";
 import { toast } from "./ui/toast.js";
 import { viewAnalytics } from "./views/analytics.js";
 import { fitCalendar, gridRange, viewCalendar } from "./views/calendar.js";
@@ -25,7 +26,7 @@ async function loadFiles() {
         S.listing = await api("GET", "/api/ls?dir=" + encodeURIComponent(S.dir));
     } catch (err) {
         if (!S.dir) throw err;
-        toast(`« ${S.dir} » n'existe plus`, true);
+        toast(t("toast.folderGone", { name: S.dir }), true);
         S.dir = "";
         history.replaceState(null, "", "#files");
         S.listing = await api("GET", "/api/ls?dir=");
@@ -47,7 +48,7 @@ export async function load() {
         S.boot ??= sg.boot;
         S.st = st;
         const added = S.st.autoAdded;
-        if (added.length) toast(`${added.length} abonnement${added.length > 1 ? "s" : ""} ajouté${added.length > 1 ? "s" : ""} d'après tes factures : ${added.join(", ")}`);
+        if (added.length) toast(t("toast.autoAdded", { count: added.length, names: added.join(", ") }));
         render();
         window.webkit?.messageHandlers?.inc?.postMessage("changed");
     } catch (err) {
@@ -59,7 +60,9 @@ export function render() {
     hidePop();
     $$(".nav a").forEach((a) => a.classList.toggle("on", a.dataset.view === S.view));
     $("#n-missing").textContent = S.st.missing.length || "";
-    $("#sync").title = `Synchronisé avec ${S.st.root.replace(/^\/Users\/[^/]+/, "~")}`;
+    $("#nav-files .tip").textContent = t("nav.folder", { name: rootName() });
+    $("#nav-files").setAttribute("aria-label", t("nav.folder", { name: rootName() }));
+    $("#sync").title = t("nav.synced", { path: S.st.root.replace(/^\/Users\/[^/]+/, "~") });
     const main = $("#main");
     main.classList.toggle("fit", S.view === "calendar");
     main.innerHTML = VIEWS[S.view]();
@@ -71,6 +74,6 @@ export async function upload(files, params) {
     if (!files.length) return;
     const res = await sendFiles(files, params);
     const n = res.saved.length;
-    toast(`${n} fichier${n > 1 ? "s" : ""} rangé${n > 1 ? "s" : ""} dans ${res.dir || "Inc"}`);
+    toast(t("toast.filed", { count: n, name: res.dir || rootName() }));
     await load();
 }

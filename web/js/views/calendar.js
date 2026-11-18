@@ -2,11 +2,12 @@
 // side panel (coming soon, subscriptions, reserve, stopped subscriptions).
 
 import { $, $$, esc } from "../dom.js";
-import { approx, capitalize, euros, firstOfMonth, fmtDay, fmtTotals, groupBy, iso, money, MONTHS, pad, shortDay, totals } from "../format.js";
+import { approx, capitalize, euros, firstOfMonth, fmtDay, fmtTotals, groupBy, iso, monthName, money, monthParts, pad, shortDay, totals, weekdays } from "../format.js";
+import { t } from "../i18n.js";
 import { icon } from "../icons.js";
 import { activeSubs, balanceOn, comingSoon, daysFromToday, eurOf, nextDue, relDay, S, subsPerMonth } from "../state.js";
 import { dateBadge, dlIcon, kpi, logo, pageHead } from "../ui/parts.js";
-import { CYCLE_SHORT, DL, STATUS, STATUS_TAG } from "../words.js";
+import { cycleShort, DL_CLASS, deadlineState, statusSentence, statusTag } from "../words.js";
 
 // gridRange is the first and last day shown for a month: whole weeks, Monday first.
 export function gridRange(month) {
@@ -22,11 +23,11 @@ export function gridRange(month) {
 // ev is one payment of a day: its logo alone, and a dot for its state.
 const ev = (e) =>
     e.type === "deadline"
-        ? `<button class="ev ${DL[e.status][0]}" data-action="deadlines" aria-label="${esc(`${e.name} · ${DL[e.status][1]}`)}">${dlIcon()}</button>`
+        ? `<button class="ev ${DL_CLASS[e.status]}" data-action="deadlines" aria-label="${esc(`${e.name} · ${deadlineState(e.status)}`)}">${dlIcon()}</button>`
         : `
     <button class="ev s-${e.status}" data-action="${e.type === "payment" ? "edit-payment" : "open-invoice"}"
         data-id="${esc(e.type === "payment" ? e.paymentId : e.invoiceId)}"
-        aria-label="${esc(`${e.name} · ${approx(e)}${money(e.amount, e.currency)} · ${STATUS_TAG[e.status] || ""}`)}">${logo(e.name, e.domain, "sm")}</button>`;
+        aria-label="${esc(`${e.name} · ${approx(e)}${money(e.amount, e.currency)} · ${statusTag(e.status)}`)}">${logo(e.name, e.domain, "sm")}</button>`;
 
 function dayCell(d, byDay) {
     const k = iso(d);
@@ -41,7 +42,7 @@ function dayCell(d, byDay) {
     ]
         .filter(Boolean)
         .join(" ");
-    const zero = k === runsOut ? '<span class="zero">réserve à 0</span>' : "";
+    const zero = k === runsOut ? `<span class="zero">${t("calendar.zeroDay")}</span>` : "";
     return `<div class="${cls}" data-action="new-payment" data-date="${k}">
         <span class="dhead"><span class="dnum">${d.getDate()}</span>${zero}<span class="grow"></span>${daySum(evs)}</span>
         <span class="evs">${evs.map(ev).join("")}<span class="more" data-action="day-list" data-date="${k}" hidden></span></span>
@@ -77,7 +78,7 @@ export function fitCalendar() {
         while (list.scrollHeight > list.clientHeight + 1 && hidden < items.length) {
             hidden += 1;
             items[items.length - hidden].hidden = true;
-            note.textContent = `+ ${hidden} autre${hidden > 1 ? "s" : ""}`;
+            note.textContent = t("calendar.more", { count: hidden });
             if (!note.isConnected) list.append(note);
         }
     }
@@ -87,16 +88,16 @@ export function fitCalendar() {
 export const upItem = (e) => `
     <button class="pitem" data-action="${e.type === "invoice" ? "open-invoice" : "edit-payment"}" data-id="${esc(e.type === "invoice" ? e.invoiceId : e.paymentId)}">
         ${dateBadge(e.date)}${logo(e.name, e.domain)}
-        <span class="pm"><b>${esc(e.name)}</b><span>${e.status === "upcoming" || e.status === "today" ? relDay(e.date) : STATUS[e.status]}</span></span>
+        <span class="pm"><b>${esc(e.name)}</b><span>${e.status === "upcoming" || e.status === "today" ? relDay(e.date) : statusSentence(e.status)}</span></span>
         <span class="amt">${approx(e)}${money(e.amount, e.currency)}</span>
     </button>`;
 
 const subItem = (p) => {
     const next = nextDue(p);
-    const auto = p.auto ? '<span class="mini" title="Ajouté d\'après tes factures">auto</span>' : "";
+    const auto = p.auto ? `<span class="mini" title="${t("calendar.autoTitle")}">${t("calendar.auto")}</span>` : "";
     return `<button class="pitem" data-action="edit-payment" data-id="${p.id}">
         ${logo(p.name, p.domain)}
-        <span class="pm"><b>${esc(p.name)}${auto}</b><span>${CYCLE_SHORT[p.cycle]}${p.variable ? " · variable" : ""}${next ? ` · ${fmtDay(next)}` : ""}</span></span>
+        <span class="pm"><b>${esc(p.name)}${auto}</b><span>${[cycleShort(p.cycle), p.variable && t("calendar.variable"), next && fmtDay(next)].filter(Boolean).join(" · ")}</span></span>
         <span class="amt">${p.variable ? "≈ " : ""}${money(p.current, p.currentCurrency)}</span>
     </button>`;
 };
@@ -104,17 +105,17 @@ const subItem = (p) => {
 const suggItem = (s) => `
     <div class="sugg">
         ${logo(s.name, s.domain)}
-        <div class="pm"><b>${esc(s.name)}</b><span>${CYCLE_SHORT[s.cycle]} · dernière facture le ${fmtDay(s.last)}</span></div>
+        <div class="pm"><b>${esc(s.name)}</b><span>${cycleShort(s.cycle)} · ${t("calendar.lastInvoice", { date: fmtDay(s.last) })}</span></div>
         <div class="acts">
-            <button class="btn sm primary" data-action="accept-sugg" data-key="${esc(s.key)}">Ajouter</button>
-            <button class="btn sm ghost icon" data-action="dismiss-sugg" data-key="${esc(s.key)}" title="Ignorer">${icon("x", 14)}</button>
+            <button class="btn sm primary" data-action="accept-sugg" data-key="${esc(s.key)}">${t("common.add")}</button>
+            <button class="btn sm ghost icon" data-action="dismiss-sugg" data-key="${esc(s.key)}" title="${t("common.ignore")}">${icon("x", 14)}</button>
         </div>
     </div>`;
 
 const reserveItem = (p) => `
     <div class="pitem${p.balance < 0 ? " neg" : ""}">
         ${dateBadge(p.date)}${logo(p.name, p.domain)}
-        <span class="pm"><b>${esc(p.name)}</b><span>reste ${money(p.balance, "EUR")}</span></span>
+        <span class="pm"><b>${esc(p.name)}</b><span>${t("calendar.left", { amount: money(p.balance, "EUR") })}</span></span>
         <span class="amt">−${money(p.amount, "EUR")}</span>
     </div>`;
 
@@ -122,7 +123,7 @@ const dlItem = (d) => `
     <button class="pitem" data-action="deadlines">
         ${dateBadge(d.date)}${dlIcon("")}
         <span class="pm"><b>${esc(d.title)}</b><span>${relDay(d.date)}</span></span>
-        <span class="tag s-deadline">à faire</span>
+        <span class="tag s-deadline">${t("calendar.todo")}</span>
     </button>`;
 
 function asideTabs() {
@@ -130,47 +131,46 @@ function asideTabs() {
     const f = st.forecast;
     const subs = [...activeSubs()].sort((a, b) => (nextDue(a) || "9").localeCompare(nextDue(b) || "9"));
     const tabs = [
-        ["upcoming", "À venir", comingSoon().length],
-        ["subs", "Abos", subs.length],
-        ["reserve", "Réserve", ""],
+        ["upcoming", comingSoon().length],
+        ["subs", subs.length],
+        ["reserve", ""],
     ];
-    if (st.suggestions.length) tabs.push(["stopped", "Arrêtés", st.suggestions.length]);
+    if (st.suggestions.length) tabs.push(["stopped", st.suggestions.length]);
     if (!tabs.some(([k]) => k === S.asideTab)) S.asideTab = "upcoming";
     const reserveSum = f.set
-        ? `${money(f.balance, "EUR")} au ${fmtDay(f.date)} · ${f.runsOut ? `<b class="warn">à 0 le ${fmtDay(f.runsOut)}</b>` : "tient plus de 3 ans"}`
+        ? `${t("calendar.balanceOn", { amount: money(f.balance, "EUR"), date: fmtDay(f.date) })} · ${f.runsOut ? `<b class="warn">${t("calendar.runsOut", { date: fmtDay(f.runsOut) })}</b>` : t("calendar.holds")}`
         : "";
     const body = {
-        upcoming: [`45 prochains jours · ${fmtTotals(totals(st.upcoming))}`, comingSoon().map((x) => (x.kind ? dlItem(x) : upItem(x))), "Rien de prévu."],
-        subs: [`${fmtTotals(subsPerMonth(subs))} par mois`, subs.map(subItem), "Aucun abonnement."],
-        reserve: [reserveSum, f.points.map(reserveItem), f.set ? "Aucun paiement prévu." : ""],
-        stopped: ["Plus de facture depuis 3 mois", st.suggestions.map(suggItem), ""],
+        upcoming: [t("calendar.upcomingSum", { total: fmtTotals(totals(st.upcoming)) }), comingSoon().map((x) => (x.kind ? dlItem(x) : upItem(x))), t("calendar.noUpcoming")],
+        subs: [t("calendar.perMonth", { total: fmtTotals(subsPerMonth(subs)) }), subs.map(subItem), t("calendar.noSubs")],
+        reserve: [reserveSum, f.points.map(reserveItem), f.set ? t("calendar.noPayment") : ""],
+        stopped: [t("calendar.stoppedSum"), st.suggestions.map(suggItem), ""],
     }[S.asideTab];
     const empty =
         S.asideTab === "reserve" && !f.set
-            ? `<div class="reserve-empty"><p>Saisis le solde du compte pro : l'app retire chaque paiement prévu à sa date et te montre le jour où il tombe à zéro.</p><button class="btn primary" data-action="reserve">Saisir la réserve</button></div>`
+            ? `<div class="reserve-empty"><p>${t("calendar.reserveIntro")}</p><button class="btn primary" data-action="reserve">${t("calendar.reserveSet")}</button></div>`
             : `<div class="empty-mini">${body[2]}</div>`;
     return `<aside class="aside">
-        <div class="tabs">${tabs.map(([k, label, n]) => `<button class="${k === S.asideTab ? "on" : ""}" data-action="aside" data-tab="${k}">${label}${n !== "" ? `<em>${n}</em>` : ""}</button>`).join("")}</div>
-        ${body[0] ? `<p class="aside-sum">${body[0]}${S.asideTab === "reserve" ? ` <a data-action="reserve">modifier</a>` : ""}</p>` : ""}
+        <div class="tabs">${tabs.map(([k, n]) => `<button class="${k === S.asideTab ? "on" : ""}" data-action="aside" data-tab="${k}">${t(`calendar.tab.${k}`)}${n !== "" ? `<em>${n}</em>` : ""}</button>`).join("")}</div>
+        ${body[0] ? `<p class="aside-sum">${body[0]}${S.asideTab === "reserve" ? ` <a data-action="reserve">${t("common.edit")}</a>` : ""}</p>` : ""}
         <div class="plist" data-fit>${body[1].length ? body[1].join("") : empty}</div>
     </aside>`;
 }
 
 function deadlineKpi() {
     const next = S.st.deadlines.find((d) => d.status === "todo");
-    if (!next) return kpi({ label: "Démarches", value: "—", sub: "rien de prévu", action: "deadlines" });
+    if (!next) return kpi({ label: t("calendar.kpi.deadlines"), value: "—", sub: t("calendar.kpi.nothingPlanned"), action: "deadlines" });
     const n = daysFromToday(next.date);
-    const when = n === 0 ? "aujourd'hui" : n === 1 ? "demain" : `dans ${n} jours`;
-    return kpi({ label: "Prochaine démarche", value: shortDay(next.date), sub: `${next.title.replace("Déclaration ", "")} · ${when}`, action: "deadlines", bad: n <= 7 });
+    return kpi({ label: t("calendar.kpi.nextDeadline"), value: shortDay(next.date), sub: `${esc(next.short)} · ${relDay(next.date)}`, action: "deadlines", bad: n <= 7 });
 }
 
 function reserveKpi() {
     const f = S.st.forecast;
-    if (!f.set) return kpi({ label: "Réserve", value: "—", sub: "clique pour la saisir", action: "reserve" });
+    if (!f.set) return kpi({ label: t("calendar.kpi.reserve"), value: "—", sub: t("calendar.kpi.reserveSet"), action: "reserve" });
     const now = balanceOn(S.st.today) ?? f.balance;
     const soon = (f.runsOut && daysFromToday(f.runsOut) < 120) || now < 0;
-    const sub = f.runsOut ? `<span class="${soon ? "neg" : ""}">à 0 le ${fmtDay(f.runsOut)}</span>` : "tient plus de 3 ans";
-    return kpi({ label: "Réserve", value: money(now, "EUR"), sub, action: "reserve", bad: now < 0 });
+    const sub = f.runsOut ? `<span class="${soon ? "neg" : ""}">${t("calendar.runsOut", { date: fmtDay(f.runsOut) })}</span>` : t("calendar.holds");
+    return kpi({ label: t("calendar.kpi.reserve"), value: money(now, "EUR"), sub, action: "reserve", bad: now < 0 });
 }
 
 // monthKpi: the month shown, in euros — paid, still to fetch, still to come.
@@ -183,15 +183,11 @@ function monthKpi(inMonth) {
         else sum.matched += v;
     }
     const total = sum.matched + sum.missing + sum.upcoming;
-    const parts = [
-        ["matched", "payé"],
-        ["missing", "à récupérer"],
-        ["upcoming", "à venir"],
-    ]
-        .filter(([k]) => sum[k] >= 0.5)
-        .map(([k, label]) => `<span class="tag s-${k}">${euros(sum[k])} ${label}</span>`)
+    const parts = ["matched", "missing", "upcoming"]
+        .filter((k) => sum[k] >= 0.5)
+        .map((k) => `<span class="tag s-${k}">${t(`calendar.monthPart.${k}`, { amount: euros(sum[k]) })}</span>`)
         .join("");
-    return kpi({ label: `Total ${MONTHS[S.month.getMonth()]}`, value: `≈ ${euros(total)}`, sub: parts || "rien ce mois-ci" });
+    return kpi({ label: t("calendar.kpi.monthTotal", { month: monthName(S.month.getMonth()) }), value: `≈ ${euros(total)}`, sub: parts || t("calendar.kpi.nothingThisMonth") });
 }
 
 export function viewCalendar() {
@@ -204,29 +200,29 @@ export function viewCalendar() {
     for (let d = new Date(from); d <= to; d.setDate(d.getDate() + 1)) cells.push(dayCell(new Date(d), byDay));
     const subs = activeSubs();
     const missing = st.missing.length;
-    const title = `${capitalize(MONTHS[S.month.getMonth()])} <span class="soft">${S.month.getFullYear()}</span>`;
+    const title = monthParts(S.month)
+        .map((p) => (p.type === "year" ? `<span class="soft">${p.value}</span>` : p.type === "month" ? capitalize(p.value) : p.value))
+        .join("");
     const tools = `
-        <button class="btn ghost icon" data-action="month" data-delta="-1" title="Mois précédent">${icon("chevL")}</button>
-        <button class="btn" data-action="month" data-delta="0">Aujourd'hui</button>
-        <button class="btn ghost icon" data-action="month" data-delta="1" title="Mois suivant">${icon("chevR")}</button>
-        <button class="btn primary" data-action="new-payment">${icon("plus", 14)}Paiement</button>`;
+        <button class="btn ghost icon" data-action="month" data-delta="-1" title="${t("calendar.prevMonth")}">${icon("chevL")}</button>
+        <button class="btn" data-action="month" data-delta="0">${t("calendar.today")}</button>
+        <button class="btn ghost icon" data-action="month" data-delta="1" title="${t("calendar.nextMonth")}">${icon("chevR")}</button>
+        <button class="btn primary" data-action="new-payment">${icon("plus", 14)}${t("calendar.newPayment")}</button>`;
     return `
     ${pageHead({ title, tools })}
     <div class="kpis">
         ${reserveKpi()}
         ${monthKpi(inMonth)}
-        ${kpi({ label: "Abonnements", value: `≈ ${euros(st.forecast.perMonth)}`, sub: `par mois · ${subs.length} actifs`, href: "#analytics" })}
-        ${kpi({ label: "Factures à récupérer", value: missing, sub: missing ? "voir la liste" : "tout est là", href: "#missing" })}
+        ${kpi({ label: t("calendar.kpi.subs"), value: `≈ ${euros(st.forecast.perMonth)}`, sub: t("calendar.kpi.subsActive", { count: subs.length }), href: "#analytics" })}
+        ${kpi({ label: t("calendar.kpi.missing"), value: missing, sub: missing ? t("calendar.kpi.seeList") : t("calendar.kpi.allThere"), href: "#missing" })}
         ${deadlineKpi()}
     </div>
     <div class="cal-layout">
         <div class="cal">
-            <div class="cal-dow">${["lun.", "mar.", "mer.", "jeu.", "ven.", "sam.", "dim."].map((d) => `<div>${d}</div>`).join("")}</div>
+            <div class="cal-dow">${weekdays().map((d) => `<div>${d}</div>`).join("")}</div>
             <div class="cal-grid">${cells.join("")}</div>
             <div class="legend">
-                <span><i class="dot s-upcoming"></i>à venir</span><span><i class="dot s-matched"></i>facture trouvée</span>
-                <span><i class="dot s-missing"></i>à récupérer</span><span><i class="dot s-invoice"></i>hors abonnement</span>
-                <span><i class="dot s-deadline"></i>démarche à faire</span>
+                ${["upcoming", "matched", "missing", "invoice", "deadline"].map((k) => `<span><i class="dot s-${k}"></i>${t(`calendar.legend.${k}`)}</span>`).join("")}
             </div>
         </div>
         ${asideTabs()}

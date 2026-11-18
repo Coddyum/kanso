@@ -20,15 +20,15 @@ type ForecastPoint struct {
 
 // Forecast is the reserve of the account spent by the planned payments.
 type Forecast struct {
-	Set      bool            `json:"set"`
-	Balance  float64         `json:"balance"`
-	Date     string          `json:"date,omitempty"`
-	RunsOut  string          `json:"runsOut,omitempty"` // first day below zero, within three years
-	PerMonth float64         `json:"perMonth"`          // the running subscriptions, in EUR per month
-	USDToEUR float64         `json:"usdToEur,omitempty"`
-	RateDate string          `json:"rateDate,omitempty"`
-	Approx   bool            `json:"approx"` // an amount in a currency with no known rate was left out
-	Points   []ForecastPoint `json:"points"`
+	Set      bool               `json:"set"`
+	Balance  float64            `json:"balance"`
+	Date     string             `json:"date,omitempty"`
+	RunsOut  string             `json:"runsOut,omitempty"` // first day below zero, within three years
+	PerMonth float64            `json:"perMonth"`          // the running subscriptions, in EUR per month
+	PerEUR   map[string]float64 `json:"perEUR,omitempty"`  // the ECB rates: 1 EUR = PerEUR[currency]
+	RateDate string             `json:"rateDate,omitempty"`
+	Approx   bool               `json:"approx"` // an amount in a currency with no known rate was left out
+	Points   []ForecastPoint    `json:"points"`
 }
 
 var perMonthFactor = map[string]float64{"weekly": 52.0 / 12, "monthly": 1, "quarterly": 1.0 / 3, "yearly": 1.0 / 12}
@@ -39,7 +39,7 @@ func round2(v float64) float64 { return math.Round(v*100) / 100 }
 // the reserve was written, until it goes below zero or for three years. A
 // variable service counts at the highest of its last invoices.
 func (m *Model) Forecast(r rates.Rates) Forecast {
-	f := Forecast{Points: []ForecastPoint{}, RateDate: r.Date, USDToEUR: r.USDToEUR()}
+	f := Forecast{Points: []ForecastPoint{}, RateDate: r.Date, PerEUR: r.PerEUR}
 	today := m.Today.Format(day.Format)
 	for _, p := range m.DB.Payments {
 		if perMonthFactor[p.Cycle] == 0 || (p.End != "" && p.End < today) {

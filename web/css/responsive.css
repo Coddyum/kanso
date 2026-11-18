@@ -1,0 +1,38 @@
+/* Les petites fenêtres, puis le sens de lecture de droite à gauche. */
+
+/* ---------- petites fenêtres ---------- */
+@media (max-width: 1240px) {
+    .cal-layout { grid-template-columns: minmax(0, 1fr) 250px; gap: 20px; }
+    .kpi { padding-inline-end: 22px; margin-inline-end: 22px; }
+    .an-cols { grid-template-columns: 1fr; }
+}
+/* Trop petit pour tenir sans défiler : le calendrier défile comme les autres pages. */
+@media (max-height: 640px), (max-width: 900px) {
+    .main.fit { height: auto; overflow: visible; }
+    .cal-grid { grid-auto-rows: minmax(84px, auto); }
+    .cal-layout { grid-template-columns: 1fr; }
+    .aside .plist { overflow: visible; }
+}
+@media (max-width: 900px) {
+    .app { grid-template-columns: 1fr; }
+    .rail { position: static; height: auto; flex-direction: row; padding: 8px 14px; border-inline-end: 0; border-bottom: 1px solid var(--line); }
+    .nav { flex-direction: row; }
+    .tip { display: none; }
+    .rail-foot { margin: 0; margin-inline-start: auto; }
+    .main { padding: 20px 16px 50px; }
+    .kpi { border-inline-end: 0; }
+    .row { grid-template-columns: 28px minmax(0, 1fr) 90px; }
+    .r-files, .r-date, .r-act { display: none; }
+    .frow { grid-template-columns: 22px minmax(0, 1fr) 80px; }
+    .frow .fmeta, .frow .r-act { display: none; }
+    .miss-groups { grid-template-columns: 1fr; }
+    .grid2 { grid-template-columns: 1fr; }
+    .span2 { grid-column: auto; }
+    .search .field { width: 100%; }
+}
+
+/* De droite à gauche (arabe) : les propriétés logiques retournent presque tout ;
+   restent les flèches du mois, la flèche des listes et les bords colorés. */
+[dir="rtl"] .select, [dir="rtl"] .f select { background-position: left 9px center; }
+[dir="rtl"] [data-delta] .i { transform: scaleX(-1); }
+[dir="rtl"] .mcard.drag, [dir="rtl"] .frow.drop-target { box-shadow: inset -2px 0 0 var(--ok); }

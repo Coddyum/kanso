@@ -4,7 +4,8 @@
 import { api } from "./api.js";
 import { load, upload } from "./app.js";
 import { $, $$ } from "./dom.js";
-import { S } from "./state.js";
+import { t } from "./i18n.js";
+import { rootName, S } from "./state.js";
 import { toast } from "./ui/toast.js";
 
 const INTERNAL = "text/x-inc-path";
@@ -55,14 +56,14 @@ async function onDrop(e) {
         } else if (dir && internal) {
             if (internal === dir.dataset.dropdir) return;
             await api("POST", "/api/move", { path: internal, toDir: dir.dataset.dropdir });
-            toast(`Déplacé dans ${dir.dataset.dropdir || "Inc"}`);
+            toast(t("toast.moved", { name: dir.dataset.dropdir || rootName() }));
             await load();
         } else if (dir && files.length) {
             await upload(files, { dir: dir.dataset.dropdir });
         } else if (S.view === "files" && files.length) {
             await upload(files, { dir: S.dir });
         } else if (files.length) {
-            toast("Dépose les fichiers dans « Dossier » ou sur une facture à récupérer.", true);
+            toast(t("toast.dropWhere"), true);
         }
     } catch (err) {
         toast(err.message, true);

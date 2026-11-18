@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/coddyum/kanso/internal/deadlines"
+	"github.com/coddyum/kanso/internal/i18n"
 	"github.com/coddyum/kanso/internal/ledger"
 )
 
@@ -17,7 +18,7 @@ func (s *Server) handleSavePayment(w http.ResponseWriter, r *http.Request) {
 	}
 	p, err := s.book.SavePayment(req.Payment, req.AmountChanged)
 	if err != nil {
-		failEdit(w, err)
+		s.failEdit(w, r, err)
 		return
 	}
 	writeJSON(w, p)
@@ -25,7 +26,7 @@ func (s *Server) handleSavePayment(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) handleDeletePayment(w http.ResponseWriter, r *http.Request) {
 	if err := s.book.DeletePayment(r.PathValue("id")); err != nil {
-		failEdit(w, err)
+		s.failEdit(w, r, err)
 		return
 	}
 	writeJSON(w, ok)
@@ -38,7 +39,7 @@ func (s *Server) handleSaveTodo(w http.ResponseWriter, r *http.Request) {
 	}
 	t, err := s.book.SaveTodo(t)
 	if err != nil {
-		failEdit(w, err)
+		s.failEdit(w, r, err)
 		return
 	}
 	writeJSON(w, t)
@@ -46,7 +47,7 @@ func (s *Server) handleSaveTodo(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) handleDeleteTodo(w http.ResponseWriter, r *http.Request) {
 	if err := s.book.DeleteTodo(r.PathValue("id")); err != nil {
-		failEdit(w, err)
+		s.failEdit(w, r, err)
 		return
 	}
 	writeJSON(w, ok)
@@ -62,7 +63,7 @@ func (s *Server) handleDismiss(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err := s.book.Dismiss(req.Key, req.On); err != nil {
-		failEdit(w, err)
+		s.failEdit(w, r, err)
 		return
 	}
 	writeJSON(w, ok)
@@ -78,7 +79,7 @@ func (s *Server) handleOverride(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err := s.book.SetOverride(req.ID, req.Override); err != nil {
-		failEdit(w, err)
+		s.failEdit(w, r, err)
 		return
 	}
 	writeJSON(w, ok)
@@ -94,7 +95,7 @@ func (s *Server) handleReserve(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err := s.book.SetReserve(req.Amount, req.Date); err != nil {
-		failEdit(w, err)
+		s.failEdit(w, r, err)
 		return
 	}
 	writeJSON(w, ok)
@@ -107,7 +108,7 @@ func (s *Server) handleSaveProject(w http.ResponseWriter, r *http.Request) {
 	}
 	p, err := s.book.SaveProject(p)
 	if err != nil {
-		failEdit(w, err)
+		s.failEdit(w, r, err)
 		return
 	}
 	writeJSON(w, p)
@@ -115,7 +116,7 @@ func (s *Server) handleSaveProject(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) handleDeleteProject(w http.ResponseWriter, r *http.Request) {
 	if err := s.book.DeleteProject(r.PathValue("id")); err != nil {
-		failEdit(w, err)
+		s.failEdit(w, r, err)
 		return
 	}
 	writeJSON(w, ok)
@@ -132,7 +133,7 @@ func (s *Server) handleAssign(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err := s.book.Assign(req.Kind, req.Ref, req.Project); err != nil {
-		failEdit(w, err)
+		s.failEdit(w, r, err)
 		return
 	}
 	writeJSON(w, ok)
@@ -148,7 +149,7 @@ func (s *Server) handleDeadline(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err := s.book.SetDone(req.Key, req.Done); err != nil {
-		failEdit(w, err)
+		s.failEdit(w, r, err)
 		return
 	}
 	writeJSON(w, ok)
@@ -161,8 +162,30 @@ func (s *Server) handleAdmin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err := s.book.SetSettings(req); err != nil {
-		failEdit(w, err)
+		s.failEdit(w, r, err)
 		return
 	}
 	writeJSON(w, req)
+}
+
+// handleLocale says which language the page speaks (the request's, without
+// the page's own X-Lang) and which one the user chose ("" follows the Mac).
+func (s *Server) handleLocale(w http.ResponseWriter, r *http.Request) {
+	r.Header.Del("X-Lang")
+	writeJSON(w, map[string]any{"lang": s.lang(r), "chosen": s.book.Lang(), "langs": i18n.Langs})
+}
+
+// handleSetLocale chooses the app's language; "" follows the Mac again.
+func (s *Server) handleSetLocale(w http.ResponseWriter, r *http.Request) {
+	var req struct {
+		Lang string `json:"lang"`
+	}
+	if !readJSON(w, r, &req) {
+		return
+	}
+	if err := s.book.SetLang(req.Lang); err != nil {
+		s.failEdit(w, r, err)
+		return
+	}
+	writeJSON(w, ok)
 }

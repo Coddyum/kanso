@@ -46,7 +46,7 @@ func main() {
 			end(cmd, exited)
 			return
 		case "update":
-			log.Printf("nouvelle version de %s : redémarrage", bin)
+			log.Printf("new version of %s: restarting", bin)
 			end(cmd, exited)
 			pause = time.Second
 		case "exit":
@@ -71,7 +71,7 @@ func watch(bin, stamp string, exited <-chan error, stop <-chan os.Signal) string
 		case <-stop:
 			return "stop"
 		case err := <-exited:
-			log.Printf("%s s'est arrêté : %v", filepath.Base(bin), err)
+			log.Printf("%s stopped: %v", filepath.Base(bin), err)
 			return "exit"
 		case <-tick.C:
 			if s := stampOf(bin); s != "" && s != stamp {

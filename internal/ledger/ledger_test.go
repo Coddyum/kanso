@@ -1,6 +1,7 @@
 package ledger
 
 import (
+	"os"
 	"path/filepath"
 	"testing"
 	"time"
@@ -8,6 +9,7 @@ import (
 	"github.com/coddyum/kanso/internal/day"
 	"github.com/coddyum/kanso/internal/extract"
 	"github.com/coddyum/kanso/internal/folder"
+	"github.com/coddyum/kanso/internal/i18n"
 	"github.com/coddyum/kanso/internal/rates"
 	"github.com/coddyum/kanso/internal/vendor"
 )
@@ -209,11 +211,11 @@ func TestMissingAndReminders(t *testing.T) {
 		{ID: "b", Name: "Banque", Amount: 3, Currency: "EUR", Cycle: "monthly", Start: "2026-10-01", ExpectInvoice: false},
 	}}
 	m := book(t, db, nil, "2026-11-18")
-	st := m.State(rateless)
+	st := m.State(rateless, french)
 	if len(st.Missing) != 2 || st.Missing[0].Date != "2026-11-01" {
 		t.Errorf("missing = %+v: two due dates of Nuage, newest first; Banque expects no invoice", st.Missing)
 	}
-	rs := m.Reminders(rateless, time.Date(2026, 11, 18, 12, 0, 0, 0, time.Local))
+	rs := m.Reminders(rateless, time.Date(2026, 11, 18, 12, 0, 0, 0, time.Local), french)
 	var titles []string
 	for _, r := range rs {
 		titles = append(titles, r.At+" "+r.Title)
@@ -266,3 +268,12 @@ func isInvalid(err error) bool {
 	_, ok := err.(Invalid)
 	return ok
 }
+
+// french is the French of the real language files.
+var french = func() i18n.Lang {
+	c, err := i18n.Load(os.DirFS("../../web"))
+	if err != nil {
+		panic(err)
+	}
+	return c.Lang("fr")
+}()

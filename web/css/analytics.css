@@ -1,0 +1,62 @@
+/* L'écran Analyse. */
+
+/* ---------- analyse ---------- */
+.an-chart { padding: 18px 20px 16px; margin-bottom: 34px; }
+.an-chart header { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; }
+.an-chart header b { font-weight: 500; }
+.an-chart header span { color: var(--ink-3); font-size: 12px; }
+.an-chart header .legend { margin-inline-start: auto; padding: 0; }
+.chart { --h: 200px; display: grid; grid-template-columns: 50px minmax(0, 1fr); column-gap: 10px; }
+.axis { position: relative; height: var(--h); }
+.axis span { position: absolute; inset-inline-end: 0; transform: translateY(-50%); font-size: 11px; color: var(--ink-3); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.plot { position: relative; height: var(--h); }
+.plot .gl { position: absolute; left: 0; right: 0; height: 1px; background: var(--line); }
+.cols { position: absolute; inset: 0; display: flex; }
+.col {
+    flex: 1; min-width: 0; height: 100%; display: flex; flex-direction: column; justify-content: flex-end;
+    padding: 0 4px; border: 0; background: none; border-radius: 6px 6px 0 0; cursor: pointer; color: inherit;
+}
+.col:hover { background: var(--hover); }
+.col.sel { background: var(--active); }
+.stack { position: relative; display: flex; flex-direction: column; width: 100%; max-width: 30px; margin: 0 auto; }
+.stack i { display: block; width: 100%; }
+.stack i:first-of-type { border-radius: 4px 4px 0 0; }
+.stack .spent { background: var(--c); }
+.stack .plan { background: #2a2c31; }
+.stack .val {
+    position: absolute; bottom: calc(100% + 5px); left: 50%; transform: translateX(-50%);
+    font-size: 10.5px; color: var(--ink-3); white-space: nowrap; font-variant-numeric: tabular-nums;
+}
+.col.sel .val, .col:hover .val { color: var(--ink); }
+.months { display: flex; padding-top: 8px; }
+.months span { flex: 1; min-width: 0; text-align: center; font-size: 11px; color: var(--ink-3); white-space: nowrap; overflow: hidden; }
+.months span.now { color: var(--ink-2); }
+.months span.sel { color: var(--ink); }
+.an-cols { display: grid; grid-template-columns: minmax(280px, 0.75fr) minmax(0, 1.6fr); gap: 28px; align-items: start; }
+.an-list { overflow: hidden; }
+.lrow { display: flex; align-items: center; gap: 12px; padding: 11px 16px; min-width: 0; border-top: 1px solid var(--line); }
+.lrow:first-child { border-top: 0; }
+.lrow[data-action] { cursor: pointer; }
+.lrow[data-action]:hover { background: var(--hover); }
+.lrow.on { background: var(--active); }
+.lrow .lm { flex: 1; min-width: 0; }
+.lrow .lm b { display: block; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lrow .lm span { display: block; color: var(--ink-3); font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lrow .lv { text-align: end; white-space: nowrap; }
+.lrow .lv b { display: block; font-weight: 500; font-variant-numeric: tabular-nums; }
+.lrow .lv small { display: block; color: var(--ink-3); font-size: 11.5px; font-variant-numeric: tabular-nums; }
+.lrow .share-line { display: block; height: 2px; margin-top: 7px; border-radius: 2px; background: var(--line); overflow: hidden; }
+.lrow .share-line i { display: block; height: 100%; background: var(--c); }
+.psel { height: 26px; max-width: 150px; font-size: 12px; background-color: transparent; color: var(--ink-3); }
+.psel.set { color: var(--c); border-color: color-mix(in srgb, var(--c) 35%, transparent); }
+.list-head { display: flex; align-items: center; gap: 10px; margin: 0 0 12px; flex-wrap: wrap; min-height: 28px; }
+.list-head .stitle { margin: 0; margin-inline-start: 2px; }
+.list-foot { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; padding: 12px 16px; border-top: 1px solid var(--line); }
+.list-foot small { color: var(--ink-3); font-size: 12px; margin-inline-end: 4px; }
+.an-note { color: var(--ink-3); font-size: 12px; margin: 14px 2px 0; }
+.an-empty { padding: 26px 16px; text-align: center; color: var(--ink-3); font-size: 13px; }
+.colors { display: flex; gap: 10px; flex-wrap: wrap; padding-top: 2px; }
+.colors label { cursor: pointer; }
+.colors input { position: absolute; opacity: 0; pointer-events: none; }
+.swatch { display: block; width: 20px; height: 20px; border-radius: 50%; background: var(--c); }
+.colors input:checked + .swatch { box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--ink); }

@@ -1,0 +1,482 @@
+{
+    "common": {
+        "add": "Add",
+        "ignore": "Ignore",
+        "edit": "edit",
+        "unknownVendor": "Unknown vendor",
+        "showInFinder": "Show in Finder",
+        "delete": "Delete",
+        "cancel": "Cancel",
+        "save": "Save",
+        "create": "Create",
+        "close": "Close",
+        "ok": "OK"
+    },
+    "calendar": {
+        "zeroDay": "reserve at 0",
+        "more_one": "+ {{count}} more",
+        "more_other": "+ {{count}} more",
+        "auto": "auto",
+        "autoTitle": "Added from your invoices",
+        "variable": "variable",
+        "lastInvoice": "last invoice on {{date}}",
+        "left": "{{amount}} left",
+        "todo": "to do",
+        "tab": {
+            "upcoming": "Upcoming",
+            "subs": "Subs",
+            "reserve": "Reserve",
+            "stopped": "Stopped"
+        },
+        "balanceOn": "{{amount}} on {{date}}",
+        "runsOut": "hits 0 on {{date}}",
+        "holds": "lasts over 3 years",
+        "upcomingSum": "Next 45 days · {{total}}",
+        "perMonth": "{{total}} per month",
+        "stoppedSum": "No invoice for 3 months",
+        "noUpcoming": "Nothing planned.",
+        "noSubs": "No subscriptions.",
+        "noPayment": "No payments planned.",
+        "reserveIntro": "Enter your business account balance: the app subtracts each planned payment on its date and shows you the day it hits zero.",
+        "reserveSet": "Set the reserve",
+        "kpi": {
+            "deadlines": "Admin tasks",
+            "nothingPlanned": "nothing planned",
+            "nextDeadline": "Next admin task",
+            "reserve": "Reserve",
+            "reserveSet": "click to set it",
+            "monthTotal": "{{month}} total",
+            "nothingThisMonth": "nothing this month",
+            "subs": "Subscriptions",
+            "subsActive_one": "per month · {{count}} active",
+            "subsActive_other": "per month · {{count}} active",
+            "missing": "Invoices to fetch",
+            "seeList": "see the list",
+            "allThere": "all there"
+        },
+        "monthPart": {
+            "matched": "{{amount}} paid",
+            "missing": "{{amount}} to fetch",
+            "upcoming": "{{amount}} upcoming"
+        },
+        "prevMonth": "Previous month",
+        "today": "Today",
+        "nextMonth": "Next month",
+        "newPayment": "Payment",
+        "legend": {
+            "upcoming": "upcoming",
+            "matched": "invoice found",
+            "missing": "to fetch",
+            "invoice": "non-subscription",
+            "deadline": "admin task due"
+        }
+    },
+    "cycle": {
+        "long": {
+            "once": "Once",
+            "weekly": "Every week",
+            "monthly": "Every month",
+            "quarterly": "Every quarter",
+            "yearly": "Every year"
+        },
+        "short": {
+            "once": "one-off",
+            "weekly": "weekly",
+            "monthly": "monthly",
+            "quarterly": "quarterly",
+            "yearly": "yearly"
+        },
+        "word": {
+            "monthly": "Monthly subscription",
+            "yearly": "Yearly subscription",
+            "quarterly": "Quarterly subscription",
+            "weekly": "Weekly subscription",
+            "once": "One-off purchase",
+            "none": "Non-subscription invoice"
+        }
+    },
+    "kind": {
+        "invoice": "Invoice",
+        "receipt": "Receipt",
+        "order": "Order",
+        "statement": "Statement",
+        "document": "Document",
+        "file": "File"
+    },
+    "amountKind": {
+        "invoice": "invoice",
+        "estimate": "invoice to fetch · estimated amount",
+        "planned": "planned"
+    },
+    "status": {
+        "sentence": {
+            "upcoming": "upcoming",
+            "today": "today",
+            "matched": "invoice found",
+            "missing": "invoice to fetch",
+            "skipped": "no invoice",
+            "paid": "paid",
+            "invoice": "non-subscription invoice"
+        },
+        "tag": {
+            "matched": "Invoice found",
+            "missing": "To fetch",
+            "upcoming": "Upcoming",
+            "today": "Today",
+            "paid": "Paid",
+            "skipped": "No invoice",
+            "invoice": "Non-subscription"
+        }
+    },
+    "deadlineState": {
+        "todo": "To do",
+        "done": "Done",
+        "past": "Past"
+    },
+    "size": {
+        "bytes": "{{n}} B",
+        "kilo": "{{n}} KB",
+        "mega": "{{n}} MB"
+    },
+    "analytics": {
+        "title": "Analytics",
+        "sub": "What the business costs, in euros: by month, by project, by service.",
+        "over12": "over 12 months",
+        "sinceStart": "since the start",
+        "inYear": "in {{year}}",
+        "period12": "12 months",
+        "periodAll": "All",
+        "kpi": {
+            "spent": "Spent",
+            "guessed": "incl. {{amount}} estimated",
+            "average": "Average",
+            "perMonthOver_one": "per month, over {{count}} month",
+            "perMonthOver_other": "per month, over {{count}} months",
+            "subs": "Subscriptions",
+            "subsSub": "per month, over the coming year",
+            "toPay": "To pay",
+            "toPaySub": "in the next 3 months"
+        },
+        "barTitle": "{{month}}: {{spent}} paid",
+        "barTitlePlanned": "{{month}}: {{spent}} paid, {{plan}} planned",
+        "chart": {
+            "title": "Spending by month",
+            "sub": "in euros · click a month to see its details",
+            "paid": "paid",
+            "planned": "planned"
+        },
+        "services_one": "{{count}} service",
+        "services_other": "{{count}} services",
+        "percent": "{{n}}%",
+        "editProject": "Edit project",
+        "projects": "Projects",
+        "newProject": "Project",
+        "noProject": "Create a project (an app, a client, the business) to file your services and invoices under it.",
+        "ideas": "Spotted in your subscriptions:",
+        "autoProject": "Auto: {{name}}",
+        "unfiled": "Unfiled",
+        "noneProject": "No project",
+        "project": "Project",
+        "noSpend": "No spending in this period.",
+        "payments_one": "{{count}} payment",
+        "payments_other": "{{count}} payments",
+        "aboutPerMonth": "≈ {{amount}} per month",
+        "wholePeriod": "Back to the whole period",
+        "allProjects": "All projects",
+        "tab": {
+            "services": "By service",
+            "ledger": "All expenses"
+        },
+        "ratesNote": "Currencies converted at the European Central Bank rate of {{date}} ({{rates}}).",
+        "noAmountNote_one": "{{count}} invoice with no readable amount, left out: fix it in Invoices.",
+        "noAmountNote_other": "{{count}} invoices with no readable amount, left out: fix them in Invoices."
+    },
+    "invoices": {
+        "title": "Invoices",
+        "number": "No. {{n}}",
+        "editedTitle": "Edited by hand",
+        "edited": "edited",
+        "noAmount": "amount?",
+        "fix": "Fix",
+        "noMatch": "No invoice matches.",
+        "count_one": "{{count}} invoice",
+        "count_other": "{{count}} invoices",
+        "shownTotal": "Total shown",
+        "read_one": "{{count}} expense read from the folder",
+        "read_other": "{{count}} expenses read from the folder",
+        "merged_one": "{{count}} duplicate grouped (invoice + receipt…)",
+        "merged_other": "{{count}} duplicates grouped (invoice + receipt…)",
+        "noReader": "PDF reading turned off",
+        "search": "Search…",
+        "allYears": "All years",
+        "allVendors": "All vendors"
+    },
+    "missing": {
+        "title": "To fetch",
+        "filedIn": "Filed in {{path}}",
+        "dueOn": "due {{date}}",
+        "drop": "Drop",
+        "noInvoice": "No invoice",
+        "lastInvoice": "last invoice received on {{date}}",
+        "noneReceived": "no invoice received",
+        "next": "next one on {{date}}",
+        "invoices": "Invoices",
+        "toFetch_one": "{{count}} to fetch",
+        "toFetch_other": "{{count}} to fetch",
+        "billingTitle": "Billing pages",
+        "billingSub": "where to get each invoice, in one click",
+        "done": "Done",
+        "intro_one": "{{count}} invoice expected from your subscriptions, not found in the folder. Drag the PDF onto its row and it's filed automatically.",
+        "intro_other": "{{count}} invoices expected from your subscriptions, not found in the folder. Drag the PDF onto its row and it's filed automatically.",
+        "nothing": "Nothing missing according to your subscriptions.",
+        "startTitle": "Start with your subscriptions in the Calendar",
+        "startText": "(or accept the ones spotted in your folder). Each past due date with no invoice lands here, with a zone to drop the PDF: it's filed automatically in {{layout}}.",
+        "layout": "Year / Vendor / Month",
+        "allThere": "All there",
+        "allThereText": "Every past due date has its invoice.",
+        "todoTitle": "To-do list",
+        "todoSub": "what to go and get outside your subscriptions",
+        "todoPlaceholder": "e.g. October electricity bill"
+    },
+    "files": {
+        "markInvoice": "It's an invoice",
+        "rename": "Rename",
+        "openNative": "Open with the Mac app",
+        "items_one": "{{count}} item",
+        "items_other": "{{count}} items",
+        "title": "{{name}} folder",
+        "sub": "The same folder as in Finder: what you add here shows up there, and vice versa.",
+        "newFolder": "New folder",
+        "import": "Import",
+        "openInFinder": "Open in Finder",
+        "empty": "Empty folder: drag files here.",
+        "dropHint": "Drag files from Finder here to add them, or onto a folder in the list to file them there.",
+        "inFolder": "In {{name}}",
+        "newName": "New name"
+    },
+    "popover": {
+        "estimated": "estimated from the last invoice",
+        "dropIn": "to drop in “To fetch”",
+        "reserveThatEvening": "Expected reserve at the end of that day"
+    },
+    "payment": {
+        "found_one": "Spotted in your folder: {{count}} invoice, the latest on {{date}}.",
+        "found_other": "Spotted in your folder: {{count}} invoices, the latest on {{date}}.",
+        "autoAdded": "Added automatically from your invoices. Deleting it stops it from coming back.",
+        "intro": "A subscription or a planned expense. Its past due dates with no invoice will go to “To fetch”.",
+        "variableNote": "Variable amount. Last 3 invoices: {{amounts}}. Upcoming due dates use the latest one; the reserve counts the highest.",
+        "manualNote": "Amount typed by hand: it's used until the next invoice, which then takes over.",
+        "new": "New payment",
+        "name": "Name",
+        "namePlaceholder": "Render, Claude Max, Apple Developer…",
+        "amount": "Amount",
+        "amountVariable": "Amount (variable)",
+        "amountHint": "if changed here, it's used until the next invoice",
+        "currency": "Currency",
+        "cycle": "Frequency",
+        "start": "First due date",
+        "vendor": "Name on invoices",
+        "vendorPlaceholder": "if different from the name",
+        "vendorHint": "to find its invoices in the folder",
+        "domain": "Website, for the logo",
+        "end": "End (optional)",
+        "match": "Word on its invoices (optional)",
+        "matchPlaceholder": "mysite.com",
+        "matchHint": "to tell apart two subscriptions from the same vendor",
+        "billing": "Invoices page",
+        "billingKnown": "empty: the vendor's known page, in gray above",
+        "billingHint": "where each invoice can be downloaded",
+        "note": "Note",
+        "expectInvoice": "I expect an invoice at each due date",
+        "added": "Payment added",
+        "saved": "Payment updated"
+    },
+    "project": {
+        "new": "New project",
+        "intro": "An app, a client, the business itself: any expense can be filed under it.",
+        "name": "Name",
+        "namePlaceholder": "Personal site, Client A…",
+        "color": "Color",
+        "keywords": "Words that file things automatically (optional)",
+        "keywordsPlaceholder": "mysite.com, shop",
+        "keywordsHint": "An expense whose service, word on its invoices or description contains the project name or one of these words goes there automatically. Separate them with commas.",
+        "created": "Project created",
+        "saved": "Project updated"
+    },
+    "invoice": {
+        "title": "Fix the invoice",
+        "vendor": "Vendor",
+        "label": "Description",
+        "date": "Date",
+        "amount": "Amount incl. VAT",
+        "notInvoice": "Not a business invoice: remove it from the list",
+        "reset": "Back to automatic reading",
+        "saved": "Invoice fixed"
+    },
+    "reserve": {
+        "rates": "Amounts in another currency are converted at the European Central Bank rate of {{date}}: {{rates}}.",
+        "noRates": "Exchange rates unavailable: amounts in another currency aren't counted.",
+        "title": "Business account reserve",
+        "intro": "The account balance on a given date. The app subtracts each planned payment on its date and shows the day the reserve hits zero.",
+        "balance": "Balance (€)",
+        "date": "As of",
+        "clear": "Remove"
+    },
+    "deadlines": {
+        "approx": "estimated date",
+        "openSite": "Open the website",
+        "done": "Done",
+        "urssaf": {
+            "quarterly": "Every quarter",
+            "monthly": "Every month",
+            "off": "No declaration"
+        },
+        "title": "Admin tasks",
+        "intro": "The official deadlines, moved to the next working day when they fall on a weekend or a public holiday. Tick what's done.",
+        "none": "No admin tasks tracked.",
+        "urssafLabel": "URSSAF declaration",
+        "reminders": "Reminders",
+        "cfe": "CFE, to pay before December 15",
+        "ir": "Income tax return, end of May",
+        "saved": "Admin tasks updated"
+    },
+    "toast": {
+        "dismissed": "Due date marked “no invoice”",
+        "markedInvoice": "Added to invoices",
+        "paymentDeleted": "Payment deleted",
+        "projectCreated": "Project “{{name}}” created",
+        "projectDeleted": "Project deleted",
+        "moved": "Moved to {{name}}",
+        "dropWhere": "Drop the files in “Folder” or on an invoice to fetch.",
+        "folderGone": "“{{name}}” no longer exists",
+        "autoAdded_one": "{{count}} subscription added from your invoices: {{names}}",
+        "autoAdded_other": "{{count}} subscriptions added from your invoices: {{names}}",
+        "filed_one": "{{count}} file put in {{name}}",
+        "filed_other": "{{count}} files put in {{name}}"
+    },
+    "nav": {
+        "synced": "Synced with {{path}}",
+        "calendar": "Calendar",
+        "analytics": "Analytics",
+        "invoices": "Invoices",
+        "missing": "To fetch",
+        "files": "Folder",
+        "folder": "{{name}} folder",
+        "loading": "Reading the folder…"
+    },
+    "rates": {
+        "one": "1 {{code}} = €{{eur}}"
+    },
+    "day": {
+        "today": "today",
+        "tomorrow": "tomorrow",
+        "inDays_one": "in {{count}} day",
+        "inDays_other": "in {{count}} days",
+        "daysAgo_one": "{{count}} day ago",
+        "daysAgo_other": "{{count}} days ago"
+    },
+    "date": {
+        "months": [
+            "January",
+            "February",
+            "March",
+            "April",
+            "May",
+            "June",
+            "July",
+            "August",
+            "September",
+            "October",
+            "November",
+            "December"
+        ],
+        "monthsShort": [
+            "Jan",
+            "Feb",
+            "Mar",
+            "Apr",
+            "May",
+            "Jun",
+            "Jul",
+            "Aug",
+            "Sep",
+            "Oct",
+            "Nov",
+            "Dec"
+        ],
+        "monthsFrom": [
+            "January",
+            "February",
+            "March",
+            "April",
+            "May",
+            "June",
+            "July",
+            "August",
+            "September",
+            "October",
+            "November",
+            "December"
+        ]
+    },
+    "format": {
+        "decimal": ".",
+        "group": ",",
+        "money": "{{sym}}{{n}}",
+        "shortDate": "{{month}} {{day}}"
+    },
+    "deadline": {
+        "urssaf": {
+            "title": "URSSAF declaration",
+            "short": "URSSAF",
+            "quarter": "revenue from {{from}} to {{to}} {{year}}, to declare even if it's €0",
+            "month": "revenue for {{from}} {{year}}, to declare even if it's €0"
+        },
+        "cfe": {
+            "title": "CFE to pay",
+            "short": "CFE to pay",
+            "detail": "pay the notice in your impots.gouv business account (online in early November) · nothing to pay if your {{year}} revenue doesn't exceed €5,000"
+        },
+        "ir": {
+            "title": "Income tax return",
+            "short": "Taxes",
+            "detail": "declare your {{year}} revenue on the 2042-C-PRO · deadline between late May and early June depending on your département"
+        }
+    },
+    "reminder": {
+        "reserveTitle": "Reserve hits 0 on {{date}}",
+        "reserveBody_one": "Planned payments empty the business account in {{count}} day: remember to top it up.",
+        "reserveBody_other": "Planned payments empty the business account in {{count}} days: remember to top it up.",
+        "tomorrowOne": "Tomorrow: {{name}}",
+        "tomorrowMany_one": "Tomorrow: {{count}} payment",
+        "tomorrowMany_other": "Tomorrow: {{count}} payments",
+        "deadlineIn7": "{{title}} in 7 days, on {{date}}",
+        "deadlineTomorrow": "{{title}} tomorrow",
+        "approx": "{{detail}} (estimated date)",
+        "missing_one": "{{count}} invoice to fetch",
+        "missing_other": "{{count}} invoices to fetch"
+    },
+    "error": {
+        "paymentFields": "name, amount, frequency and date are required",
+        "unknownCurrency": "unknown currency",
+        "paymentNotFound": "payment not found",
+        "emptyText": "empty text",
+        "missingKey": "missing key",
+        "missingFile": "missing file",
+        "projectName": "the project needs a name",
+        "projectExists": "a project already has this name",
+        "projectNotFound": "project not found",
+        "missingRef": "missing service or invoice",
+        "missingDeadline": "missing deadline",
+        "unknownRhythm": "unknown URSSAF schedule",
+        "badPath": "path refused: {{path}}",
+        "badName": "invalid name",
+        "renameRefused": "rename refused",
+        "moveRefused": "move refused",
+        "intoItself": "a folder can't go inside itself",
+        "tooBig": "file over 500 MB",
+        "noTargetDir": "destination folder not found",
+        "unknownLang": "unknown language",
+        "exists": "“{{path}}” already exists"
+    }
+}

@@ -4,7 +4,6 @@ package logo
 import (
 	"bytes"
 	"html"
-	"io"
 	"log"
 	"net/http"
 	"net/url"
@@ -16,7 +15,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/coddyum/kanso/internal/brand"
+	"github.com/coddyum/kanso/internal/netgate"
 )
 
 var (
@@ -28,17 +27,21 @@ var (
 // Source serves the icons kept in its cache folder, fetching the missing ones.
 type Source struct {
 	dir   string
-	locks sync.Map // domain → *sync.Mutex: one fetch per domain at a time, the others go on
+	gate  *netgate.Gate
+	allow func(domain string) bool // a domain the user's data names: no other is ever fetched
+	locks sync.Map                 // domain → *sync.Mutex: one fetch per domain at a time, the others go on
 }
 
-// NewSource keeps its icons in cacheDir/logos.
-func NewSource(cacheDir string) *Source { return &Source{dir: filepath.Join(cacheDir, "logos")} }
+// NewSource keeps its icons in cacheDir/logos and fetches, through gate, only the domains allow accepts.
+func NewSource(cacheDir string, gate *netgate.Gate, allow func(domain string) bool) *Source {
+	return &Source{dir: filepath.Join(cacheDir, "logos"), gate: gate, allow: allow}
+}
 
 // ValidDomain says whether d is a domain name worth fetching an icon for.
 func ValidDomain(d string) bool { return reDomain.MatchString(d) }
 
 // Get returns the icon of domain, or nil. An empty cached file remembers
-// « no icon » for a week before the next try.
+// « no icon » for a week before the next try; a domain allow refuses is never fetched.
 func (s *Source) Get(domain string) []byte {
 	if !ValidDomain(domain) {
 		return nil
@@ -55,7 +58,10 @@ func (s *Source) Get(domain string) []byte {
 	if st, err2 := os.Stat(file); err == nil && err2 == nil && time.Since(st.ModTime()) < 7*24*time.Hour {
 		return nil
 	}
-	data = fetch(domain)
+	if !s.allow(domain) {
+		return nil
+	}
+	data = s.fetch(domain)
 	if err := os.MkdirAll(s.dir, 0o755); err != nil {
 		log.Printf("logo: cache dir: %v", err)
 		return data
@@ -75,44 +81,23 @@ func ContentType(data []byte) string {
 }
 
 // fetch tries the icons the home page declares (largest first), then
-// /favicon.ico, then Google's icon service.
-func fetch(domain string) []byte {
-	client := &http.Client{Timeout: 6 * time.Second}
-	candidates := append(declaredIcons(client, domain),
-		"https://"+domain+"/favicon.ico",
-		"https://www.google.com/s2/favicons?domain="+domain+"&sz=128",
-	)
+// /favicon.ico: the brand's own site only, never a third-party icon service.
+func (s *Source) fetch(domain string) []byte {
+	p := netgate.Logo(domain)
+	candidates := append(s.declaredIcons(p, domain), "https://"+domain+"/favicon.ico")
 	for _, u := range candidates {
-		if body := get(client, u, 1<<20); len(body) > 60 && strings.HasPrefix(ContentType(body), "image/") {
+		if body, err := s.gate.Get(p, u, 1<<20); err == nil && len(body) > 60 && strings.HasPrefix(ContentType(body), "image/") {
 			return body
 		}
 	}
 	return nil
 }
 
-func get(client *http.Client, u string, limit int64) []byte {
-	req, err := http.NewRequest(http.MethodGet, u, nil)
-	if err != nil {
-		return nil
-	}
-	req.Header.Set("User-Agent", "Mozilla/5.0 (Macintosh) "+brand.Name)
-	resp, err := client.Do(req)
-	if err != nil {
-		return nil
-	}
-	defer resp.Body.Close()
-	if resp.StatusCode != http.StatusOK {
-		return nil
-	}
-	body, _ := io.ReadAll(io.LimitReader(resp.Body, limit))
-	return body
-}
-
 // declaredIcons reads the <link rel="…icon…"> tags of the home page, the
 // best first: Apple touch icon, SVG, a sized icon, then the rest.
-func declaredIcons(client *http.Client, domain string) []string {
+func (s *Source) declaredIcons(p netgate.Purpose, domain string) []string {
 	base, _ := url.Parse("https://" + domain + "/")
-	page := get(client, base.String(), 512<<10)
+	page, _ := s.gate.Get(p, base.String(), 512<<10)
 	type icon struct {
 		href  string
 		score int

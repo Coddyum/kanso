@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/coddyum/kanso/internal/day"
+	"github.com/coddyum/kanso/internal/i18n"
 )
 
 // Estimate is what the next due dates of a payment should cost.
@@ -100,14 +101,14 @@ func (m *Model) dueItem(p Payment, d time.Time) DueItem {
 // Calendar lists, between from and to, the due dates of the payments, the
 // administrative deadlines, and the invoices no due date claims (spending
 // that was not planned), by date then by name.
-func (m *Model) Calendar(from, to time.Time) []DueItem {
+func (m *Model) Calendar(from, to time.Time, tr i18n.Lang) []DueItem {
 	events := []DueItem{}
 	for _, p := range m.DB.Payments {
 		for _, d := range p.Dues(from, to) {
 			events = append(events, m.dueItem(p, d))
 		}
 	}
-	for _, d := range m.Deadlines(from, to) {
+	for _, d := range m.Deadlines(from, to, tr) {
 		events = append(events, DueItem{Key: d.Key, Type: "deadline", Date: d.Date, Name: d.Title, Detail: d.Detail, Status: d.Status})
 	}
 	claimed := m.claimed()

@@ -1,0 +1,27 @@
+/* L'écran Factures. */
+
+/* ---------- factures ---------- */
+.mgroup { margin-bottom: 28px; }
+.mgroup .card { overflow: hidden; }
+.row {
+    display: grid; grid-template-columns: 28px minmax(0, 1.6fr) minmax(0, 1fr) 110px 110px 64px;
+    align-items: center; gap: 16px; padding: 11px 16px; border-top: 1px solid var(--line);
+}
+.row:first-child { border-top: 0; }
+.row:hover { background: var(--hover); }
+.r-main { min-width: 0; }
+.r-main b { display: block; font-weight: 500; }
+.r-main span { display: block; color: var(--ink-3); font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.r-files { display: flex; gap: 5px; flex-wrap: wrap; }
+.pill {
+    display: inline-flex; align-items: center; padding: 1px 7px; border-radius: 5px; text-decoration: none;
+    background: var(--active); color: var(--ink-2); font-size: 11.5px; font-weight: 500;
+}
+.pill:hover { color: var(--ink); background: rgba(255, 255, 255, 0.1); }
+.pill.k-edited { color: var(--warn); }
+.r-date { color: var(--ink-2); font-size: 12.5px; }
+.r-amt { text-align: end; font-weight: 500; font-variant-numeric: tabular-nums; }
+.r-amt.none { color: var(--ink-3); font-weight: 400; }
+.r-act { display: flex; gap: 2px; justify-content: flex-end; color: var(--ink-3); }
+.totals { display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; margin: -10px 0 22px; margin-inline-start: 2px; color: var(--ink-3); font-size: 12.5px; }
+.totals b { color: var(--ink); font-weight: 500; font-variant-numeric: tabular-nums; }

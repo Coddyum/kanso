@@ -2,13 +2,12 @@ package ledger
 
 import (
 	"fmt"
-	"math"
 	"sort"
-	"strconv"
 	"strings"
 	"time"
 
 	"github.com/coddyum/kanso/internal/day"
+	"github.com/coddyum/kanso/internal/i18n"
 	"github.com/coddyum/kanso/internal/rates"
 )
 
@@ -21,25 +20,7 @@ type Reminder struct {
 	View  string `json:"view"`
 }
 
-var monthShort = []string{"janv.", "févr.", "mars", "avr.", "mai", "juin", "juil.", "août", "sept.", "oct.", "nov.", "déc."}
-
 const reminderHour = 9
-
-// moneyFR writes « 1 234,50 € », « 19,08 $ ».
-func moneyFR(v float64, cur string) string {
-	s := strconv.FormatFloat(math.Abs(v), 'f', 2, 64)
-	whole, dec, _ := strings.Cut(s, ".")
-	for i := len(whole) - 3; i > 0; i -= 3 {
-		whole = whole[:i] + " " + whole[i:]
-	}
-	sym := map[string]string{"EUR": "€", "USD": "$", "GBP": "£"}[cur]
-	if sym == "" {
-		sym = cur
-	}
-	return whole + "," + dec + " " + sym
-}
-
-func shortDate(t time.Time) string { return fmt.Sprintf("%d %s", t.Day(), monthShort[t.Month()-1]) }
 
 // Reminders lists the notifications of the next two months, all at 9:00:
 //   - the day before a payment (zero amounts left out; several on one day: one notification);
@@ -48,7 +29,7 @@ func shortDate(t time.Time) string { return fmt.Sprintf("%d %s", t.Day(), monthS
 //   - 30, 14, 7 and 1 days before the reserve runs out.
 //
 // Only reminders still to come after now are listed.
-func (m *Model) Reminders(r rates.Rates, now time.Time) []Reminder {
+func (m *Model) Reminders(r rates.Rates, now time.Time, tr i18n.Lang) []Reminder {
 	out := []Reminder{}
 	add := func(id string, d time.Time, title, body, view string) {
 		at := time.Date(d.Year(), d.Month(), d.Day(), reminderHour, 0, 0, 0, time.Local)
@@ -57,14 +38,14 @@ func (m *Model) Reminders(r rates.Rates, now time.Time) []Reminder {
 		}
 	}
 	horizon := m.Today.AddDate(0, 2, 0)
-	m.paymentReminders(horizon, add)
-	m.deadlineReminders(horizon, add)
-	m.missingReminders(add)
+	m.paymentReminders(horizon, add, tr)
+	m.deadlineReminders(horizon, add, tr)
+	m.missingReminders(add, tr)
 	if f := m.Forecast(r); f.RunsOut != "" {
 		out0, _ := day.Parse(f.RunsOut)
 		for _, before := range []int{30, 14, 7, 1} {
-			body := fmt.Sprintf("Les paiements prévus vident le compte pro dans %d jours : pense à l'alimenter.", before)
-			add(fmt.Sprintf("reserve@%s@%d", f.RunsOut, before), out0.AddDate(0, 0, -before), "Réserve à 0 le "+shortDate(out0), body, "calendar")
+			add(fmt.Sprintf("reserve@%s@%d", f.RunsOut, before), out0.AddDate(0, 0, -before),
+				tr.T("reminder.reserveTitle", "date", tr.ShortDate(out0)), tr.N("reminder.reserveBody", before), "calendar")
 		}
 	}
 	sort.SliceStable(out, func(i, j int) bool { return out[i].At < out[j].At })
@@ -74,7 +55,7 @@ func (m *Model) Reminders(r rates.Rates, now time.Time) []Reminder {
 type addReminder func(id string, d time.Time, title, body, view string)
 
 // paymentReminders: the day before each upcoming payment that costs something, one notification per day.
-func (m *Model) paymentReminders(horizon time.Time, add addReminder) {
+func (m *Model) paymentReminders(horizon time.Time, add addReminder, tr i18n.Lang) {
 	byDay := map[string][]DueItem{}
 	for _, p := range m.DB.Payments {
 		for _, d := range p.Dues(m.Today.AddDate(0, 0, 1), horizon) {
@@ -84,7 +65,7 @@ func (m *Model) paymentReminders(horizon time.Time, add addReminder) {
 		}
 	}
 	price := func(it DueItem) string {
-		s := moneyFR(*it.Amount, it.Currency)
+		s := tr.Money(*it.Amount, it.Currency)
 		if it.Estimate {
 			s = "≈ " + s
 		}
@@ -93,7 +74,7 @@ func (m *Model) paymentReminders(horizon time.Time, add addReminder) {
 	for date, items := range byDay {
 		d, _ := day.Parse(date)
 		if len(items) == 1 {
-			add("pay@"+date, d.AddDate(0, 0, -1), "Demain : "+items[0].Name, price(items[0]), "calendar")
+			add("pay@"+date, d.AddDate(0, 0, -1), tr.T("reminder.tomorrowOne", "name", items[0].Name), price(items[0]), "calendar")
 			continue
 		}
 		sort.Slice(items, func(i, j int) bool { return items[i].Name < items[j].Name })
@@ -101,29 +82,29 @@ func (m *Model) paymentReminders(horizon time.Time, add addReminder) {
 		for _, it := range items {
 			parts = append(parts, it.Name+" "+price(it))
 		}
-		add("pay@"+date, d.AddDate(0, 0, -1), fmt.Sprintf("Demain : %d paiements", len(items)), strings.Join(parts, " · "), "calendar")
+		add("pay@"+date, d.AddDate(0, 0, -1), tr.N("reminder.tomorrowMany", len(items)), strings.Join(parts, " · "), "calendar")
 	}
 }
 
 // deadlineReminders: 7 days and 1 day before each administrative deadline still to do.
-func (m *Model) deadlineReminders(horizon time.Time, add addReminder) {
-	for _, dl := range m.Deadlines(m.Today, horizon.AddDate(0, 0, 7)) {
+func (m *Model) deadlineReminders(horizon time.Time, add addReminder, tr i18n.Lang) {
+	for _, dl := range m.Deadlines(m.Today, horizon.AddDate(0, 0, 7), tr) {
 		if dl.Status != "todo" {
 			continue
 		}
 		d, _ := day.Parse(dl.Date)
 		body := dl.Detail
 		if dl.Approx {
-			body += " (date prévisionnelle)"
+			body = tr.T("reminder.approx", "detail", body)
 		}
-		add(dl.Key+"@j7", d.AddDate(0, 0, -7), fmt.Sprintf("%s dans 7 jours, le %s", dl.Title, shortDate(d)), body, "calendar")
-		add(dl.Key+"@j1", d.AddDate(0, 0, -1), dl.Title+" demain", body, "calendar")
+		add(dl.Key+"@j7", d.AddDate(0, 0, -7), tr.T("reminder.deadlineIn7", "title", dl.Title, "date", tr.ShortDate(d)), body, "calendar")
+		add(dl.Key+"@j1", d.AddDate(0, 0, -1), tr.T("reminder.deadlineTomorrow", "title", dl.Title), body, "calendar")
 	}
 }
 
 // missingReminders: every Monday of the next 8 weeks while invoices are
 // missing, naming the first four services.
-func (m *Model) missingReminders(add addReminder) {
+func (m *Model) missingReminders(add addReminder, tr i18n.Lang) {
 	var missing []string
 	seen := map[string]bool{}
 	for _, p := range m.DB.Payments {
@@ -150,7 +131,7 @@ func (m *Model) missingReminders(add addReminder) {
 		body += "…"
 	}
 	monday := m.Today.AddDate(0, 0, (8-int(m.Today.Weekday()))%7)
-	title := fmt.Sprintf("%d facture%s à récupérer", n, map[bool]string{true: "s"}[n > 1])
+	title := tr.N("reminder.missing", n)
 	for w := 0; w < 8; w++ {
 		d := monday.AddDate(0, 0, 7*w)
 		add("missing@"+d.Format(day.Format), d, title, body, "missing")

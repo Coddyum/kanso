@@ -6,25 +6,34 @@
     <meta name="theme-color" content="#0f1012">
     <title>Kanso</title>
     <link rel="icon" href="icon.svg" type="image/svg+xml">
-    <link rel="stylesheet" href="app.css">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/shell.css">
+    <link rel="stylesheet" href="css/controls.css">
+    <link rel="stylesheet" href="css/calendar.css">
+    <link rel="stylesheet" href="css/invoices.css">
+    <link rel="stylesheet" href="css/missing.css">
+    <link rel="stylesheet" href="css/files.css">
+    <link rel="stylesheet" href="css/analytics.css">
+    <link rel="stylesheet" href="css/forms.css">
+    <link rel="stylesheet" href="css/responsive.css">
 </head>
 <body>
     <div class="app">
         <aside class="rail">
             <a href="#calendar" title="Kanso"><img class="mark" src="icon.svg" alt=""></a>
             <nav class="nav">
-                <a href="#calendar" data-view="calendar" aria-label="Calendrier"><span data-icon="calendar"></span><span class="tip">Calendrier</span></a>
-                <a href="#analytics" data-view="analytics" aria-label="Analyse"><span data-icon="chart"></span><span class="tip">Analyse</span></a>
-                <a href="#invoices" data-view="invoices" aria-label="Factures"><span data-icon="receipt"></span><span class="tip">Factures</span></a>
-                <a href="#missing" data-view="missing" aria-label="À récupérer"><span data-icon="alert"></span><span class="tip">À récupérer</span><span class="badge" id="n-missing"></span></a>
-                <a href="#files" data-view="files" aria-label="Dossier Inc"><span data-icon="folder"></span><span class="tip">Dossier Inc</span></a>
+                <a href="#calendar" data-view="calendar" data-i18n-label="nav.calendar"><span data-icon="calendar"></span><span class="tip" data-i18n="nav.calendar"></span></a>
+                <a href="#analytics" data-view="analytics" data-i18n-label="nav.analytics"><span data-icon="chart"></span><span class="tip" data-i18n="nav.analytics"></span></a>
+                <a href="#invoices" data-view="invoices" data-i18n-label="nav.invoices"><span data-icon="receipt"></span><span class="tip" data-i18n="nav.invoices"></span></a>
+                <a href="#missing" data-view="missing" data-i18n-label="nav.missing"><span data-icon="alert"></span><span class="tip" data-i18n="nav.missing"></span><span class="badge" id="n-missing"></span></a>
+                <a href="#files" data-view="files" data-i18n-label="nav.files" id="nav-files"><span data-icon="folder"></span><span class="tip" data-i18n="nav.files"></span></a>
             </nav>
-            <div class="rail-foot" id="sync" title="Synchronisé avec le dossier Inc">
+            <div class="rail-foot" id="sync">
                 <span class="sync-dot" id="sync-dot"></span>
             </div>
         </aside>
         <main class="main" id="main">
-            <div class="loading">Lecture du dossier…</div>
+            <div class="loading" data-i18n="nav.loading"></div>
         </main>
     </div>
     <div class="modal" id="modal" hidden></div>

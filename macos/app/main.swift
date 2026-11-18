@@ -80,6 +80,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, WKNa
     func syncReminders() {
         var request = URLRequest(url: serverURL.appendingPathComponent("api/reminders"))
         request.timeoutInterval = 15
+        // The Mac's languages, in order: the server writes the reminders in the first one it speaks.
+        request.setValue(Locale.preferredLanguages.joined(separator: ","), forHTTPHeaderField: "Accept-Language")
         URLSession.shared.dataTask(with: request) { data, _, _ in
             guard let data, let list = try? JSONDecoder().decode([Reminder].self, from: data) else { return }
             let center = UNUserNotificationCenter.current()

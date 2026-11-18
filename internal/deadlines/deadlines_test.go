@@ -1,17 +1,28 @@
 package deadlines
 
 import (
+	"os"
 	"testing"
 	"time"
 
 	"github.com/coddyum/kanso/internal/day"
+	"github.com/coddyum/kanso/internal/i18n"
 )
 
 func date(y, m, d int) time.Time { return time.Date(y, time.Month(m), d, 0, 0, 0, 0, time.Local) }
 
+// french is the French of the real language files.
+var french = func() i18n.Lang {
+	c, err := i18n.Load(os.DirFS("../../web"))
+	if err != nil {
+		panic(err)
+	}
+	return c.Lang("fr")
+}()
+
 func TestUrssafQuarterly(t *testing.T) {
 	var got []string
-	for _, d := range List(Settings{Urssaf: "quarterly"}, map[string]bool{"urssaf@2026-04-30": true}, date(2026, 1, 1), date(2027, 6, 30), date(2026, 11, 18)) {
+	for _, d := range List(Settings{Urssaf: "quarterly"}, map[string]bool{"urssaf@2026-04-30": true}, date(2026, 1, 1), date(2027, 6, 30), date(2026, 11, 18), french) {
 		got = append(got, d.Date+" "+d.Status)
 	}
 	want := []string{
@@ -27,7 +38,7 @@ func TestUrssafQuarterly(t *testing.T) {
 
 func TestUrssafMonthly(t *testing.T) {
 	var got []string
-	for _, d := range List(Settings{Urssaf: "monthly"}, nil, date(2026, 6, 1), date(2026, 9, 30), date(2026, 1, 1)) {
+	for _, d := range List(Settings{Urssaf: "monthly"}, nil, date(2026, 6, 1), date(2026, 9, 30), date(2026, 1, 1), french) {
 		got = append(got, d.Date+" "+d.Detail)
 	}
 	want := []string{
@@ -42,7 +53,7 @@ func TestUrssafMonthly(t *testing.T) {
 
 func TestCFEAndIncomeTax(t *testing.T) {
 	var got []string
-	for _, d := range List(Settings{Urssaf: "off", CFE: true, IR: true}, nil, date(2026, 1, 1), date(2026, 12, 31), date(2026, 1, 1)) {
+	for _, d := range List(Settings{Urssaf: "off", CFE: true, IR: true}, nil, date(2026, 1, 1), date(2026, 12, 31), date(2026, 1, 1), french) {
 		got = append(got, d.Date+" "+d.Kind)
 	}
 	assertList(t, got, []string{"2026-05-20 ir", "2026-12-15 cfe"})

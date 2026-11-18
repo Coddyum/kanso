@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/coddyum/kanso/internal/day"
+	"github.com/coddyum/kanso/internal/i18n"
 	"github.com/coddyum/kanso/internal/norm"
 	"github.com/coddyum/kanso/internal/rates"
 )
@@ -43,13 +44,13 @@ type Spend struct {
 
 // Analytics is every amount of the analytics screen.
 type Analytics struct {
-	Today    string    `json:"today"`
-	Projects []Project `json:"projects"`
-	Spend    []Spend   `json:"spend"`
-	NoAmount int       `json:"noAmount"` // invoices whose amount could not be read: left out
-	NoRate   int       `json:"noRate"`   // amounts in a currency with no known rate: left out
-	USDToEUR float64   `json:"usdToEur,omitempty"`
-	RateDate string    `json:"rateDate,omitempty"`
+	Today    string             `json:"today"`
+	Projects []Project          `json:"projects"`
+	Spend    []Spend            `json:"spend"`
+	NoAmount int                `json:"noAmount"` // invoices whose amount could not be read: left out
+	NoRate   int                `json:"noRate"`   // amounts in a currency with no known rate: left out
+	PerEUR   map[string]float64 `json:"perEUR,omitempty"`
+	RateDate string             `json:"rateDate,omitempty"`
 }
 
 // ServiceKey is how a service is named in the assignments: « Cloudflare · example.com » → « cloudflare · example.com ».
@@ -95,8 +96,8 @@ func hasProject(list []Project, id string) bool {
 // Analytics lists every amount from three years back to one year ahead, in
 // euros: the invoices, the past due dates with no invoice at their estimate,
 // and the due dates to come. Skipped due dates and zero amounts are left out.
-func (m *Model) Analytics(r rates.Rates) Analytics {
-	res := Analytics{Today: m.Today.Format(day.Format), Projects: m.DB.Projects, Spend: []Spend{}, RateDate: r.Date, USDToEUR: r.USDToEUR()}
+func (m *Model) Analytics(r rates.Rates, tr i18n.Lang) Analytics {
+	res := Analytics{Today: m.Today.Format(day.Format), Projects: m.DB.Projects, Spend: []Spend{}, RateDate: r.Date, PerEUR: r.PerEUR}
 	add := func(s Spend) {
 		if s.Amount == 0 {
 			return
@@ -142,7 +143,7 @@ func (m *Model) Analytics(r rates.Rates) Analytics {
 		}
 		name := inv.Vendor
 		if name == "" {
-			name = "Fournisseur inconnu"
+			name = tr.T("common.unknownVendor")
 		}
 		add(Spend{
 			Date: inv.Date, Service: name, Domain: inv.Domain, Label: inv.Label,

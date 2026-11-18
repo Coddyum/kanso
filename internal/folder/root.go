@@ -22,10 +22,17 @@ import (
 const maxUpload = 500 << 20
 
 // Refused is a path or a name the folder does not accept: the user's to fix.
-// Any other error of an operation is the disk's (a file already there…).
-type Refused string
+// Key names its sentence in web/locales (error.*), which the server writes in
+// the user's language; Path is the path refused, when there is one. Any other
+// error of an operation is the disk's (a file already there…).
+type Refused struct{ Key, Path string }
 
-func (e Refused) Error() string { return string(e) }
+func (e Refused) Error() string {
+	if e.Path == "" {
+		return e.Key
+	}
+	return e.Key + ": " + e.Path
+}
 
 // Root is the synced folder, for the operations the app makes on its files.
 // Every path it takes is relative to the folder; hidden files and anything
@@ -47,12 +54,12 @@ func (r Root) Abs(rel string) (string, error) {
 	clean := path.Clean("/" + strings.ReplaceAll(rel, "\\", "/"))
 	for _, seg := range strings.Split(clean, "/") {
 		if strings.HasPrefix(seg, ".") {
-			return "", Refused("chemin refusé : " + rel)
+			return "", Refused{"error.badPath", rel}
 		}
 	}
 	abs := filepath.Join(r.dir, filepath.FromSlash(clean))
 	if abs != r.dir && !strings.HasPrefix(abs, r.dir+string(filepath.Separator)) {
-		return "", Refused("chemin refusé : " + rel)
+		return "", Refused{"error.badPath", rel}
 	}
 	return abs, nil
 }
@@ -73,7 +80,7 @@ func CleanName(name string) (string, error) {
 	name = strings.TrimLeft(name, ".")
 	name = strings.ReplaceAll(name, ":", "-")
 	if name == "" || name == "/" || len(name) > 200 {
-		return "", Refused("nom invalide")
+		return "", Refused{Key: "error.badName"}
 	}
 	return name, nil
 }
@@ -153,7 +160,7 @@ func (r Root) Mkdir(parent, name string) (string, error) {
 	}
 	target := filepath.Join(dir, name)
 	if err := os.Mkdir(target, 0o755); err != nil {
-		return "", fmt.Errorf("création de « %s » impossible : %w", name, err)
+		return "", fmt.Errorf("create %q: %w", name, err)
 	}
 	return r.Rel(target), nil
 }
@@ -163,7 +170,7 @@ func (r Root) Rename(rel, name string) (string, error) {
 	src, err := r.Abs(rel)
 	name, err2 := CleanName(name)
 	if err = errors.Join(err, err2); err != nil || src == r.dir {
-		return "", errors.Join(err, Refused("renommage refusé"))
+		return "", errors.Join(err, Refused{Key: "error.renameRefused"})
 	}
 	dst := filepath.Join(filepath.Dir(src), name)
 	if err := moveNoClobber(src, dst); err != nil {
@@ -177,10 +184,10 @@ func (r Root) Move(rel, toDir string) (string, error) {
 	src, err := r.Abs(rel)
 	dir, err2 := r.Abs(toDir)
 	if err = errors.Join(err, err2); err != nil || src == r.dir {
-		return "", errors.Join(err, Refused("déplacement refusé"))
+		return "", errors.Join(err, Refused{Key: "error.moveRefused"})
 	}
 	if dir == src || strings.HasPrefix(dir, src+string(filepath.Separator)) {
-		return "", Refused("un dossier ne peut pas aller dans lui-même")
+		return "", Refused{Key: "error.intoItself"}
 	}
 	dst := filepath.Join(dir, filepath.Base(src))
 	if err := moveNoClobber(src, dst); err != nil {
@@ -198,11 +205,11 @@ func moveNoClobber(src, dst string) error {
 	if dstInfo, err := os.Stat(dst); err == nil {
 		srcInfo, err := os.Stat(src)
 		if err != nil || !os.SameFile(srcInfo, dstInfo) {
-			return fmt.Errorf("« %s » existe déjà", filepath.Base(dst))
+			return Refused{"error.exists", filepath.Base(dst)}
 		}
 	}
 	if err := os.Rename(src, dst); err != nil {
-		return fmt.Errorf("déplacement impossible : %w", err)
+		return fmt.Errorf("move: %w", err)
 	}
 	return nil
 }
@@ -243,22 +250,22 @@ func (r Root) Write(dir, name string, src io.Reader) (string, error) {
 			continue
 		}
 		if err != nil {
-			return "", fmt.Errorf("écriture de %s : %w", candidate, err)
+			return "", fmt.Errorf("write %s: %w", candidate, err)
 		}
 		n, err := io.Copy(f, io.LimitReader(src, maxUpload+1))
 		if err == nil && n > maxUpload {
-			err = errors.New("fichier de plus de 500 Mo")
+			err = Refused{Key: "error.tooBig"}
 		}
 		if cerr := f.Close(); err == nil {
 			err = cerr
 		}
 		if err != nil {
 			os.Remove(p)
-			return "", fmt.Errorf("écriture de %s : %w", candidate, err)
+			return "", fmt.Errorf("write %s: %w", candidate, err)
 		}
 		return r.Rel(p), nil
 	}
-	return "", fmt.Errorf("trop de fichiers nommés %s", name)
+	return "", fmt.Errorf("too many files named %s", name)
 }
 
 // TargetDir is YEAR/Vendor/Month for a due date, created when missing; existing
@@ -286,7 +293,7 @@ func (r Root) TargetDir(vendorName, date string) (string, error) {
 		return day.IsTimeName(n) && day.MonthOf(strings.Fields(norm.Words(n))[0]) == month
 	}))
 	if err := os.MkdirAll(dir, 0o755); err != nil {
-		return "", fmt.Errorf("création de %s : %w", dir, err)
+		return "", fmt.Errorf("create %s: %w", dir, err)
 	}
 	return dir, nil
 }

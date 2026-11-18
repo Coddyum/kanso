@@ -5,9 +5,10 @@ import { api } from "./api.js";
 import { load, loadCalendar, render, upload } from "./app.js";
 import { $ } from "./dom.js";
 import { encPath, fileURL, firstOfMonth } from "./format.js";
+import { t } from "./i18n.js";
 import { paymentModal } from "./modals/payment.js";
 import { dayModal, deadlinesModal, invoiceModal, projectModal, reserveModal } from "./modals/others.js";
-import { findInvoice, projectById, S } from "./state.js";
+import { findInvoice, projectById, rootName, S } from "./state.js";
 import { closeModal, modalOpen, promptModal } from "./ui/modal.js";
 import { toast } from "./ui/toast.js";
 import { invoiceList } from "./views/invoices.js";
@@ -48,7 +49,7 @@ const ACTIONS = {
     },
     "dismiss-due": async (el) => {
         await dismiss(el.dataset.key);
-        toast("Échéance marquée « sans facture »");
+        toast(t("toast.dismissed"));
         await load();
     },
     "toggle-todo": async (el) => {
@@ -64,18 +65,18 @@ const ACTIONS = {
         location.hash = "files" + (el.dataset.path ? "/" + encPath(el.dataset.path) : "");
     },
     mkdir: () =>
-        promptModal("Nouveau dossier", `Dans ${S.dir || "Inc"}`, "", async (name) => {
+        promptModal(t("files.newFolder"), t("files.inFolder", { name: S.dir || rootName() }), "", async (name) => {
             await api("POST", "/api/mkdir", { path: S.dir, name });
             await load();
         }),
     rename: (el) =>
-        promptModal("Renommer", "Nouveau nom", el.dataset.name, async (name) => {
+        promptModal(t("files.rename"), t("files.newName"), el.dataset.name, async (name) => {
             await api("POST", "/api/rename", { path: el.dataset.path, name });
             await load();
         }),
     "mark-invoice": async (el) => {
         await api("POST", "/api/override", { id: el.dataset.hash, override: { kind: "invoice" } });
-        toast("Ajouté aux factures");
+        toast(t("toast.markedInvoice"));
         await load();
     },
     close: () => closeModal(),
@@ -87,7 +88,7 @@ const ACTIONS = {
     "delete-payment": async (el) => {
         await api("DELETE", "/api/payments/" + el.dataset.id);
         closeModal();
-        toast("Paiement supprimé");
+        toast(t("toast.paymentDeleted"));
         await load();
     },
     deadlines: () => deadlinesModal(),
@@ -120,14 +121,14 @@ const ACTIONS = {
     "edit-project": (el) => projectModal(projectById(el.dataset.id)),
     "quick-project": async (el) => {
         await api("POST", "/api/projects", { name: el.dataset.name });
-        toast(`Projet « ${el.dataset.name} » créé`);
+        toast(t("toast.projectCreated", { name: el.dataset.name }));
         await load();
     },
     "delete-project": async (el) => {
         await api("DELETE", "/api/projects/" + el.dataset.id);
         if (S.an.project === el.dataset.id) S.an.project = "all";
         closeModal();
-        toast("Projet supprimé");
+        toast(t("toast.projectDeleted"));
         await load();
     },
     "reset-invoice": async (el) => {

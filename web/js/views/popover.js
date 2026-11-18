@@ -1,10 +1,11 @@
 // The bubble over a calendar day: its payments, deadlines and the reserve left that evening.
 
 import { esc } from "../dom.js";
-import { approx, fmtTotals, money, parseISO, capitalize, totals } from "../format.js";
+import { approx, capitalize, fmtTotals, longDay, money, totals } from "../format.js";
+import { t } from "../i18n.js";
 import { balanceOn, findInvoice, S } from "../state.js";
 import { dlIcon, logo, tagOf } from "../ui/parts.js";
-import { CYCLE_SHORT, DL, KIND } from "../words.js";
+import { cycleShort, DL_CLASS, deadlineState, kindName } from "../words.js";
 
 const pop = document.createElement("div");
 pop.className = "pop";
@@ -15,20 +16,19 @@ let inPop = false;
 
 function popItem(e) {
     if (e.type === "deadline") {
-        const [cls, label] = DL[e.status];
         return `<div class="pop-item" data-action="deadlines">${dlIcon("")}
             <div class="pm"><b>${esc(e.name)}</b><span class="wrap">${esc(e.detail)}</span></div>
-            <div class="pop-r"><span class="tag ${cls}">${label}</span></div>
+            <div class="pop-r"><span class="tag ${DL_CLASS[e.status]}">${deadlineState(e.status)}</span></div>
         </div>`;
     }
     const inv = e.invoiceId ? findInvoice(e.invoiceId) : null;
     const p = e.paymentId ? S.st.payments.find((x) => x.id === e.paymentId) : null;
-    const files = inv ? inv.files.map((f) => KIND[f.kind] || "Fichier").join(" + ") : "";
+    const files = inv ? inv.files.map((f) => kindName(f.kind)).join(" + ") : "";
     const lines = [
-        [p && CYCLE_SHORT[p.cycle], inv?.label].filter(Boolean).join(" · "),
-        inv ? [files, inv.number && `n° ${inv.number}`].filter(Boolean).join(" · ") : "",
-        e.estimate && p ? `estimé sur la dernière facture · ${p.recent.map((a) => money(a, p.currentCurrency)).join(" · ")}` : "",
-        e.status === "missing" ? "à déposer dans « À récupérer »" : "",
+        [p && cycleShort(p.cycle), inv?.label].filter(Boolean).join(" · "),
+        inv ? [files, inv.number && t("invoices.number", { n: inv.number })].filter(Boolean).join(" · ") : "",
+        e.estimate && p ? `${t("popover.estimated")} · ${p.recent.map((a) => money(a, p.currentCurrency)).join(" · ")}` : "",
+        e.status === "missing" ? t("popover.dropIn") : "",
     ].filter(Boolean);
     const action = e.type === "payment" ? `data-action="edit-payment" data-id="${esc(e.paymentId)}"` : `data-action="open-invoice" data-id="${esc(e.invoiceId)}"`;
     return `<div class="pop-item" ${action}>${logo(e.name, e.domain)}
@@ -43,9 +43,9 @@ function showPop(day) {
     const balance = balanceOn(date);
     if (!evs.length && balance === null) return hidePop();
     popDay = day;
-    const title = capitalize(parseISO(date).toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" }));
+    const title = capitalize(longDay(date));
     const total = evs.some((e) => e.amount != null) ? fmtTotals(totals(evs.filter((e) => e.amount != null && e.status !== "skipped"))) : "";
-    const foot = balance === null ? "" : `<footer class="${balance < 0 ? "neg" : ""}">Réserve prévue ce soir-là<b>${money(balance, "EUR")}</b></footer>`;
+    const foot = balance === null ? "" : `<footer class="${balance < 0 ? "neg" : ""}">${t("popover.reserveThatEvening")}<b>${money(balance, "EUR")}</b></footer>`;
     pop.innerHTML = `<header><b>${title}</b><span>${total}</span></header>${evs.map(popItem).join("")}${foot}`;
     pop.hidden = false;
     const r = day.getBoundingClientRect();

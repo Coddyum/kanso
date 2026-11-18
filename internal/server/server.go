@@ -15,8 +15,10 @@ import (
 	"github.com/coddyum/kanso/internal/brand"
 	"github.com/coddyum/kanso/internal/day"
 	"github.com/coddyum/kanso/internal/folder"
+	"github.com/coddyum/kanso/internal/i18n"
 	"github.com/coddyum/kanso/internal/ledger"
 	"github.com/coddyum/kanso/internal/logo"
+	"github.com/coddyum/kanso/internal/netgate"
 	"github.com/coddyum/kanso/internal/rates"
 	"github.com/coddyum/kanso/internal/vendor"
 )
@@ -37,6 +39,7 @@ type Server struct {
 	book   *ledger.Book
 	rates  *rates.Source
 	logos  *logo.Source
+	texts  *i18n.Catalog
 	static fs.FS
 	port   int
 	boot   string // when this process started: the page reloads itself when it changes (a new version)
@@ -58,19 +61,51 @@ func New(cfg Config) (*Server, error) {
 	if err != nil {
 		return nil, err
 	}
+	texts, err := i18n.Load(cfg.Static)
+	if err != nil {
+		return nil, err
+	}
 	sum := sha256.Sum256([]byte(cfg.Root))
 	cacheFile := filepath.Join(cfg.CacheDir, "index-"+hex.EncodeToString(sum[:4])+".json")
-	return &Server{
+	gate := netgate.New()
+	s := &Server{
 		root:   folder.NewRoot(cfg.Root, vendors),
 		index:  folder.NewIndex(cfg.Root, cacheFile, cfg.PDFText, vendors),
 		book:   book,
-		rates:  rates.NewSource(cfg.CacheDir),
-		logos:  logo.NewSource(cfg.CacheDir),
+		texts:  texts,
+		rates:  rates.NewSource(cfg.CacheDir, gate),
 		static: cfg.Static,
 		port:   cfg.Port,
 		boot:   time.Now().Format(time.RFC3339Nano),
 		now:    time.Now,
-	}, nil
+	}
+	s.logos = logo.NewSource(cfg.CacheDir, gate, s.knownDomain)
+	return s, nil
+}
+
+// lang is the language of a request: the one the page sends (X-Lang), the one
+// chosen in the app, the Mac's (Accept-Language), English when none is spoken.
+func (s *Server) lang(r *http.Request) string {
+	if code := r.Header.Get("X-Lang"); i18n.Known(code) {
+		return code
+	}
+	if code := s.book.Lang(); code != "" {
+		return code
+	}
+	if code := i18n.Match(r.Header.Get("Accept-Language")); code != "" {
+		return code
+	}
+	return "en"
+}
+
+// tr is the language of a request, for the texts the server writes.
+func (s *Server) tr(r *http.Request) i18n.Lang { return s.texts.Lang(s.lang(r)) }
+
+// knownDomain says whether the user's data names domain: a payment, an
+// invoice, a suggestion or a billing page. The icon of no other site is fetched.
+func (s *Server) knownDomain(domain string) bool {
+	m, err := s.model()
+	return err == nil && m.Domains()[domain]
 }
 
 // Handler routes every request, behind the guard.
@@ -104,6 +139,8 @@ func (s *Server) Handler() http.Handler {
 	mux.HandleFunc("POST /api/assign", s.handleAssign)
 	mux.HandleFunc("POST /api/deadline", s.handleDeadline)
 	mux.HandleFunc("POST /api/admin", s.handleAdmin)
+	mux.HandleFunc("GET /api/locale", s.handleLocale)
+	mux.HandleFunc("POST /api/locale", s.handleSetLocale)
 
 	mux.Handle("GET /", noCache(http.FileServerFS(s.static)))
 	return guard(s.port, mux)
@@ -135,8 +172,10 @@ func (s *Server) model() (*ledger.Model, error) {
 	return m, nil
 }
 
-// guard refuses foreign Host headers (DNS rebinding) and writes without the
-// X-Inc header (a form posted by another website cannot set it).
+// guard refuses foreign Host headers (DNS rebinding), anything another website
+// asks the browser to load (Sec-Fetch-Site: an <img> of a page could make the
+// server fetch an icon), and writes without the X-Inc header (a form posted by
+// another website cannot set it). The Mac app sends no Sec-Fetch-Site.
 func guard(port int, next http.Handler) http.Handler {
 	allowed := map[string]bool{
 		fmt.Sprintf("localhost:%d", port): true,
@@ -144,11 +183,15 @@ func guard(port int, next http.Handler) http.Handler {
 	}
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if !allowed[r.Host] {
-			http.Error(w, "hôte refusé", http.StatusForbidden)
+			http.Error(w, "host refused", http.StatusForbidden)
+			return
+		}
+		if site := r.Header.Get("Sec-Fetch-Site"); site != "" && site != "same-origin" && site != "none" {
+			http.Error(w, "request from another website refused", http.StatusForbidden)
 			return
 		}
 		if r.Method != http.MethodGet && r.Method != http.MethodHead && r.Header.Get("X-Inc") != "1" {
-			http.Error(w, "en-tête X-Inc manquant", http.StatusForbidden)
+			http.Error(w, "X-Inc header missing", http.StatusForbidden)
 			return
 		}
 		next.ServeHTTP(w, r)

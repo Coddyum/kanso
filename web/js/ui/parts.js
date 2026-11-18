@@ -1,9 +1,11 @@
 // The pieces every screen is built with: logos, headers, key numbers, date badges, tags.
 
 import { esc } from "../dom.js";
-import { MONTHS_SHORT, parseISO } from "../format.js";
+import { monthName, num, parseISO } from "../format.js";
+import { t } from "../i18n.js";
 import { icon } from "../icons.js";
-import { STATUS_TAG } from "../words.js";
+import { S } from "../state.js";
+import { statusTag } from "../words.js";
 
 // The colours of a service's initials: the Tailwind palette in 400, like the tiles.
 const PALETTE = ["#fb7185", "#38bdf8", "#a78bfa", "#34d399", "#fbbf24", "#818cf8", "#2dd4bf", "#f472b6", "#fb923c", "#a3e635", "#e879f9", "#60a5fa"];
@@ -36,13 +38,28 @@ export const kpi = ({ label, value, sub = "", href = "", action = "", bad = fals
 
 export const dateBadge = (date) => {
     const d = parseISO(date);
-    return `<span class="datebadge"><small>${MONTHS_SHORT[d.getMonth()].replace(".", "")}</small><b>${d.getDate()}</b></span>`;
+    return `<span class="datebadge"><small>${monthName(d.getMonth(), true).replace(".", "")}</small><b>${d.getDate()}</b></span>`;
 };
 
-export const tagOf = (status) => `<span class="tag s-${status}">${STATUS_TAG[status] || status}</span>`;
+export const tagOf = (status) => `<span class="tag s-${status}">${statusTag(status) || status}</span>`;
 
 // dlIcon is the flag of an administrative deadline, in place of a logo.
 export const dlIcon = (size = "sm") => `<span class="logo ${size} dl">${icon("flag", size === "sm" ? 12 : 14)}</span>`;
 
-export const currencyOptions = (cur) =>
-    ["EUR", "USD", "GBP"].map((c) => `<option ${c === (cur || "EUR") ? "selected" : ""}>${c}</option>`).join("");
+// rateList writes what one unit of each foreign currency costs: « 1 USD = 0,8621 € · 1 GBP = 1,1765 € ».
+export const rateList = (perEUR, codes) =>
+    codes
+        .filter((c) => perEUR[c])
+        .map((c) => t("rates.one", { code: c, eur: num(1 / perEUR[c], 4) }))
+        .join(" · ");
+
+// foreignIn lists the currencies other than the euro among amounts, sorted.
+export const foreignIn = (currencies) => [...new Set(currencies.filter((c) => c && c !== "EUR"))].sort();
+
+// currencyOptions lists the currencies the server knows, each with its name; a code outside the list is kept.
+export function currencyOptions(cur) {
+    const picked = cur || "EUR";
+    const codes = S.st.currencies.includes(picked) ? S.st.currencies : [picked, ...S.st.currencies];
+    const names = new Intl.DisplayNames([document.documentElement.lang], { type: "currency" });
+    return codes.map((c) => `<option value="${c}" ${c === picked ? "selected" : ""}>${c} · ${esc(names.of(c))}</option>`).join("");
+}

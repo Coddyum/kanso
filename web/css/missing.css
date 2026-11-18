@@ -1,0 +1,48 @@
+/* L'écran À récupérer. */
+
+/* ---------- à récupérer : une liste par service ---------- */
+.miss-groups { display: grid; grid-template-columns: repeat(auto-fill, minmax(460px, 1fr)); gap: 22px; margin-bottom: 36px; align-items: start; }
+.miss-group { overflow: hidden; }
+.miss-group header { display: flex; align-items: center; gap: 12px; padding: 14px 16px 12px; }
+.miss-group header .pm { flex: 1; min-width: 0; }
+.miss-group header .pm b { display: block; font-weight: 600; }
+.miss-group header .pm span { color: var(--ink-3); font-size: 12px; }
+.miss-group header .pm span b { display: inline; font-weight: 500; color: var(--ink-2); }
+.mcard {
+    display: grid; grid-template-columns: minmax(0, 1fr) auto auto auto; align-items: center; gap: 12px;
+    padding: 9px 12px; padding-inline-start: 16px; border-top: 1px solid var(--line); transition: background 0.12s;
+}
+.mcard:hover { background: var(--hover); }
+.mcard.drag { background: rgba(76, 195, 138, 0.08); box-shadow: inset 2px 0 0 var(--ok); }
+.mc-month b { display: block; font-weight: 500; }
+.mc-month span { color: var(--ink-3); font-size: 12px; }
+.mc-amt { color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.bill-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 8px; margin-bottom: 36px; }
+.bill {
+    display: flex; align-items: center; gap: 11px; min-width: 0; padding: 10px 12px; border-radius: 10px;
+    background: var(--panel); border: 1px solid var(--line); text-decoration: none; color: var(--ink-3);
+    transition: background 0.12s, border-color 0.12s;
+}
+.bill:hover { background: var(--panel-2); border-color: var(--line-2); color: var(--ink); }
+.bill .pm { flex: 1; min-width: 0; }
+.bill .pm b { display: block; font-weight: 500; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bill .pm span { display: block; font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.miss-group header .btn { flex: none; }
+.callout { display: flex; gap: 12px; align-items: flex-start; padding: 16px; margin-bottom: 26px; color: var(--ink-2); }
+.callout .i { color: var(--accent); margin-top: 2px; }
+.callout b { color: var(--ink); font-weight: 500; }
+.allgood { padding: 28px; text-align: center; color: var(--ink-2); margin-bottom: 30px; }
+.allgood b { display: block; color: var(--ink); font-weight: 600; margin-bottom: 2px; }
+.todos { padding: 4px 0; max-width: 680px; }
+.todo-form { display: flex; gap: 8px; padding: 10px 12px; }
+.todo-form .field { flex: 1; }
+.todo { display: flex; align-items: center; gap: 10px; padding: 9px 14px; border-top: 1px solid var(--line); }
+.todo span { flex: 1; }
+.todo.done span { color: var(--ink-3); text-decoration: line-through; }
+.tick-btn {
+    width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid var(--ink-3); background: none;
+    display: grid; place-items: center; cursor: pointer; color: transparent; padding: 0;
+}
+.tick-btn:hover { border-color: var(--ink-2); }
+.todo.done .tick-btn { background: var(--accent); border-color: var(--accent); color: #fff; }
+.todo .x { color: var(--ink-3); }

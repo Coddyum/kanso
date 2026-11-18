@@ -2,17 +2,58 @@ package extract
 
 import (
 	"regexp"
+	"sort"
 	"strconv"
 	"strings"
+
+	"github.com/coddyum/kanso/internal/currency"
 )
 
 const numRe = `\d+(?:[ \x{00a0}\x{202f}.,]\d{3})*(?:[.,]\d{1,2})?`
 
+// signs are the currency signs an invoice writes, lowercased, with their ISO
+// code. A bare « $ » is the US dollar; the other dollars carry their country.
+var signs = map[string]string{
+	"€": "EUR", "$": "USD", "us$": "USD", "£": "GBP", "¥": "JPY", "円": "JPY", "cn¥": "CNY", "元": "CNY", "rmb": "CNY",
+	"ca$": "CAD", "c$": "CAD", "a$": "AUD", "au$": "AUD", "nz$": "NZD", "hk$": "HKD", "s$": "SGD", "sg$": "SGD",
+	"r$": "BRL", "mx$": "MXN", "₹": "INR", "₩": "KRW", "₺": "TRY", "₪": "ILS", "฿": "THB", "₱": "PHP", "zł": "PLN", "kč": "CZK",
+}
+
+// moneyRe is the alternation of every sign and code, longest first; a sign
+// or code that starts with a letter must start a word (« ils 12 » is not « ILS »).
+var moneyRe = func() string {
+	var alts []string
+	for s := range signs {
+		alts = append(alts, s)
+	}
+	for _, c := range currency.Codes {
+		alts = append(alts, strings.ToLower(c))
+	}
+	sort.Slice(alts, func(i, j int) bool {
+		return len(alts[i]) > len(alts[j]) || len(alts[i]) == len(alts[j]) && alts[i] < alts[j]
+	})
+	for i, a := range alts {
+		alts[i] = regexp.QuoteMeta(a)
+		if r := a[0]; r >= 'a' && r <= 'z' {
+			alts[i] = `\b` + alts[i]
+			if _, ok := signs[a]; !ok {
+				alts[i] += `\b`
+			}
+		}
+	}
+	return "(?:" + strings.Join(alts, "|") + ")"
+}()
+
+// codeRe is the alternation of the codes alone: after a sign, a code may touch
+// the number (« $USD8.89 »), so it needs no word boundary there.
+var codeRe = "(?:" + strings.ToLower(strings.Join(currency.Codes, "|")) + ")"
+
 var (
-	reMoney      = regexp.MustCompile(`(?i)(?:([€$£])\s?(?:usd|eur)?\s?(` + numRe + `)|(` + numRe + `)\s?(€|eur\b|usd\b))`)
-	reHeadline   = regexp.MustCompile(`(?i)([€$£])\s?(` + numRe + `)(?:\s?(?:usd|eur))?\s+(?:paid on|due)`)
+	reMoney      = regexp.MustCompile(`(?i)(?:(` + moneyRe + `)\s?(` + codeRe + `)?\s?(` + numRe + `)|(` + numRe + `)\s?(` + moneyRe + `))`)
+	reHeadline   = regexp.MustCompile(`(?i)(` + moneyRe + `)\s?(` + numRe + `)(?:\s?` + moneyRe + `)?\s+(?:paid on|due)`)
 	reHeadlineFR = regexp.MustCompile(`(?i)(` + numRe + `)\s?€\s+(?:dus? le|payés? le|prélevés? le)`)
 	reBareNum    = regexp.MustCompile(`\d+[.,]\d{2}\b`)
+	reMoneyStart = regexp.MustCompile(`(?i)^(?:\d|` + moneyRe + `)`)
 )
 
 // amountLabels start the lines that carry the total, most precise first.
@@ -62,13 +103,8 @@ func detectAmount(lines []string, text string) (float64, string, bool) {
 	return 0, "", false
 }
 
-// startsWithMoney says whether s begins with a digit or a currency sign.
-func startsWithMoney(s string) bool {
-	for _, r := range s {
-		return strings.ContainsRune("€$£0123456789", r) // privacy:ok (the digits, not a phone number)
-	}
-	return false
-}
+// startsWithMoney says whether s begins with a digit, a currency sign or a currency code.
+func startsWithMoney(s string) bool { return reMoneyStart.MatchString(s) }
 
 func moneyIn(s string, lastBare bool) (float64, string, bool) {
 	if lastBare {
@@ -83,9 +119,12 @@ func moneyIn(s string, lastBare bool) (float64, string, bool) {
 	if m == nil {
 		return 0, "", false
 	}
-	sym, num := m[1], m[2]
+	sym, num := m[1], m[3]
+	if m[2] != "" {
+		sym = m[2] // « $ CAD 12 »: the code says which dollar
+	}
 	if num == "" {
-		num, sym = m[3], m[4]
+		num, sym = m[4], m[5]
 	}
 	v, ok := parseNumber(num)
 	return v, currencyOf(sym), ok
@@ -110,12 +149,14 @@ func parseNumber(s string) (float64, bool) {
 	return v, err == nil
 }
 
+// currencyOf names the currency of a sign or a code; the euro when it is neither.
 func currencyOf(sym string) string {
-	switch strings.ToLower(sym) {
-	case "$", "usd":
-		return "USD"
-	case "£":
-		return "GBP"
+	sym = strings.ToLower(sym)
+	if code := signs[sym]; code != "" {
+		return code
+	}
+	if code := strings.ToUpper(sym); currency.Known(code) {
+		return code
 	}
 	return "EUR"
 }

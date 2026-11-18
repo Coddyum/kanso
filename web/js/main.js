@@ -8,6 +8,7 @@ import { fetchView, load, render } from "./app.js";
 import { initDragDrop } from "./dnd.js";
 import { $, $$ } from "./dom.js";
 import { icon } from "./icons.js";
+import { loadLocale, translatePage } from "./i18n.js";
 import { readHash, S } from "./state.js";
 import { modalOpen } from "./ui/modal.js";
 import { toast } from "./ui/toast.js";
@@ -50,17 +51,25 @@ async function onHashChange() {
     }
 }
 
-initPopover();
-initActions();
-initDragDrop();
-$$("[data-icon]").forEach((el) => (el.outerHTML = icon(el.dataset.icon, 17)));
-window.addEventListener("hashchange", onHashChange);
-document.addEventListener("visibilitychange", poll);
-let resizeTimer;
-window.addEventListener("resize", () => {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(() => S.st && S.view === "calendar" && render(), 120);
-});
-setInterval(poll, 4000);
-readHash();
-load();
+// start reads the language first: every text of the page comes from it.
+async function start() {
+    const { lang } = await api("GET", "/api/locale").catch(() => ({ lang: "fr" }));
+    await loadLocale(lang);
+    translatePage();
+    initPopover();
+    initActions();
+    initDragDrop();
+    $$("[data-icon]").forEach((el) => (el.outerHTML = icon(el.dataset.icon, 17)));
+    window.addEventListener("hashchange", onHashChange);
+    document.addEventListener("visibilitychange", poll);
+    let resizeTimer;
+    window.addEventListener("resize", () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => S.st && S.view === "calendar" && render(), 120);
+    });
+    setInterval(poll, 4000);
+    readHash();
+    load();
+}
+
+start();
