@@ -30,24 +30,31 @@ type Config struct {
 	PDFText  string // the PDFKit helper; "" to list PDFs without reading them
 	Port     int    // the only Host the server answers: localhost or 127.0.0.1 on this port
 	Static   fs.FS  // the web page
+	Home     string // the user's home: where the config file is (a change of folder is saved there)
+	Version  string // the build, shown in the diagnostic
+	Restart  func() // stops the server so its launcher starts it again; nil when nothing restarts it
 }
 
 // Server answers the web page and the Mac app.
 type Server struct {
-	root   folder.Root
-	index  *folder.Index
-	book   *ledger.Book
-	rates  *rates.Source
-	logos  *logo.Source
-	texts  *i18n.Catalog
-	static fs.FS
-	port   int
-	boot   string // when this process started: the page reloads itself when it changes (a new version)
-	now    func() time.Time
+	root    folder.Root
+	index   *folder.Index
+	book    *ledger.Book
+	rates   *rates.Source
+	logos   *logo.Source
+	texts   *i18n.Catalog
+	static  fs.FS
+	port    int
+	boot    string // when this process started: the page reloads itself when it changes (a new version)
+	now     func() time.Time
+	home    string
+	version string
+	restart func()
 
 	mu       sync.Mutex
 	cached   *ledger.Model
-	cacheKey string // folder signature | database version | day
+	cacheKey string    // folder signature | database version | day
+	app      AppStatus // what the Mac app last reported
 }
 
 // New opens the database and the user's vendors of the folder.
@@ -78,6 +85,7 @@ func New(cfg Config) (*Server, error) {
 		port:   cfg.Port,
 		boot:   time.Now().Format(time.RFC3339Nano),
 		now:    time.Now,
+		home:   cfg.Home, version: cfg.Version, restart: cfg.Restart,
 	}
 	s.logos = logo.NewSource(cfg.CacheDir, gate, s.knownDomain)
 	return s, nil
@@ -102,8 +110,12 @@ func (s *Server) lang(r *http.Request) string {
 func (s *Server) tr(r *http.Request) i18n.Lang { return s.texts.Lang(s.lang(r)) }
 
 // knownDomain says whether the user's data names domain: a payment, an
-// invoice, a suggestion or a billing page. The icon of no other site is fetched.
+// invoice, a suggestion or a billing page. The icon of no other site is
+// fetched, and none when the user turned the download of icons off.
 func (s *Server) knownDomain(domain string) bool {
+	if !s.book.Privacy().Logos {
+		return false
+	}
 	m, err := s.model()
 	return err == nil && m.Domains()[domain]
 }
@@ -139,6 +151,13 @@ func (s *Server) Handler() http.Handler {
 	mux.HandleFunc("POST /api/assign", s.handleAssign)
 	mux.HandleFunc("POST /api/deadline", s.handleDeadline)
 	mux.HandleFunc("POST /api/admin", s.handleAdmin)
+	mux.HandleFunc("GET /api/settings", s.handleSettings)
+	mux.HandleFunc("POST /api/settings", s.handleSaveSettings)
+	mux.HandleFunc("POST /api/app-status", s.handleAppStatus)
+	mux.HandleFunc("GET /api/diagnostic", s.handleDiagnostic)
+	mux.HandleFunc("POST /api/backups/restore", s.handleRestore)
+	mux.HandleFunc("POST /api/export", s.handleExport)
+	mux.HandleFunc("POST /api/folder", s.handleFolder)
 	mux.HandleFunc("GET /api/locale", s.handleLocale)
 	mux.HandleFunc("POST /api/locale", s.handleSetLocale)
 

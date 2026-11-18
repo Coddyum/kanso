@@ -1,13 +1,16 @@
 PORT ?= 48219
 # The app's name: scripts/brand.sh (kept equal to internal/brand by its test).
 ID := $(shell . scripts/brand.sh && echo $$ID)
+VERSION := $(shell git describe --tags --always --dirty 2>/dev/null || echo dev)
+# Never let Go download another toolchain behind the user's back: install.sh checks the version.
+export GOTOOLCHAIN := local
 
-.PHONY: build run open logs test install-agent uninstall-agent app
+.PHONY: build run open logs test init doctor uninstall app
 
 # Avec le lancement automatique installé, l'app tourne déjà : `make build` suffit,
 # le lanceur la redémarre sur la nouvelle version en 2 à 3 secondes.
 build: bin/pdftext bin/$(ID)-launcher
-	go build -trimpath -ldflags "-s -w" -o bin/$(ID) ./cmd/kanso
+	go build -trimpath -ldflags "-s -w -X main.version=$(VERSION)" -o bin/$(ID) ./cmd/kanso
 
 bin/pdftext: macos/pdftext.swift
 	mkdir -p bin
@@ -17,9 +20,9 @@ bin/pdftext: macos/pdftext.swift
 bin/$(ID)-launcher: cmd/kanso-launcher/main.go
 	go build -trimpath -ldflags "-s -w" -o bin/$(ID)-launcher ./cmd/kanso-launcher
 
-# À la main, dans un terminal (sans le lancement automatique).
+# À la main, dans un terminal, sans le lancement automatique.
 run: build
-	./bin/$(ID) -port $(PORT)
+	./bin/$(ID) serve -port $(PORT)
 
 open:
 	open http://localhost:$(PORT)
@@ -33,13 +36,15 @@ test:
 	go vet ./...
 	go test -race ./...
 
-# Lancement automatique (LaunchAgent macOS) : démarre à l'ouverture de session,
-# redémarre après un arrêt et après chaque `make build`.
-install-agent: build
-	./scripts/agent.sh install "$(CURDIR)" $(PORT)
+# Le dossier, le lancement automatique, l'ouverture de l'app (install.sh le fait une fois).
+init: build
+	./bin/$(ID) init
 
-uninstall-agent:
-	./scripts/agent.sh uninstall
+doctor: build
+	./bin/$(ID) doctor
+
+uninstall:
+	./bin/$(ID) uninstall
 
 # L'app Mac (fenêtre + rappels), installée dans ~/Applications. À refaire seulement
 # quand macos/app change : l'écran vient du serveur, `make build` suffit pour le reste.

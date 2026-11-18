@@ -23,6 +23,39 @@ type DB struct {
 	Admin     *deadlines.Settings `json:"admin,omitempty"`
 	Done      map[string]bool     `json:"done"`           // administrative due dates ticked as done
 	Lang      string              `json:"lang,omitempty"` // the language chosen in the app; empty: the Mac's
+	Notify    *Notify             `json:"notify,omitempty"`
+	Privacy   *Privacy            `json:"privacy,omitempty"`
+}
+
+// Notify says which reminders the Mac app shows, and at what hour.
+type Notify struct {
+	Payments  bool `json:"payments"`  // the day before a payment
+	Deadlines bool `json:"deadlines"` // 7 days and 1 day before an administrative deadline
+	Missing   bool `json:"missing"`   // every Monday while invoices are missing
+	Reserve   bool `json:"reserve"`   // 30, 14, 7 and 1 days before the reserve runs out
+	Hour      int  `json:"hour"`      // 0 to 23
+}
+
+// Privacy says what the app may download: the ECB's rates, the brands' icons.
+type Privacy struct {
+	Rates bool `json:"rates"`
+	Logos bool `json:"logos"`
+}
+
+// NotifySettings are the reminders chosen; all of them at 9:00 until the user chooses.
+func (d DB) NotifySettings() Notify {
+	if d.Notify != nil {
+		return *d.Notify
+	}
+	return Notify{Payments: true, Deadlines: true, Missing: true, Reserve: true, Hour: 9}
+}
+
+// PrivacySettings are the downloads allowed; both until the user turns one off.
+func (d DB) PrivacySettings() Privacy {
+	if d.Privacy != nil {
+		return *d.Privacy
+	}
+	return Privacy{Rates: true, Logos: true}
 }
 
 // Fill gives every list and map a value: the front reads [] and {}, never null.

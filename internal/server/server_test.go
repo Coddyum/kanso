@@ -10,19 +10,25 @@ import (
 )
 
 func newServer(t *testing.T) http.Handler {
+	h, _ := newServerIn(t)
+	return h
+}
+
+// newServerIn is a server on a fresh folder, with a home of its own for the config file.
+func newServerIn(t *testing.T) (h http.Handler, home string) {
 	t.Helper()
-	root := t.TempDir()
+	root, home := t.TempDir(), t.TempDir()
 	if err := os.MkdirAll(filepath.Join(root, "2026"), 0o755); err != nil {
 		t.Fatal(err)
 	}
 	s, err := New(Config{
 		Root: root, CacheDir: t.TempDir(), Port: 4000,
-		Static: os.DirFS("../../web"),
+		Static: os.DirFS("../../web"), Home: home,
 	})
 	if err != nil {
 		t.Fatal(err)
 	}
-	return s.Handler()
+	return s.Handler(), home
 }
 
 func do(h http.Handler, method, host, path, body string, header map[string]string) *httptest.ResponseRecorder {
@@ -63,5 +69,44 @@ func TestGuard(t *testing.T) {
 		if got := do(h, c.method, c.host, c.path, c.body, c.header).Code; got != c.want {
 			t.Errorf("%s: %d, want %d", c.name, got, c.want)
 		}
+	}
+}
+
+func TestSettings(t *testing.T) {
+	h, home := newServerIn(t)
+	inc := map[string]string{"X-Inc": "1", "X-Lang": "en"}
+	other := t.TempDir()
+	cases := []struct {
+		name, method, path, body string
+		want                     int
+	}{
+		{"read", "GET", "/api/settings", "", 200},
+		{"an hour that does not exist", "POST", "/api/settings", `{"notify":{"hour":25}}`, 400},
+		{"reminders at 8", "POST", "/api/settings", `{"notify":{"payments":true,"hour":8}}`, 200},
+		{"no download of icons", "POST", "/api/settings", `{"privacy":{"rates":true,"logos":false}}`, 200},
+		{"a creation day that is not a day", "POST", "/api/admin", `{"urssaf":"off","created":"10/05/2026"}`, 400},
+		{"a backup outside the folder", "POST", "/api/backups/restore", `{"name":"../db.json"}`, 400},
+		{"the Mac app reports", "POST", "/api/app-status", `{"notifications":"authorized","loginItem":true}`, 200},
+		{"diagnostic", "GET", "/api/diagnostic", "", 200},
+		{"a relative folder", "POST", "/api/folder", `{"path":"Documents/X"}`, 400},
+		{"a folder that does not exist", "POST", "/api/folder", `{"path":"` + filepath.Join(other, "nope") + `"}`, 400},
+		{"another folder", "POST", "/api/folder", `{"path":"` + other + `"}`, 200},
+	}
+	for _, c := range cases {
+		if got := do(h, c.method, "127.0.0.1:4000", c.path, c.body, inc); got.Code != c.want {
+			t.Errorf("%s: %d %s, want %d", c.name, got.Code, strings.TrimSpace(got.Body.String()), c.want)
+		}
+	}
+	body := do(h, "GET", "127.0.0.1:4000", "/api/settings", "", inc).Body.String()
+	for _, want := range []string{`"hour":8`, `"logos":false`, `"loginItem":true`} {
+		if !strings.Contains(body, want) {
+			t.Errorf("settings lack %s: %s", want, body)
+		}
+	}
+	if got := do(h, "POST", "127.0.0.1:4000", "/api/settings", `{"notify":{"hour":-1}}`, inc).Body.String(); strings.Contains(got, "error.") || strings.TrimSpace(got) == "" {
+		t.Errorf("a refusal is a sentence, never a key: %q", got)
+	}
+	if data, err := os.ReadFile(filepath.Join(home, "Library", "Application Support", "Kanso", "config.json")); err != nil || !strings.Contains(string(data), other) {
+		t.Errorf("the new folder must be saved in the config file: %s, %v", data, err)
 	}
 }

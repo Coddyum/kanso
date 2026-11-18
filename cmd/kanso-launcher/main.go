@@ -20,7 +20,7 @@ import (
 
 func main() {
 	if len(os.Args) < 2 {
-		log.Fatal("usage : kanso-launcher <binaire> [arguments…]")
+		log.Fatal("usage: kanso-launcher <binary> [arguments…]")
 	}
 	bin, args := os.Args[1], os.Args[2:]
 	stop := make(chan os.Signal, 1)
@@ -32,7 +32,7 @@ func main() {
 		cmd.Stdout, cmd.Stderr = os.Stderr, os.Stderr
 		started := time.Now()
 		if err := cmd.Start(); err != nil {
-			log.Printf("lancement impossible : %v", err)
+			log.Printf("cannot start: %v", err)
 			if wait(stop, pause) {
 				return
 			}

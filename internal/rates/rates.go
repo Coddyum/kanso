@@ -57,6 +57,20 @@ func NewSource(cacheDir string, gate *netgate.Gate) *Source {
 	return &Source{file: filepath.Join(cacheDir, "rates.json"), gate: gate}
 }
 
+// Cached returns the rates saved last, never downloading: what the app shows
+// when the user turned the download of rates off.
+func (s *Source) Cached() Rates {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	if !s.loaded {
+		s.loaded = true
+		if data, err := os.ReadFile(s.file); err == nil {
+			_ = json.Unmarshal(data, &s.mem)
+		}
+	}
+	return s.mem
+}
+
 // Get returns the rates. Rates older than 12 hours are refreshed in the
 // background, so a slow network never slows a page; only the very first
 // call, with nothing cached yet, waits for the download.

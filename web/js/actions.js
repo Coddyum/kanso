@@ -9,6 +9,7 @@ import { t } from "./i18n.js";
 import { paymentModal } from "./modals/payment.js";
 import { dayModal, deadlinesModal, invoiceModal, projectModal, reserveModal } from "./modals/others.js";
 import { findInvoice, projectById, rootName, S } from "./state.js";
+import { onSettingChange, SETTINGS_ACTIONS } from "./settings-actions.js";
 import { closeModal, modalOpen, promptModal } from "./ui/modal.js";
 import { toast } from "./ui/toast.js";
 import { invoiceList } from "./views/invoices.js";
@@ -136,6 +137,7 @@ const ACTIONS = {
         closeModal();
         await load();
     },
+    ...SETTINGS_ACTIONS,
 };
 
 async function onClick(e) {
@@ -155,7 +157,9 @@ async function onClick(e) {
 async function onChange(e) {
     const t = e.target;
     try {
-        if (t.dataset.assign) {
+        if (t.dataset.set) {
+            await onSettingChange(t);
+        } else if (t.dataset.assign) {
             await api("POST", "/api/assign", { kind: t.dataset.assign, ref: t.dataset.ref, project: t.value });
             await load();
         } else if (t.id === "inv-year" || t.id === "inv-vendor") {

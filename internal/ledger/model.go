@@ -1,6 +1,8 @@
 package ledger
 
 import (
+	"errors"
+	"path/filepath"
 	"sort"
 	"strings"
 	"time"
@@ -18,14 +20,32 @@ type Book struct {
 	vendors *vendor.Catalog
 }
 
-// Open reads the database at path, or starts an empty one.
+// Open reads the database at path, or starts an empty one. Every day's first
+// change saves the file as it was in backups/ beside it (the last 30 days).
 func Open(path string, vendors *vendor.Catalog) (*Book, error) {
 	s, err := store.Open(path, Fill)
 	if err != nil {
 		return nil, err
 	}
+	s.KeepBackups(filepath.Join(filepath.Dir(path), "backups"), 30)
 	return &Book{store: s, vendors: vendors}, nil
 }
+
+// Backups lists the saved copies of the database, the newest first.
+func (b *Book) Backups() ([]store.Backup, error) { return b.store.Backups() }
+
+// Restore puts a saved copy back; the database as it was is saved first.
+func (b *Book) Restore(name string) error {
+	if err := b.store.Restore(name); errors.Is(err, store.ErrNoBackup) {
+		return Invalid("error.noBackup")
+	} else if err != nil {
+		return err
+	}
+	return nil
+}
+
+// Snapshot is a copy of the whole database: what an export writes.
+func (b *Book) Snapshot() DB { return b.store.Snapshot() }
 
 // Version changes with every write to the database.
 func (b *Book) Version() int { return b.store.Version() }

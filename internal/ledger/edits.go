@@ -346,3 +346,28 @@ func (b *Book) SetLang(code string) error {
 		return nil
 	})
 }
+
+// Notify is the reminders chosen.
+func (b *Book) Notify() Notify { return b.store.Snapshot().NotifySettings() }
+
+// SetNotify chooses the reminders and their hour (0 to 23).
+func (b *Book) SetNotify(n Notify) error {
+	if n.Hour < 0 || n.Hour > 23 {
+		return Invalid("error.badHour")
+	}
+	return b.store.Update(func(db *DB) error {
+		db.Notify = &n
+		return nil
+	})
+}
+
+// Privacy is the downloads allowed.
+func (b *Book) Privacy() Privacy { return b.store.Snapshot().PrivacySettings() }
+
+// SetPrivacy allows or forbids the downloads of rates and icons.
+func (b *Book) SetPrivacy(p Privacy) error {
+	return b.store.Update(func(db *DB) error {
+		db.Privacy = &p
+		return nil
+	})
+}

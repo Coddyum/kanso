@@ -1,12 +1,27 @@
 // The Mac app: one window on the local server (started by launchd, see
-// scripts/agent.sh), and the reminders scheduled in macOS so they arrive even
-// when the app is closed. Its name comes from Info.plist (scripts/brand.sh).
+// `kanso init`), and the reminders scheduled in macOS so they arrive even
+// when the app is closed. Its name comes from Info.plist (scripts/brand.sh),
+// its words from the server's language files (web/locales, keys « mac.* »).
 import Cocoa
+import ServiceManagement
 import UserNotifications
 import WebKit
 
-let serverURL = URL(string: "http://localhost:48219/")!
 let appName = Bundle.main.object(forInfoDictionaryKey: "CFBundleName") as? String ?? "Kanso"
+
+/// The server's port, from the file `kanso init` writes; 48219 until there is one.
+let serverURL: URL = {
+    let file = FileManager.default.homeDirectoryForCurrentUser
+        .appendingPathComponent("Library/Application Support/\(appName)/config.json")
+    var port = 48219
+    if let data = try? Data(contentsOf: file),
+        let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+        let p = json["port"] as? Int, p > 0
+    {
+        port = p
+    }
+    return URL(string: "http://localhost:\(port)/")!
+}()
 let background = NSColor(srgbRed: 15 / 255, green: 16 / 255, blue: 18 / 255, alpha: 1)
 
 /// A notification the server asks for (GET /api/reminders).
@@ -25,9 +40,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, WKNa
     var web: WKWebView!
     var syncTimer: Timer?
     var pendingSync: DispatchWorkItem?
+    var texts: [String: Any] = [:]
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        buildMenu()
         let config = WKWebViewConfiguration()
         config.userContentController.add(self, name: "inc")
         web = WKWebView(frame: .zero, configuration: config)
@@ -58,8 +73,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, WKNa
         let center = UNUserNotificationCenter.current()
         center.delegate = self
         center.requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
-            NSLog("%@ : notifications %@ %@", appName, granted ? "autorisées" : "refusées", error?.localizedDescription ?? "")
-            DispatchQueue.main.async { self.syncReminders() }
+            NSLog("%@: notifications %@ %@", appName, granted ? "allowed" : "refused", error?.localizedDescription ?? "")
+            DispatchQueue.main.async {
+                self.syncReminders()
+                self.reportStatus()
+            }
         }
         syncTimer = Timer.scheduledTimer(withTimeInterval: 30 * 60, repeats: true) { _ in self.syncReminders() }
         NSApp.activate(ignoringOtherApps: true)
@@ -102,16 +120,111 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, WKNa
                 center.add(UNNotificationRequest(identifier: r.id, content: content, trigger: trigger))
                 scheduled += 1
             }
-            NSLog("%@ : %d rappels programmés", appName, scheduled)
+            NSLog("%@: %d reminders scheduled", appName, scheduled)
         }.resume()
     }
 
-    /// The page says its data changed (a payment saved, a deadline ticked): sync once it settles.
+    /// The page talks to the app: « changed » (its data changed: sync the
+    /// reminders once it settles), or what only the app can do, from Settings.
     func userContentController(_ controller: WKUserContentController, didReceive message: WKScriptMessage) {
-        pendingSync?.cancel()
-        let work = DispatchWorkItem { self.syncReminders() }
-        pendingSync = work
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2, execute: work)
+        guard let body = message.body as? [String: Any], let type = body["type"] as? String else {
+            pendingSync?.cancel()
+            let work = DispatchWorkItem { self.syncReminders() }
+            pendingSync = work
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2, execute: work)
+            return
+        }
+        switch type {
+        case "test": testReminder()
+        case "pickFolder": pickFolder(move: body["move"] as? Bool ?? false)
+        case "loginItem": setLoginItem(body["on"] as? Bool ?? false)
+        case "openNotifications":
+            let url = "x-apple.systempreferences:com.apple.Notifications-Settings.extension?id=\(Bundle.main.bundleIdentifier ?? "")"
+            if let u = URL(string: url) { NSWorkspace.shared.open(u) }
+        default: break
+        }
+    }
+
+    // MARK: settings
+
+    /// reportStatus tells the server what only the app knows: notifications
+    /// allowed, opening at login. The Settings screen and `kanso doctor` show it.
+    func reportStatus() {
+        UNUserNotificationCenter.current().getNotificationSettings { settings in
+            let state: String
+            switch settings.authorizationStatus {
+            case .authorized: state = "authorized"
+            case .provisional: state = "provisional"
+            case .denied: state = "denied"
+            default: state = "notDetermined"
+            }
+            var request = URLRequest(url: serverURL.appendingPathComponent("api/app-status"))
+            request.httpMethod = "POST"
+            request.setValue("1", forHTTPHeaderField: "X-Inc")
+            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? ""
+            request.httpBody = try? JSONSerialization.data(withJSONObject: [
+                "notifications": state, "loginItem": SMAppService.mainApp.status == .enabled, "version": version,
+            ])
+            URLSession.shared.dataTask(with: request) { _, _, _ in
+                DispatchQueue.main.async { self.web.evaluateJavaScript("window.kansoAppChanged && window.kansoAppChanged()") }
+            }.resume()
+        }
+    }
+
+    /// setLoginItem opens the app at login, or stops it (macOS may ask to confirm in System Settings).
+    func setLoginItem(_ on: Bool) {
+        do {
+            if on { try SMAppService.mainApp.register() } else { try SMAppService.mainApp.unregister() }
+        } catch {
+            NSLog("%@: login item: %@", appName, error.localizedDescription)
+        }
+        reportStatus()
+    }
+
+    /// pickFolder lets the user choose a folder, then hands it to the page: to use it, or to move the folder into it.
+    func pickFolder(move: Bool) {
+        let panel = NSOpenPanel()
+        panel.canChooseFiles = false
+        panel.canChooseDirectories = true
+        panel.canCreateDirectories = true
+        panel.allowsMultipleSelection = false
+        panel.beginSheetModal(for: window) { result in
+            guard result == .OK, let path = panel.url?.path,
+                let json = try? JSONEncoder().encode(path), let literal = String(data: json, encoding: .utf8)
+            else { return }
+            self.web.evaluateJavaScript("window.kansoFolderPicked(\(literal), \(move))")
+        }
+    }
+
+    func windowDidBecomeKey(_ notification: Notification) { reportStatus() }
+
+    // MARK: words
+
+    /// loadTexts reads the page's language and its file, then names the menus in it.
+    func loadTexts() {
+        var request = URLRequest(url: serverURL.appendingPathComponent("api/locale"))
+        request.setValue(Locale.preferredLanguages.joined(separator: ","), forHTTPHeaderField: "Accept-Language")
+        URLSession.shared.dataTask(with: request) { data, _, _ in
+            guard let data, let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+                let lang = json["lang"] as? String
+            else { return }
+            let file = serverURL.appendingPathComponent("locales/\(lang).json")
+            URLSession.shared.dataTask(with: file) { data, _, _ in
+                guard let data, let dict = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else { return }
+                DispatchQueue.main.async {
+                    self.texts = dict
+                    self.buildMenu()
+                }
+            }.resume()
+        }.resume()
+    }
+
+    /// text is the sentence of key (« mac.quit ») with {{name}} as the app's name; the key itself when missing.
+    func text(_ key: String) -> String {
+        var node: Any? = texts
+        for part in key.split(separator: ".") { node = (node as? [String: Any])?[String(part)] }
+        return (node as? String ?? key).replacingOccurrences(of: "{{name}}", with: appName)
     }
 
     func userNotificationCenter(
@@ -185,6 +298,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, WKNa
         panel.beginSheetModal(for: window) { result in completionHandler(result == .OK ? panel.urls : nil) }
     }
 
+    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) { loadTexts() }
+
     /// The server may still be starting (after a login or an update): try again.
     func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
         let e = error as NSError
@@ -210,25 +325,26 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, WKNa
             return it
         }
         _ = submenu(appName, [
-            item("Envoyer un rappel de test", #selector(testReminder), "", self),
+            item(text("mac.settings"), #selector(openSettings), ",", self),
+            item(text("mac.test"), #selector(testReminder), "", self),
             .separator(),
-            item("Masquer \(appName)", #selector(NSApplication.hide(_:)), "h"),
+            item(text("mac.hide"), #selector(NSApplication.hide(_:)), "h"),
             .separator(),
-            item("Quitter \(appName)", #selector(NSApplication.terminate(_:)), "q"),
+            item(text("mac.quit"), #selector(NSApplication.terminate(_:)), "q"),
         ])
-        _ = submenu("Édition", [
-            item("Annuler", Selector(("undo:")), "z"),
-            item("Rétablir", Selector(("redo:")), "Z"),
+        _ = submenu(text("mac.edit"), [
+            item(text("mac.undo"), Selector(("undo:")), "z"),
+            item(text("mac.redo"), Selector(("redo:")), "Z"),
             .separator(),
-            item("Couper", #selector(NSText.cut(_:)), "x"),
-            item("Copier", #selector(NSText.copy(_:)), "c"),
-            item("Coller", #selector(NSText.paste(_:)), "v"),
-            item("Tout sélectionner", #selector(NSText.selectAll(_:)), "a"),
+            item(text("mac.cut"), #selector(NSText.cut(_:)), "x"),
+            item(text("mac.copy"), #selector(NSText.copy(_:)), "c"),
+            item(text("mac.paste"), #selector(NSText.paste(_:)), "v"),
+            item(text("mac.selectAll"), #selector(NSText.selectAll(_:)), "a"),
         ])
-        _ = submenu("Présentation", [item("Recharger", #selector(reload), "r", self)])
-        let windows = submenu("Fenêtre", [
-            item("Réduire", #selector(NSWindow.performMiniaturize(_:)), "m"),
-            item("Fermer", #selector(NSWindow.performClose(_:)), "w"),
+        _ = submenu(text("mac.view"), [item(text("mac.reload"), #selector(reload), "r", self)])
+        let windows = submenu(text("mac.window"), [
+            item(text("mac.minimize"), #selector(NSWindow.performMiniaturize(_:)), "m"),
+            item(text("mac.close"), #selector(NSWindow.performClose(_:)), "w"),
         ])
         NSApp.mainMenu = main
         NSApp.windowsMenu = windows
@@ -236,11 +352,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, WKNa
 
     @objc func reload() { web.reload() }
 
-    /// A notification in 5 seconds: shows the reminders are allowed (Réglages Système › Notifications otherwise).
+    @objc func openSettings() {
+        window.makeKeyAndOrderFront(nil)
+        web.evaluateJavaScript("location.hash = 'settings'")
+    }
+
+    /// A notification in 5 seconds: shows the reminders are allowed (System Settings › Notifications otherwise).
     @objc func testReminder() {
         let content = UNMutableNotificationContent()
-        content.title = "Rappel de test"
-        content.body = "Les rappels de \(appName) arrivent bien."
+        content.title = text("mac.testTitle")
+        content.body = text("mac.testBody")
         content.sound = .default
         content.userInfo = ["view": "calendar"]
         let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 5, repeats: false)

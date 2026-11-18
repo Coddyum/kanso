@@ -144,7 +144,7 @@ export function deadlinesModal() {
         <footer><span class="grow"></span><button type="button" class="btn ghost" data-action="close">${t("common.close")}</button><button class="btn primary">${t("common.save")}</button></footer>
     </form>`,
         async (data) => {
-            await api("POST", "/api/admin", { urssaf: data.urssaf, cfe: "cfe" in data, ir: "ir" in data });
+            await api("POST", "/api/admin", { ...a, urssaf: data.urssaf, cfe: "cfe" in data, ir: "ir" in data });
             toast(t("deadlines.saved"));
             await load();
         },

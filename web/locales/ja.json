@@ -347,7 +347,8 @@
         "missing": "未取得",
         "files": "フォルダ",
         "folder": "{{name}} フォルダ",
-        "loading": "フォルダを読み込み中…"
+        "loading": "フォルダを読み込み中…",
+        "settings": "設定"
     },
     "rates": {
         "one": "1 {{code}} = {{eur}} €"
@@ -457,6 +458,183 @@
         "tooBig": "500 MB を超えるファイル",
         "noTargetDir": "移動先のフォルダが見つかりません",
         "unknownLang": "不明な言語",
-        "exists": "「{{path}}」は既に存在します"
+        "exists": "「{{path}}」は既に存在します",
+        "badHour": "無効な時刻",
+        "noBackup": "バックアップが見つかりません",
+        "folderAbsolute": "フォルダのフルパスを入力してください（/… または ~/…）",
+        "folderMissing": "このフォルダは存在しません",
+        "folderNotWritable": "このフォルダに書き込めません",
+        "folderTaken": "その場所には同じ名前のフォルダが既にあります",
+        "otherDisk": "このフォルダは別のディスクにあります。Finder で移動してから、ここで選択してください"
+    },
+    "cli": {
+        "usage": "Kanso {{version}} — 100 % local.\n\n使い方：kanso <コマンド>\n\n  init       請求書のフォルダを選び、Mac と一緒に Kanso を起動する\n  update     最新バージョンを取得してビルドする\n  doctor     すべて正常に動いているか確認する\n  uninstall  Mac から Kanso を削除する（フォルダとデータは残ります）\n  serve      サーバーを起動する（通常は自動起動が行います）\n  version    バージョンを表示する",
+        "unknown": "不明なコマンド：{{name}}",
+        "noFolder": "フォルダが選択されていません。先に「kanso init」を実行してください。",
+        "yesNo": "[y/N]",
+        "yes": "y,yes,はい",
+        "init": {
+            "hello": "Kanso — 100 % local：請求書、銀行の情報、数字はすべて Mac の中に残ります。",
+            "ask": "請求書をどこに保存しますか？名前（「書類」内にフォルダを作成）またはパスを入力",
+            "defaultName": "請求書",
+            "notFolder": "フォルダではありません：{{path}}",
+            "existing": "既存のフォルダです。中身は何も変更しません：{{path}}",
+            "create": "フォルダ {{path}} は存在しません。作成しますか？",
+            "created": "フォルダを作成しました：{{path}}",
+            "cancelled": "何も変更されていません。",
+            "agent": "自動起動を設定しました。Kanso は Mac と一緒に起動します。",
+            "access": "macOS からフォルダへのアクセスを求められたら、「許可」をクリックしてください。",
+            "waiting": "起動中…",
+            "ready": "Kanso が動作中です：http://localhost:{{port}}",
+            "notReady": "Kanso はまだ応答していません。1分後に「kanso doctor」を実行してください。",
+            "next": "アプリで通知を許可してから、「設定」を開いてください。"
+        },
+        "update": {
+            "noRepo": "このフォルダは Kanso の git クローンではありません：{{path}}",
+            "pulling": "最新バージョンを取得中…",
+            "upToDate": "すでに最新です。",
+            "building": "ビルド中…",
+            "appChanged": "Mac アプリが変更されたため、再インストールします。",
+            "done": "アップデートしました。Kanso は自動で再起動し、ページも再読み込みされます。"
+        },
+        "uninstall": {
+            "confirm": "この Mac から Kanso を削除しますか？フォルダ {{path}} とデータは残ります。",
+            "done": "Kanso を削除しました。フォルダはそのまま残っています：{{path}}",
+            "repo": "最後に、コードのフォルダを削除しても構いません：{{path}}"
+        },
+        "doctor": {
+            "noConfig": "フォルダが選択されていません。「kanso init」を実行してください。",
+            "config": "設定：{{path}}",
+            "folder": "フォルダ：{{path}}",
+            "folderMissing": "フォルダが見つかりません：{{path}}（移動しましたか？もう一度「kanso init」を実行してください）",
+            "agent": "自動起動：有効",
+            "agentMissing": "自動起動が設定されていません。「kanso init」を実行してください",
+            "server": "Kanso は http://localhost:{{port}} で応答しています（バージョン {{version}}）",
+            "serverDown": "Kanso が応答しません。ログ {{log}} を確認してください",
+            "access": "macOS は Kanso にフォルダの読み取りを許可しています",
+            "noAccess": "macOS がフォルダへのアクセスを拒否しています：システム設定 › プライバシーとセキュリティ › ファイルとフォルダ",
+            "pdfReader": "PDF の読み取り：利用可能",
+            "noPdf": "PDF の読み取りが利用できません。「make build」を実行してください",
+            "appInstalled": "Mac アプリ：インストール済み",
+            "noApp": "Mac アプリがありません。「make app」を実行してください",
+            "appUnknown": "Mac アプリからまだ状態が届いていません。一度開いてください",
+            "notifications": "通知：許可済み",
+            "noNotifications": "通知が拒否されています：システム設定 › 通知 › Kanso",
+            "loginItem": "アプリは Mac と一緒に開きます",
+            "noLoginItem": "アプリは Mac と一緒に開きません：アプリ内の「設定 › 通知」",
+            "focus": "集中モード：リマインダーを受け取るには、許可されたアプリに Kanso を追加してください",
+            "noData": "まだデータがありません。アプリを開いて始めてください",
+            "allGood": "すべて正常です。",
+            "problems_other": "修正が必要な項目が {{count}} 件あります。"
+        },
+        "install": {
+            "macos": "Kanso には macOS 13（Ventura）以降が必要です。",
+            "xcode": "Apple の開発ツールがありません。macOS がそのインストール画面を開きました。完了したら、もう一度 ./install.sh を実行してください",
+            "go": "Go がありません。公式のダウンロードページ（go.dev/dl）を開きました。インストールしてから、もう一度 ./install.sh を実行してください",
+            "goOld": "Go のバージョンが古すぎます。go.dev/dl（ページを開きました）から最新版をインストールしてから、もう一度 ./install.sh を実行してください",
+            "building": "Kanso をビルド中…",
+            "app": "Mac アプリを ~/Applications にインストール中…"
+        }
+    },
+    "export": {
+        "date": "日付",
+        "service": "サービス",
+        "label": "摘要",
+        "kind": "種類",
+        "amount": "金額",
+        "currency": "通貨",
+        "eur": "金額（ユーロ）",
+        "project": "プロジェクト"
+    },
+    "settings": {
+        "title": "設定",
+        "sub": "Kanso {{version}} · すべて Mac の中に残ります。",
+        "saved": "保存しました",
+        "lang": {
+            "title": "言語",
+            "label": "アプリの言語",
+            "auto": "Mac と同じ"
+        },
+        "folder": {
+            "title": "フォルダ",
+            "sub": "請求書を保存するフォルダです。Kanso はこのフォルダを読み取り、ドロップしたものをここに整理します。Kanso 自身のデータは隠しサブフォルダ .kanso にあります。",
+            "where": "場所",
+            "other": "別のフォルダを選択…",
+            "move": "フォルダを移動…",
+            "otherLabel": "使用するフォルダのフルパス（/… または ~/…）",
+            "moveLabel": "移動先フォルダのフルパス（/… または ~/…）",
+            "otherConfirm": "Kanso は {{path}} を使用します。何もコピー・削除されません。Kanso は再起動します。",
+            "moveConfirm": "フォルダを中身ごと {{path}} に移動します。Kanso は再起動します。",
+            "restarting": "Kanso を再起動中…"
+        },
+        "admin": {
+            "title": "行政手続き",
+            "sub": "フランスのマイクロ起業家（micro-entrepreneur）向けの規則：URSSAF、CFE、所得税。",
+            "created": "開業日",
+            "createdHint": "この日付より前の分は何も支払う必要はなく、初年度の CFE も不要です。"
+        },
+        "notify": {
+            "title": "通知",
+            "state": {
+                "unknown": "Mac アプリからまだ状態が届いていません",
+                "on": "macOS で通知が許可されています",
+                "off": "macOS で通知が拒否されています"
+            },
+            "payments": "支払いの前日",
+            "deadlines": "手続きの7日前と1日前",
+            "missing": "毎週月曜日（未取得の請求書がある場合）",
+            "reserve": "残高がゼロになる前",
+            "hour": "リマインダーの時刻",
+            "test": "テスト用リマインダーを送信",
+            "testSent": "5秒後にテスト用リマインダーが届きます",
+            "openSystem": "通知の設定を開く",
+            "login": "Mac と一緒に Kanso を開く",
+            "loginHint": "アプリを閉じていてもリマインダーは届きます。アプリはログイン時に再び開きます。",
+            "appOnly": "通知は Mac アプリを通じて届きます。テストするには Kanso.app を開いてください。",
+            "focus": "集中モード：リマインダーを受け取るには、許可されたアプリに Kanso を追加してください（システム設定 › 集中モード）。"
+        },
+        "privacy": {
+            "title": "プライバシー",
+            "sub": "100 % local。請求書、銀行の情報、数字は Mac の中に残り、どこにも送信されません。より快適に使えるよう、アプリがダウンロードするのは公開されている次の2つだけです：欧州中央銀行の為替レートと、ブランドのロゴ。",
+            "rates": "為替レートをダウンロード",
+            "ratesHint": "為替レートがないと、外貨の金額はユーロで集計されません。",
+            "logos": "ブランドのロゴをダウンロード",
+            "logosHint": "ブランドのサイトから一度だけ取得します。ロゴがない場合はイニシャルを表示します。"
+        },
+        "data": {
+            "title": "データ",
+            "sub": "設定とサブスクのバックアップを1日1回作成し（.kanso/backups）、直近30日分を保存します。",
+            "export": "エクスポート",
+            "exported": "エクスポートを .kanso/exports に保存しました。Finder に表示されます",
+            "diagnostic": "診断",
+            "diagnosticSub": "Kanso から見たお使いの Mac の状態です。うまく動かないときにコピーしてください。請求書や金額は含まれません。",
+            "copy": "コピー",
+            "copied": "コピーしました",
+            "backups": "バックアップ",
+            "noBackup": "バックアップはまだありません。次に変更したときに最初のバックアップが作成されます。",
+            "restore": "復元",
+            "restoreConfirm": "バックアップ {{name}} を復元しますか？現在の状態は別のバックアップとして保存されます。",
+            "restored": "バックアップを復元しました"
+        }
+    },
+    "mac": {
+        "settings": "設定…",
+        "test": "テスト用リマインダーを送信",
+        "hide": "{{name}}を隠す",
+        "quit": "{{name}}を終了",
+        "edit": "編集",
+        "undo": "取り消す",
+        "redo": "やり直す",
+        "cut": "カット",
+        "copy": "コピー",
+        "paste": "ペースト",
+        "selectAll": "すべてを選択",
+        "view": "表示",
+        "reload": "再読み込み",
+        "window": "ウインドウ",
+        "minimize": "しまう",
+        "close": "閉じる",
+        "testTitle": "テスト用リマインダー",
+        "testBody": "{{name}} のリマインダーは正常に届いています。"
     }
 }

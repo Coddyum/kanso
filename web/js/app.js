@@ -11,9 +11,10 @@ import { fitCalendar, gridRange, viewCalendar } from "./views/calendar.js";
 import { viewFiles } from "./views/files.js";
 import { viewInvoices } from "./views/invoices.js";
 import { viewMissing } from "./views/missing.js";
+import { viewSettings } from "./views/settings.js";
 import { hidePop } from "./views/popover.js";
 
-const VIEWS = { calendar: viewCalendar, analytics: viewAnalytics, invoices: viewInvoices, missing: viewMissing, files: viewFiles };
+const VIEWS = { calendar: viewCalendar, analytics: viewAnalytics, invoices: viewInvoices, missing: viewMissing, files: viewFiles, settings: viewSettings };
 
 export async function loadCalendar() {
     const { from, to } = gridRange(S.month);
@@ -38,6 +39,7 @@ export async function fetchView() {
     if (S.view === "calendar") await loadCalendar();
     else if (S.view === "analytics") S.an.data = await api("GET", "/api/analytics");
     else if (S.view === "files") await loadFiles();
+    else if (S.view === "settings") S.settings = await api("GET", "/api/settings");
 }
 
 // load reads everything again, then redraws; the Mac app is told so its reminders follow.

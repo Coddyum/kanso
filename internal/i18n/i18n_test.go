@@ -118,7 +118,32 @@ func used(t *testing.T) (keys, prefixes map[string]string) {
 			keys[m[1]] = rel
 		}
 	})
+	// The Mac app names its menus with text("mac.quit").
+	reSwift := regexp.MustCompile(`\btext\("([\w.]+)"\)`)
+	walkFiles(t, "../..", []string{".swift"}, func(rel string, data []byte) {
+		for _, m := range reSwift.FindAllStringSubmatch(string(data), -1) {
+			keys[m[1]] = rel
+		}
+	})
+	// install.sh reads its sentences with plutil: « -extract "cli.install.$1" », « -extract cli.init.hello ».
+	reShPrefix := regexp.MustCompile(`-extract "([a-z][\w.]*)\.\$`)
+	reShKey := regexp.MustCompile(`-extract "?([a-z][\w.]*[\w])"? raw`)
+	walkFiles(t, "../..", []string{".sh"}, func(rel string, data []byte) {
+		for _, m := range reShPrefix.FindAllStringSubmatch(string(data), -1) {
+			prefixes[m[1]] = rel
+		}
+		for _, m := range reShKey.FindAllStringSubmatch(string(data), -1) {
+			if !strings.Contains(m[1], "$") {
+				keys[m[1]] = rel
+			}
+		}
+	})
 	reKey := regexp.MustCompile(`^[a-z][a-zA-Z]*(\.[a-zA-Z0-9]+)*\.?$`)
+	reFile := regexp.MustCompile(`\.(json|csv|plist|log|app|pdf)$`) // « rates.json » is a file, not a key
+	tops := map[string]bool{}                                       // the first words of fr.json's keys: « cli », « error »…
+	for k := range catalog(t).Keys("fr") {
+		tops[strings.Split(k, ".")[0]] = true
+	}
 	walkFiles(t, "../..", []string{".go"}, func(rel string, data []byte) {
 		f, err := parser.ParseFile(token.NewFileSet(), rel, data, parser.SkipObjectResolution)
 		if err != nil {
@@ -130,7 +155,7 @@ func used(t *testing.T) (keys, prefixes map[string]string) {
 				return true
 			}
 			s, _ := strconv.Unquote(lit.Value)
-			if !reKey.MatchString(s) || !strings.Contains(s, ".") || !strings.Contains("common nav calendar error deadline reminder date format", strings.Split(s, ".")[0]) {
+			if !reKey.MatchString(s) || !strings.Contains(s, ".") || !tops[strings.Split(s, ".")[0]] || reFile.MatchString(s) {
 				return true
 			}
 			if strings.HasSuffix(s, ".") {

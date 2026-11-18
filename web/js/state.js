@@ -19,12 +19,13 @@ export const S = {
     vendor: "all",
     asideTab: "upcoming",
     an: { period: "12m", project: "all", month: "", tab: "services", data: null },
+    settings: null,
 };
 
 // rootName is the name of the synced folder: « Inc », « Factures »…
 export const rootName = () => S.st.root.split("/").filter(Boolean).pop() || "/";
 
-export const VIEW_NAMES = ["calendar", "analytics", "invoices", "missing", "files"];
+export const VIEW_NAMES = ["calendar", "analytics", "invoices", "missing", "files", "settings"];
 
 // readHash picks the screen from the address: #calendar, #files/2026/Mars…
 export function readHash() {

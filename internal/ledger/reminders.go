@@ -20,9 +20,8 @@ type Reminder struct {
 	View  string `json:"view"`
 }
 
-const reminderHour = 9
-
-// Reminders lists the notifications of the next two months, all at 9:00:
+// Reminders lists the notifications of the next two months, at the hour
+// chosen (9:00 by default), each kind only when it is turned on:
 //   - the day before a payment (zero amounts left out; several on one day: one notification);
 //   - 7 days and 1 day before an administrative deadline still to do;
 //   - every Monday while invoices are missing;
@@ -31,17 +30,24 @@ const reminderHour = 9
 // Only reminders still to come after now are listed.
 func (m *Model) Reminders(r rates.Rates, now time.Time, tr i18n.Lang) []Reminder {
 	out := []Reminder{}
+	n := m.DB.NotifySettings()
 	add := func(id string, d time.Time, title, body, view string) {
-		at := time.Date(d.Year(), d.Month(), d.Day(), reminderHour, 0, 0, 0, time.Local)
+		at := time.Date(d.Year(), d.Month(), d.Day(), n.Hour, 0, 0, 0, time.Local)
 		if at.After(now) {
 			out = append(out, Reminder{ID: id, At: at.Format("2006-01-02T15:04"), Title: title, Body: body, View: view})
 		}
 	}
 	horizon := m.Today.AddDate(0, 2, 0)
-	m.paymentReminders(horizon, add, tr)
-	m.deadlineReminders(horizon, add, tr)
-	m.missingReminders(add, tr)
-	if f := m.Forecast(r); f.RunsOut != "" {
+	if n.Payments {
+		m.paymentReminders(horizon, add, tr)
+	}
+	if n.Deadlines {
+		m.deadlineReminders(horizon, add, tr)
+	}
+	if n.Missing {
+		m.missingReminders(add, tr)
+	}
+	if f := m.Forecast(r); n.Reserve && f.RunsOut != "" {
 		out0, _ := day.Parse(f.RunsOut)
 		for _, before := range []int{30, 14, 7, 1} {
 			add(fmt.Sprintf("reserve@%s@%d", f.RunsOut, before), out0.AddDate(0, 0, -before),

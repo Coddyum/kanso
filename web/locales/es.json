@@ -362,7 +362,8 @@
         "missing": "Por recuperar",
         "files": "Carpeta",
         "folder": "Carpeta {{name}}",
-        "loading": "Leyendo la carpeta…"
+        "loading": "Leyendo la carpeta…",
+        "settings": "Ajustes"
     },
     "rates": {
         "one": "1 {{code}} = {{eur}} €"
@@ -477,6 +478,184 @@
         "tooBig": "archivo de más de 500 MB",
         "noTargetDir": "carpeta de destino no encontrada",
         "unknownLang": "idioma desconocido",
-        "exists": "«{{path}}» ya existe"
+        "exists": "«{{path}}» ya existe",
+        "badHour": "hora no válida",
+        "noBackup": "copia de seguridad no encontrada",
+        "folderAbsolute": "indica la ruta completa de la carpeta (/… o ~/…)",
+        "folderMissing": "esta carpeta no existe",
+        "folderNotWritable": "no se puede escribir en esta carpeta",
+        "folderTaken": "ya hay ahí una carpeta con el mismo nombre",
+        "otherDisk": "esta carpeta está en otro disco: muévela en Finder y luego elígela aquí"
+    },
+    "cli": {
+        "usage": "Kanso {{version}} — 100 % local.\n\nUso: kanso <comando>\n\n  init       elegir la carpeta de tus facturas y hacer que Kanso arranque con tu Mac\n  update     obtener la última versión y compilarla\n  doctor     comprobar que todo funciona\n  uninstall  quitar Kanso del Mac (tu carpeta y tus datos se conservan)\n  serve      lanzar el servidor (el inicio automático se encarga de ello)\n  version    mostrar la versión",
+        "unknown": "Comando desconocido: {{name}}",
+        "noFolder": "No has elegido ninguna carpeta: ejecuta primero «kanso init».",
+        "yesNo": "[s/N]",
+        "yes": "s,si,sí",
+        "init": {
+            "hello": "Kanso — 100 % local: tus facturas, tu banco y tus cifras se quedan en tu Mac.",
+            "ask": "¿Dónde quieres guardar tus facturas? Un nombre (carpeta creada en Documentos) o una ruta",
+            "defaultName": "Facturas",
+            "notFolder": "No es una carpeta: {{path}}",
+            "existing": "Carpeta existente, no se mueve nada de su contenido: {{path}}",
+            "create": "La carpeta {{path}} no existe. ¿Crearla?",
+            "created": "Carpeta creada: {{path}}",
+            "cancelled": "No se ha cambiado nada.",
+            "agent": "Inicio automático instalado: Kanso arranca con tu Mac.",
+            "access": "Si macOS pide acceso a la carpeta, haz clic en «Permitir».",
+            "waiting": "Iniciando…",
+            "ready": "Kanso está en marcha: http://localhost:{{port}}",
+            "notReady": "Kanso aún no responde: ejecuta «kanso doctor» dentro de un minuto.",
+            "next": "En la app: permite las notificaciones y luego abre Ajustes."
+        },
+        "update": {
+            "noRepo": "Esta carpeta no es un clon git de Kanso: {{path}}",
+            "pulling": "Obteniendo la última versión…",
+            "upToDate": "Ya está actualizado.",
+            "building": "Compilando…",
+            "appChanged": "La app del Mac ha cambiado: reinstalando.",
+            "done": "Actualizado: Kanso se reinicia solo y la página se recarga."
+        },
+        "uninstall": {
+            "confirm": "¿Quitar Kanso de este Mac? Tu carpeta {{path}} y tus datos se conservan.",
+            "done": "Kanso se ha quitado. Tu carpeta está intacta: {{path}}",
+            "repo": "Para terminar, puedes borrar la carpeta del código: {{path}}"
+        },
+        "doctor": {
+            "noConfig": "No has elegido ninguna carpeta: ejecuta «kanso init».",
+            "config": "Ajustes: {{path}}",
+            "folder": "Carpeta: {{path}}",
+            "folderMissing": "Carpeta no encontrada: {{path}} (¿la has movido? vuelve a ejecutar «kanso init»)",
+            "agent": "Inicio automático activo",
+            "agentMissing": "Inicio automático ausente: ejecuta «kanso init»",
+            "server": "Kanso responde en http://localhost:{{port}} (versión {{version}})",
+            "serverDown": "Kanso no responde: mira el registro {{log}}",
+            "access": "macOS deja que Kanso lea la carpeta",
+            "noAccess": "macOS deniega el acceso a la carpeta: Ajustes del Sistema › Privacidad y seguridad › Archivos y carpetas",
+            "pdfReader": "Lectura de PDF disponible",
+            "noPdf": "Lectura de PDF no disponible: ejecuta «make build»",
+            "appInstalled": "App del Mac instalada",
+            "noApp": "App del Mac no instalada: ejecuta «make app»",
+            "appUnknown": "La app del Mac aún no ha dado señales: ábrela una vez",
+            "notifications": "Notificaciones permitidas",
+            "noNotifications": "Notificaciones denegadas: Ajustes del Sistema › Notificaciones › Kanso",
+            "loginItem": "La app se abre al iniciar tu Mac",
+            "noLoginItem": "La app no se abre al iniciar tu Mac: Ajustes › Notificaciones, en la app",
+            "focus": "Modo de concentración: añade Kanso a las apps permitidas para recibir los recordatorios",
+            "noData": "Aún no hay datos: abre la app para empezar",
+            "allGood": "Todo en orden.",
+            "problems_one": "{{count}} punto por corregir.",
+            "problems_other": "{{count}} puntos por corregir."
+        },
+        "install": {
+            "macos": "Kanso necesita macOS 13 (Ventura) o posterior.",
+            "xcode": "Faltan las herramientas de desarrollo de Apple: macOS acaba de abrir su instalación. Cuando termine, vuelve a ejecutar ./install.sh",
+            "go": "Falta Go: acaba de abrirse la página oficial de descarga (go.dev/dl). Instálalo y luego vuelve a ejecutar ./install.sh",
+            "goOld": "Tu versión de Go es demasiado antigua: instala la última desde go.dev/dl (la página acaba de abrirse) y luego vuelve a ejecutar ./install.sh",
+            "building": "Compilando Kanso…",
+            "app": "Instalando la app del Mac en ~/Applications…"
+        }
+    },
+    "export": {
+        "date": "Fecha",
+        "service": "Servicio",
+        "label": "Concepto",
+        "kind": "Tipo",
+        "amount": "Importe",
+        "currency": "Divisa",
+        "eur": "Importe en euros",
+        "project": "Proyecto"
+    },
+    "settings": {
+        "title": "Ajustes",
+        "sub": "Kanso {{version}} · todo se queda en tu Mac.",
+        "saved": "Guardado",
+        "lang": {
+            "title": "Idioma",
+            "label": "Idioma de la app",
+            "auto": "El del Mac"
+        },
+        "folder": {
+            "title": "Carpeta",
+            "sub": "La carpeta donde se guardan tus facturas. Kanso la lee y guarda en ella lo que sueltas; sus propios datos están en su subcarpeta oculta .kanso.",
+            "where": "Ubicación",
+            "other": "Elegir otra carpeta…",
+            "move": "Mover la carpeta…",
+            "otherLabel": "Ruta completa de la carpeta a usar (/… o ~/…)",
+            "moveLabel": "Ruta completa de la carpeta a la que moverla (/… o ~/…)",
+            "otherConfirm": "Kanso va a usar {{path}}. No se copia ni se borra nada; Kanso se reiniciará.",
+            "moveConfirm": "Tu carpeta se moverá a {{path}}, con todo lo que contiene. Kanso se reiniciará.",
+            "restarting": "Kanso se está reiniciando…"
+        },
+        "admin": {
+            "title": "Trámites administrativos",
+            "sub": "Las normas francesas de los microempresarios: URSSAF, CFE, impuesto sobre la renta.",
+            "created": "Fecha de creación de la empresa",
+            "createdHint": "No se debe nada anterior a esta fecha, ni la CFE del primer año."
+        },
+        "notify": {
+            "title": "Notificaciones",
+            "state": {
+                "unknown": "La app del Mac aún no ha dado señales",
+                "on": "Notificaciones permitidas por macOS",
+                "off": "Notificaciones denegadas por macOS"
+            },
+            "payments": "El día antes de un pago",
+            "deadlines": "7 días y 1 día antes de un trámite",
+            "missing": "Cada lunes, si faltan facturas",
+            "reserve": "Antes de que la reserva llegue a cero",
+            "hour": "Hora de los recordatorios",
+            "test": "Enviar un recordatorio de prueba",
+            "testSent": "Recordatorio de prueba en 5 segundos",
+            "openSystem": "Abrir los ajustes de notificaciones",
+            "login": "Abrir Kanso al iniciar el Mac",
+            "loginHint": "Los recordatorios llegan incluso con la app cerrada; se vuelve a abrir al iniciar sesión.",
+            "appOnly": "Las notificaciones pasan por la app del Mac: abre Kanso.app para probarlas.",
+            "focus": "Modo de concentración: añade Kanso a las apps permitidas (Ajustes del Sistema › Concentración) para recibir los recordatorios."
+        },
+        "privacy": {
+            "title": "Privacidad",
+            "sub": "100 % local. Tus facturas, tu banco y tus cifras se quedan en tu Mac: no se envía nada a ninguna parte. Para que sea más agradable de usar, la app solo descarga dos cosas públicas: los tipos de cambio del Banco Central Europeo y los logos de las marcas.",
+            "rates": "Descargar los tipos de cambio",
+            "ratesHint": "Sin ellos, los importes en otra divisa no se cuentan en euros.",
+            "logos": "Descargar los logos de las marcas",
+            "logosHint": "Tomados una vez de la web de la marca; sin ellos, sus iniciales."
+        },
+        "data": {
+            "title": "Datos",
+            "sub": "Una copia de seguridad al día de tus ajustes y suscripciones (.kanso/backups), de los últimos 30 días.",
+            "export": "Exportar",
+            "exported": "Exportación guardada en .kanso/exports: Finder la muestra",
+            "diagnostic": "Diagnóstico",
+            "diagnosticSub": "Lo que Kanso ve de tu Mac, para copiarlo si algo no funciona. No incluye ninguna factura ni importe.",
+            "copy": "Copiar",
+            "copied": "Copiado",
+            "backups": "Copias de seguridad",
+            "noBackup": "Aún no hay ninguna copia de seguridad: la primera se hará en el próximo cambio.",
+            "restore": "Restaurar",
+            "restoreConfirm": "¿Restaurar la copia de seguridad {{name}}? El estado actual se guarda en otra copia.",
+            "restored": "Copia de seguridad restaurada"
+        }
+    },
+    "mac": {
+        "settings": "Ajustes…",
+        "test": "Enviar un recordatorio de prueba",
+        "hide": "Ocultar {{name}}",
+        "quit": "Salir de {{name}}",
+        "edit": "Edición",
+        "undo": "Deshacer",
+        "redo": "Rehacer",
+        "cut": "Cortar",
+        "copy": "Copiar",
+        "paste": "Pegar",
+        "selectAll": "Seleccionar todo",
+        "view": "Visualización",
+        "reload": "Volver a cargar",
+        "window": "Ventana",
+        "minimize": "Minimizar",
+        "close": "Cerrar",
+        "testTitle": "Recordatorio de prueba",
+        "testBody": "Los recordatorios de {{name}} llegan bien."
     }
 }

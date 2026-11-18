@@ -21,7 +21,7 @@ func (s *Server) handleState(w http.ResponseWriter, r *http.Request) {
 		Root      string `json:"root"`
 		Extractor bool   `json:"extractor"` // the PDF reader is there
 		ledger.State
-	}{s.root.Dir(), s.index.CanReadPDF(), m.State(s.rates.Get(), s.tr(r))})
+	}{s.root.Dir(), s.index.CanReadPDF(), m.State(s.currentRates(), s.tr(r))})
 }
 
 // handleCalendar returns the events between ?from= and ?to=, at most 400 days apart.
@@ -46,7 +46,7 @@ func (s *Server) handleAnalytics(w http.ResponseWriter, r *http.Request) {
 		fail(w, http.StatusInternalServerError, err)
 		return
 	}
-	writeJSON(w, m.Analytics(s.rates.Get(), s.tr(r)))
+	writeJSON(w, m.Analytics(s.currentRates(), s.tr(r)))
 }
 
 // handleReminders lists the notifications the Mac app schedules.
@@ -56,7 +56,7 @@ func (s *Server) handleReminders(w http.ResponseWriter, r *http.Request) {
 		fail(w, http.StatusInternalServerError, err)
 		return
 	}
-	writeJSON(w, m.Reminders(s.rates.Get(), s.now(), s.tr(r)))
+	writeJSON(w, m.Reminders(s.currentRates(), s.now(), s.tr(r)))
 }
 
 // handleSig is polled by the page: a new folder signature means reload the

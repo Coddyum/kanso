@@ -12,16 +12,20 @@ import (
 
 // Settings says which administrative due dates apply to the business.
 type Settings struct {
-	Urssaf string `json:"urssaf"` // quarterly | monthly | off
-	CFE    bool   `json:"cfe"`
-	IR     bool   `json:"ir"`
+	Urssaf  string `json:"urssaf"` // quarterly | monthly | off
+	CFE     bool   `json:"cfe"`
+	IR      bool   `json:"ir"`
+	Created string `json:"created,omitempty"` // the business's creation day: nothing is due for before it
 }
 
 // Default is what a new business follows: quarterly Urssaf declarations, CFE and income tax.
 func Default() Settings { return Settings{Urssaf: "quarterly", CFE: true, IR: true} }
 
-// Valid says whether the Urssaf rhythm is one the app knows.
+// Valid says whether the Urssaf rhythm is one the app knows and the creation day, when given, is a day.
 func (s Settings) Valid() bool {
+	if _, ok := day.Parse(s.Created); s.Created != "" && !ok {
+		return false
+	}
 	return s.Urssaf == "quarterly" || s.Urssaf == "monthly" || s.Urssaf == "off"
 }
 
@@ -48,11 +52,16 @@ func lastDayOf(y int, m time.Month) time.Time {
 //   - the CFE, to pay by 15 December;
 //   - the yearly income tax return (2042-C-PRO), around the end of May: a forecast.
 //
-// A key in done is ticked; an unticked one before today is past. The texts
+// A key in done is ticked; an unticked one before today is past. With a
+// creation day, a declaration whose period ended before it is left out, and so
+// is the CFE of the creation year (a new business does not pay it). The texts
 // are in tr's language; the rules stay French whatever the language.
 func List(s Settings, done map[string]bool, from, to, today time.Time, tr i18n.Lang) []Deadline {
 	out := []Deadline{}
 	months, monthsFrom := tr.List("date.months"), tr.List("date.monthsFrom")
+	created, hasCreated := day.Parse(s.Created)
+	// before says whether a period ending on periodEnd is over before the business existed.
+	before := func(periodEnd time.Time) bool { return hasCreated && periodEnd.Before(created) }
 	add := func(kind string, d time.Time, detail, url string, approx bool) {
 		if d.Before(from) || d.After(to) {
 			return
@@ -76,22 +85,28 @@ func List(s Settings, done map[string]bool, from, to, today time.Time, tr i18n.L
 		case "quarterly":
 			for q := 0; q < 4; q++ {
 				first := time.Month(3*q + 1)
+				if before(lastDayOf(y, first+2)) {
+					continue
+				}
 				due := workingDay(lastDayOf(y, first+3))
 				detail := tr.T("deadline.urssaf.quarter", "from", monthsFrom[3*q], "to", months[3*q+2], "year", y)
 				add("urssaf", due, detail, urssafURL, false)
 			}
 		case "monthly":
 			for m := time.January; m <= time.December; m++ {
+				if before(lastDayOf(y, m)) {
+					continue
+				}
 				due := workingDay(lastDayOf(y, m+1))
 				detail := tr.T("deadline.urssaf.month", "from", monthsFrom[m-1], "year", y)
 				add("urssaf", due, detail, urssafURL, false)
 			}
 		}
-		if s.CFE {
+		if s.CFE && (!hasCreated || y > created.Year()) {
 			detail := tr.T("deadline.cfe.detail", "year", y-2)
 			add("cfe", time.Date(y, time.December, 15, 0, 0, 0, 0, time.Local), detail, "https://www.impots.gouv.fr/professionnel", false)
 		}
-		if s.IR {
+		if s.IR && !before(time.Date(y-1, time.December, 31, 0, 0, 0, 0, time.Local)) {
 			detail := tr.T("deadline.ir.detail", "year", y-1)
 			add("ir", time.Date(y, time.May, 20, 0, 0, 0, 0, time.Local), detail, "https://www.impots.gouv.fr", true)
 		}

@@ -91,3 +91,26 @@ func assertList(t *testing.T, got, want []string) {
 		}
 	}
 }
+
+// TestCreated: nothing is due for a period before the business existed, nor the CFE of its first year.
+func TestCreated(t *testing.T) {
+	s := Settings{Urssaf: "quarterly", CFE: true, IR: true, Created: "2026-05-10"}
+	if !s.Valid() || (Settings{Urssaf: "off", Created: "10/05/2026"}).Valid() {
+		t.Fatal("a creation day must be a YYYY-MM-DD day")
+	}
+	var got []string
+	for _, d := range List(s, nil, date(2026, 1, 1), date(2027, 12, 31), date(2026, 5, 10), french) {
+		got = append(got, d.Date+" "+d.Kind)
+	}
+	want := []string{
+		"2026-07-31 urssaf", // T2 2026: the business exists from 10 May
+		"2026-11-02 urssaf",
+		"2027-02-01 urssaf",
+		"2027-04-30 urssaf",
+		"2027-05-20 ir",     // the 2026 income
+		"2027-08-02 urssaf", // 31 July 2027 is a Saturday
+		"2027-11-02 urssaf",
+		"2027-12-15 cfe", // no CFE in 2026, the creation year
+	}
+	assertList(t, got, want)
+}

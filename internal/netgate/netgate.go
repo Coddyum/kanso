@@ -84,3 +84,21 @@ func (g *Gate) Get(p Purpose, rawURL string, limit int64) ([]byte, error) {
 	}
 	return io.ReadAll(io.LimitReader(resp.Body, limit))
 }
+
+// Local asks the app's own server on this Mac (127.0.0.1:port) for path:
+// how `kanso init` and `kanso doctor` see whether it runs. It never leaves the Mac.
+func (g *Gate) Local(port int, path string) ([]byte, error) {
+	client := &http.Client{
+		Timeout:       3 * time.Second,
+		CheckRedirect: func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse },
+	}
+	resp, err := client.Get(fmt.Sprintf("http://127.0.0.1:%d/%s", port, strings.TrimPrefix(path, "/")))
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("netgate: local %s: status %d", path, resp.StatusCode)
+	}
+	return io.ReadAll(io.LimitReader(resp.Body, 1<<20))
+}

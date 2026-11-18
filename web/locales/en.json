@@ -362,7 +362,8 @@
         "missing": "To fetch",
         "files": "Folder",
         "folder": "{{name}} folder",
-        "loading": "Reading the folder…"
+        "loading": "Reading the folder…",
+        "settings": "Settings"
     },
     "rates": {
         "one": "1 {{code}} = €{{eur}}"
@@ -477,6 +478,184 @@
         "tooBig": "file over 500 MB",
         "noTargetDir": "destination folder not found",
         "unknownLang": "unknown language",
-        "exists": "“{{path}}” already exists"
+        "exists": "“{{path}}” already exists",
+        "badHour": "invalid time",
+        "noBackup": "backup not found",
+        "folderAbsolute": "enter the folder's full path (/… or ~/…)",
+        "folderMissing": "this folder doesn't exist",
+        "folderNotWritable": "can't write to this folder",
+        "folderTaken": "a folder with the same name is already there",
+        "otherDisk": "this folder is on another disk: move it in Finder, then choose it here"
+    },
+    "cli": {
+        "usage": "Kanso {{version}} — 100% local.\n\nUsage: kanso <command>\n\n  init       choose your invoices folder and have Kanso start with your Mac\n  update     get the latest version and build it\n  doctor     check that everything works\n  uninstall  remove Kanso from the Mac (your folder and your data are kept)\n  serve      start the server (automatic launch does this for you)\n  version    show the version",
+        "unknown": "Unknown command: {{name}}",
+        "noFolder": "No folder chosen: run “kanso init” first.",
+        "yesNo": "[y/N]",
+        "yes": "y,yes",
+        "init": {
+            "hello": "Kanso — 100% local: your invoices, your bank and your figures stay on your Mac.",
+            "ask": "Where should your invoices go? A name (folder created in Documents) or a path",
+            "defaultName": "Invoices",
+            "notFolder": "This isn't a folder: {{path}}",
+            "existing": "Existing folder, nothing in it is moved: {{path}}",
+            "create": "The folder {{path}} doesn't exist. Create it?",
+            "created": "Folder created: {{path}}",
+            "cancelled": "Nothing was changed.",
+            "agent": "Automatic launch installed: Kanso starts with your Mac.",
+            "access": "If macOS asks for access to the folder, click “Allow”.",
+            "waiting": "Starting…",
+            "ready": "Kanso is running: http://localhost:{{port}}",
+            "notReady": "Kanso isn't responding yet: run “kanso doctor” in a minute.",
+            "next": "In the app: allow notifications, then open Settings."
+        },
+        "update": {
+            "noRepo": "This folder isn't a git clone of Kanso: {{path}}",
+            "pulling": "Getting the latest version…",
+            "upToDate": "Already up to date.",
+            "building": "Building…",
+            "appChanged": "The Mac app changed: reinstalling.",
+            "done": "Updated: Kanso restarts on its own and the page reloads."
+        },
+        "uninstall": {
+            "confirm": "Remove Kanso from this Mac? Your folder {{path}} and your data are kept.",
+            "done": "Kanso is removed. Your folder is untouched: {{path}}",
+            "repo": "To finish, you can delete the code folder: {{path}}"
+        },
+        "doctor": {
+            "noConfig": "No folder chosen: run “kanso init”.",
+            "config": "Settings: {{path}}",
+            "folder": "Folder: {{path}}",
+            "folderMissing": "Folder not found: {{path}} (moved? run “kanso init” again)",
+            "agent": "Automatic launch on",
+            "agentMissing": "Automatic launch missing: run “kanso init”",
+            "server": "Kanso is responding at http://localhost:{{port}} (version {{version}})",
+            "serverDown": "Kanso isn't responding: check the log {{log}}",
+            "access": "macOS lets Kanso read the folder",
+            "noAccess": "macOS denies access to the folder: System Settings › Privacy & Security › Files and Folders",
+            "pdfReader": "PDF reading available",
+            "noPdf": "PDF reading unavailable: run “make build”",
+            "appInstalled": "Mac app installed",
+            "noApp": "Mac app not installed: run “make app”",
+            "appUnknown": "The Mac app hasn't reported in yet: open it once",
+            "notifications": "Notifications allowed",
+            "noNotifications": "Notifications not allowed: System Settings › Notifications › Kanso",
+            "loginItem": "The app opens when your Mac starts",
+            "noLoginItem": "The app doesn't open when your Mac starts: Settings › Notifications, in the app",
+            "focus": "Focus mode: add Kanso to the allowed apps to get reminders",
+            "noData": "No data yet: open the app to get started",
+            "allGood": "All good.",
+            "problems_one": "{{count}} issue to fix.",
+            "problems_other": "{{count}} issues to fix."
+        },
+        "install": {
+            "macos": "Kanso needs macOS 13 (Ventura) or later.",
+            "xcode": "Apple's developer tools are missing: macOS has just opened their installer. Once it's done, run ./install.sh again",
+            "go": "Go is missing: the official download page has just opened (go.dev/dl). Install it, then run ./install.sh again",
+            "goOld": "Your Go version is too old: install the latest one from go.dev/dl (the page has just opened), then run ./install.sh again",
+            "building": "Building Kanso…",
+            "app": "Installing the Mac app in ~/Applications…"
+        }
+    },
+    "export": {
+        "date": "Date",
+        "service": "Service",
+        "label": "Description",
+        "kind": "Type",
+        "amount": "Amount",
+        "currency": "Currency",
+        "eur": "Amount in euros",
+        "project": "Project"
+    },
+    "settings": {
+        "title": "Settings",
+        "sub": "Kanso {{version}} · everything stays on your Mac.",
+        "saved": "Saved",
+        "lang": {
+            "title": "Language",
+            "label": "App language",
+            "auto": "Same as the Mac"
+        },
+        "folder": {
+            "title": "Folder",
+            "sub": "The folder where your invoices are kept. Kanso reads it and files whatever you drop into it; its own data is in its hidden .kanso subfolder.",
+            "where": "Location",
+            "other": "Choose another folder…",
+            "move": "Move the folder…",
+            "otherLabel": "Full path of the folder to use (/… or ~/…)",
+            "moveLabel": "Full path of the folder to move it to (/… or ~/…)",
+            "otherConfirm": "Kanso will use {{path}}. Nothing is copied or deleted; Kanso will restart.",
+            "moveConfirm": "Your folder will be moved to {{path}}, with everything in it. Kanso will restart.",
+            "restarting": "Kanso is restarting…"
+        },
+        "admin": {
+            "title": "Admin tasks",
+            "sub": "The French rules for micro-entrepreneurs: URSSAF, CFE, income tax.",
+            "created": "Business start date",
+            "createdHint": "Nothing before this date is due, and no CFE for the first year."
+        },
+        "notify": {
+            "title": "Notifications",
+            "state": {
+                "unknown": "The Mac app hasn't reported in yet",
+                "on": "Notifications allowed by macOS",
+                "off": "Notifications not allowed by macOS"
+            },
+            "payments": "The day before a payment",
+            "deadlines": "7 days and 1 day before an admin task",
+            "missing": "Every Monday, if invoices are missing",
+            "reserve": "Before the reserve hits zero",
+            "hour": "Reminder time",
+            "test": "Send a test reminder",
+            "testSent": "Test reminder in 5 seconds",
+            "openSystem": "Open notification settings",
+            "login": "Open Kanso when the Mac starts",
+            "loginHint": "Reminders arrive even with the app closed; it reopens when you log in.",
+            "appOnly": "Notifications go through the Mac app: open Kanso.app to test them.",
+            "focus": "Focus mode: add Kanso to the allowed apps (System Settings › Focus) to get reminders."
+        },
+        "privacy": {
+            "title": "Privacy",
+            "sub": "100% local. Your invoices, your bank and your figures stay on your Mac: nothing is sent anywhere. To make it nicer to use, the app downloads only two public things: the European Central Bank's exchange rates and brand logos.",
+            "rates": "Download exchange rates",
+            "ratesHint": "Without them, amounts in another currency aren't counted in euros.",
+            "logos": "Download brand logos",
+            "logosHint": "Fetched once from the brand's website; without them, its initials."
+        },
+        "data": {
+            "title": "Data",
+            "sub": "One backup a day of your settings and subscriptions (.kanso/backups), for the last 30 days.",
+            "export": "Export",
+            "exported": "Export written to .kanso/exports: Finder shows it",
+            "diagnostic": "Diagnostics",
+            "diagnosticSub": "What Kanso sees of your Mac, to copy if something doesn't work. No invoices or amounts in it.",
+            "copy": "Copy",
+            "copied": "Copied",
+            "backups": "Backups",
+            "noBackup": "No backup yet: the first one will be made at the next change.",
+            "restore": "Restore",
+            "restoreConfirm": "Restore the backup {{name}}? The current state is kept in another backup.",
+            "restored": "Backup restored"
+        }
+    },
+    "mac": {
+        "settings": "Settings…",
+        "test": "Send a test reminder",
+        "hide": "Hide {{name}}",
+        "quit": "Quit {{name}}",
+        "edit": "Edit",
+        "undo": "Undo",
+        "redo": "Redo",
+        "cut": "Cut",
+        "copy": "Copy",
+        "paste": "Paste",
+        "selectAll": "Select All",
+        "view": "View",
+        "reload": "Reload",
+        "window": "Window",
+        "minimize": "Minimize",
+        "close": "Close",
+        "testTitle": "Test reminder",
+        "testBody": "Reminders from {{name}} are getting through."
     }
 }

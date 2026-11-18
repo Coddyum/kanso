@@ -4,7 +4,9 @@ import (
 	"errors"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
+	"time"
 )
 
 type data struct {
@@ -74,5 +76,47 @@ func TestOpenBrokenFile(t *testing.T) {
 	}
 	if _, err := Open(path, fill); err == nil {
 		t.Error("a broken database must stop the start, never be overwritten")
+	}
+}
+
+// TestBackups: one copy a day of the file before its first change, the oldest
+// pruned, and a restore that can itself be undone.
+func TestBackups(t *testing.T) {
+	dir := t.TempDir()
+	s, err := Open(filepath.Join(dir, "db.json"), fill)
+	if err != nil {
+		t.Fatal(err)
+	}
+	s.KeepBackups(filepath.Join(dir, "backups"), 2)
+	day := time.Date(2026, 11, 1, 10, 0, 0, 0, time.Local)
+	s.now = func() time.Time { return day }
+	set := func(v string) {
+		t.Helper()
+		if err := s.Update(func(d *data) error { d.Items = []string{v}; return nil }); err != nil {
+			t.Fatal(err)
+		}
+	}
+	set("a") // no file yet: nothing to save
+	set("b") // the day's first change of an existing file: « a » is saved
+	for i, v := range []string{"c", "d", "e"} {
+		day = day.AddDate(0, 0, i+1)
+		set(v)
+	}
+	list, err := s.Backups()
+	if err != nil || len(list) != 2 {
+		t.Fatalf("Backups = %v, %v; want the 2 newest", list, err)
+	}
+	if err := s.Restore("../db.json"); err != ErrNoBackup {
+		t.Errorf("a name outside the folder must be refused, got %v", err)
+	}
+	if err := s.Restore(list[1].Name); err != nil {
+		t.Fatal(err)
+	}
+	if got := s.Snapshot().Items[0]; got != "c" {
+		t.Errorf("after restoring %s: %q, want c", list[1].Name, got)
+	}
+	after, _ := s.Backups()
+	if len(after) != 3 || !strings.Contains(after[1].Name+after[2].Name, "before-restore") {
+		t.Errorf("the file before the restore must be kept: %v", after)
 	}
 }
