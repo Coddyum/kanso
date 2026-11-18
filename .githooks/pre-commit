@@ -1,0 +1,4 @@
+#!/bin/sh
+# Refuse un commit qui publierait une donnée personnelle : facture, export bancaire,
+# base de l'app, IBAN, e-mail, numéro, ou un mot de ta liste privée (tools/privacy).
+exec go run ./tools/privacy

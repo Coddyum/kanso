@@ -1,0 +1,15 @@
+# Compilé par make
+bin/
+
+# Données personnelles : jamais dans le dépôt (tools/privacy les refuse aussi au commit)
+.coddyum-inc/
+renommage/
+db.json
+*.pdf
+*.csv
+*.ofx
+*.qif
+*.xls
+*.xlsx
+
+.DS_Store
