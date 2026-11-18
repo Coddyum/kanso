@@ -465,7 +465,8 @@
         "folderMissing": "该文件夹不存在",
         "folderNotWritable": "无法写入该文件夹",
         "folderTaken": "该位置已有同名文件夹",
-        "otherDisk": "该文件夹位于另一个磁盘上：请先在 Finder 中移动它，再在这里选择"
+        "otherDisk": "该文件夹位于另一个磁盘上：请先在 Finder 中移动它，再在这里选择",
+        "unknownStep": "未知的步骤"
     },
     "cli": {
         "usage": "Kanso {{version}} — 100 % local.\n\n用法：kanso <命令>\n\n  init       选择存放发票的文件夹，并让 Kanso 随 Mac 启动\n  update     获取最新版本并编译\n  doctor     检查一切是否正常\n  uninstall  从 Mac 上移除 Kanso（你的文件夹和数据会保留）\n  serve      启动服务器（自动启动会负责这一步）\n  version    显示版本",
@@ -615,6 +616,11 @@
             "restore": "恢复",
             "restoreConfirm": "要恢复备份 {{name}} 吗？当前状态会保存为另一个备份。",
             "restored": "已恢复备份"
+        },
+        "start": {
+            "title": "入门",
+            "sub": "入门清单，用来继续之前跳过的步骤。",
+            "reopen": "重新打开清单"
         }
     },
     "mac": {
@@ -636,5 +642,42 @@
         "close": "关闭",
         "testTitle": "测试提醒",
         "testBody": "{{name}} 的提醒可以正常送达。"
+    },
+    "welcome": {
+        "title": "欢迎使用 Kanso",
+        "sub": "几项设置，帮你顺利开始。每一步都可以跳过，之后在“设置”中继续。",
+        "local": "一切都留在你的 Mac 上",
+        "progress": "已设置的步骤：{{done}} / {{total}}",
+        "skip": "跳过",
+        "next": "继续",
+        "later": "稍后完成",
+        "start": "开始使用",
+        "state": {
+            "todo": "待完成",
+            "done": "已完成",
+            "skipped": "已跳过"
+        },
+        "steps": {
+            "lang": {
+                "title": "语言",
+                "text": "应用的显示语言。行政事务仍按法国微型企业主的规则：URSSAF、CFE、所得税。"
+            },
+            "folder": {
+                "title": "文件夹",
+                "text": "存放发票的文件夹。Kanso 读取它，把你拖入的文件归档进去，并把自己的数据保存在隐藏子文件夹 .kanso 中。",
+                "ok": "就是这个文件夹"
+            },
+            "reserve": {
+                "title": "储备金",
+                "text": "你的企业账户今天的余额：Kanso 会计算它能撑到什么时候，包括即将到来的付款。",
+                "save": "保存储备金",
+                "missing": "请输入金额"
+            },
+            "notify": {
+                "title": "通知",
+                "text": "付款前一天、办理事务之前以及缺少发票时，即使应用已关闭，Kanso 也会提醒你。需要 macOS 允许。",
+                "ok": "已完成"
+            }
+        }
     }
 }

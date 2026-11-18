@@ -243,14 +243,15 @@ func TestEditsRefuse(t *testing.T) {
 	if _, err := b.SaveProject(Project{Name: "A"}); err != nil {
 		t.Fatal(err)
 	}
+	saved := b.Version()
 	if _, err := b.SaveProject(Project{Name: "a"}); !isInvalid(err) {
 		t.Errorf("two projects with the same name: %v", err)
 	}
 	if err := b.Assign("service", "Nuage", "inconnu"); !isInvalid(err) {
 		t.Errorf("assign to an unknown project: %v", err)
 	}
-	if v := b.Version(); v != 1 {
-		t.Errorf("refused edits must write nothing: version %d, want 1", v)
+	if v := b.Version(); v != saved {
+		t.Errorf("refused edits must write nothing: version %d, want %d", v, saved)
 	}
 	p, err := b.SavePayment(Payment{Name: "Nuage", Cycle: "monthly", Start: "2026-01-01", Amount: 5}, false)
 	if err != nil || p.ID == "" || p.Currency != "EUR" || p.Domain != "" {

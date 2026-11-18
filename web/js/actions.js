@@ -14,6 +14,7 @@ import { closeModal, modalOpen, promptModal } from "./ui/modal.js";
 import { toast } from "./ui/toast.js";
 import { invoiceList } from "./views/invoices.js";
 import { hidePop } from "./views/popover.js";
+import { onWelcomeChange, WELCOME_ACTIONS } from "./welcome-actions.js";
 
 const dismiss = (key) => api("POST", "/api/dismiss", { key, on: true });
 
@@ -138,6 +139,7 @@ const ACTIONS = {
         await load();
     },
     ...SETTINGS_ACTIONS,
+    ...WELCOME_ACTIONS,
 };
 
 async function onClick(e) {
@@ -159,6 +161,8 @@ async function onChange(e) {
     try {
         if (t.dataset.set) {
             await onSettingChange(t);
+        } else if (t.dataset.ob === "lang") {
+            await onWelcomeChange(t);
         } else if (t.dataset.assign) {
             await api("POST", "/api/assign", { kind: t.dataset.assign, ref: t.dataset.ref, project: t.value });
             await load();

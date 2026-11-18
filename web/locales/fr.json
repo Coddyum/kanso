@@ -485,7 +485,8 @@
         "folderMissing": "ce dossier n'existe pas",
         "folderNotWritable": "impossible d'écrire dans ce dossier",
         "folderTaken": "un dossier du même nom y est déjà",
-        "otherDisk": "ce dossier est sur un autre disque : déplace-le dans le Finder, puis choisis-le ici"
+        "otherDisk": "ce dossier est sur un autre disque : déplace-le dans le Finder, puis choisis-le ici",
+        "unknownStep": "Étape inconnue"
     },
     "cli": {
         "usage": "Kanso {{version}} — 100 % local.\n\nUtilisation : kanso <commande>\n\n  init       choisir le dossier de tes factures et lancer Kanso avec ton Mac\n  update     récupérer la dernière version et la compiler\n  doctor     vérifier que tout marche\n  uninstall  retirer Kanso du Mac (ton dossier et tes données restent)\n  serve      lancer le serveur (le lancement automatique s'en charge)\n  version    afficher la version",
@@ -636,6 +637,11 @@
             "restore": "Restaurer",
             "restoreConfirm": "Remettre la sauvegarde {{name}} ? L'état actuel est gardé dans une autre sauvegarde.",
             "restored": "Sauvegarde remise"
+        },
+        "start": {
+            "title": "Premiers pas",
+            "sub": "La liste de démarrage, pour reprendre une étape passée.",
+            "reopen": "Rouvrir la liste"
         }
     },
     "mac": {
@@ -657,5 +663,42 @@
         "close": "Fermer",
         "testTitle": "Rappel de test",
         "testBody": "Les rappels de {{name}} arrivent bien."
+    },
+    "welcome": {
+        "title": "Bienvenue dans Kanso",
+        "sub": "Quelques réglages pour bien démarrer. Chaque étape peut être passée, puis reprise depuis Réglages.",
+        "local": "Tout reste sur ton Mac",
+        "progress": "Étapes réglées : {{done}} sur {{total}}",
+        "skip": "Passer",
+        "next": "Continuer",
+        "later": "Je finirai plus tard",
+        "start": "C'est parti",
+        "state": {
+            "todo": "À faire",
+            "done": "Fait",
+            "skipped": "Passé"
+        },
+        "steps": {
+            "lang": {
+                "title": "Langue",
+                "text": "La langue de l'app. Les démarches restent celles d'un micro-entrepreneur français : URSSAF, CFE, impôts."
+            },
+            "folder": {
+                "title": "Dossier",
+                "text": "Le dossier où sont rangées tes factures. Kanso le lit, y range ce que tu déposes, et garde ses propres données dans son sous-dossier caché .kanso.",
+                "ok": "C'est le bon dossier"
+            },
+            "reserve": {
+                "title": "Réserve",
+                "text": "Le solde de ton compte pro aujourd'hui : Kanso calcule jusqu'à quand il tient, paiements à venir compris.",
+                "save": "Enregistrer la réserve",
+                "missing": "Indique un montant"
+            },
+            "notify": {
+                "title": "Notifications",
+                "text": "Kanso te prévient la veille d'un paiement, avant une démarche et quand il manque des factures, même app fermée. macOS doit l'autoriser.",
+                "ok": "C'est fait"
+            }
+        }
     }
 }

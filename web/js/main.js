@@ -69,7 +69,9 @@ async function start() {
     });
     setInterval(poll, 4000);
     readHash();
-    load();
+    await load();
+    // A new install opens on the first-run checklist, unless the address names a screen.
+    if (!location.hash && S.st?.onboarding.show) location.hash = "welcome";
 }
 
 start();

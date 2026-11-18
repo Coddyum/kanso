@@ -485,7 +485,8 @@
         "folderMissing": "this folder doesn't exist",
         "folderNotWritable": "can't write to this folder",
         "folderTaken": "a folder with the same name is already there",
-        "otherDisk": "this folder is on another disk: move it in Finder, then choose it here"
+        "otherDisk": "this folder is on another disk: move it in Finder, then choose it here",
+        "unknownStep": "Unknown step"
     },
     "cli": {
         "usage": "Kanso {{version}} — 100% local.\n\nUsage: kanso <command>\n\n  init       choose your invoices folder and have Kanso start with your Mac\n  update     get the latest version and build it\n  doctor     check that everything works\n  uninstall  remove Kanso from the Mac (your folder and your data are kept)\n  serve      start the server (automatic launch does this for you)\n  version    show the version",
@@ -636,6 +637,11 @@
             "restore": "Restore",
             "restoreConfirm": "Restore the backup {{name}}? The current state is kept in another backup.",
             "restored": "Backup restored"
+        },
+        "start": {
+            "title": "Getting started",
+            "sub": "The getting-started list, to take up a skipped step.",
+            "reopen": "Open the list again"
         }
     },
     "mac": {
@@ -657,5 +663,42 @@
         "close": "Close",
         "testTitle": "Test reminder",
         "testBody": "Reminders from {{name}} are getting through."
+    },
+    "welcome": {
+        "title": "Welcome to Kanso",
+        "sub": "A few settings to get started. Every step can be skipped, then taken up again from Settings.",
+        "local": "Everything stays on your Mac",
+        "progress": "Steps set: {{done}} of {{total}}",
+        "skip": "Skip",
+        "next": "Continue",
+        "later": "I'll finish later",
+        "start": "Let's go",
+        "state": {
+            "todo": "To do",
+            "done": "Done",
+            "skipped": "Skipped"
+        },
+        "steps": {
+            "lang": {
+                "title": "Language",
+                "text": "The app's language. The paperwork stays that of a French micro-entrepreneur: URSSAF, CFE, income tax."
+            },
+            "folder": {
+                "title": "Folder",
+                "text": "The folder where your invoices are filed. Kanso reads it, files what you drop into it, and keeps its own data in its hidden .kanso subfolder.",
+                "ok": "This is the right folder"
+            },
+            "reserve": {
+                "title": "Reserve",
+                "text": "Your business account's balance today: Kanso works out how long it lasts, upcoming payments included.",
+                "save": "Save the reserve",
+                "missing": "Enter an amount"
+            },
+            "notify": {
+                "title": "Notifications",
+                "text": "Kanso lets you know the day before a payment, before a deadline and when invoices are missing, even with the app closed. macOS has to allow it.",
+                "ok": "Done"
+            }
+        }
     }
 }

@@ -12,6 +12,10 @@ import { pageHead } from "../ui/parts.js";
 // inApp says whether the page runs in the Mac app, which alone can test a notification or pick a folder.
 export const inApp = () => !!window.webkit?.messageHandlers?.inc;
 
+// notifyState says whether macOS lets the app notify: on, off, or unknown while the app has not reported.
+export const notifyState = (app) =>
+    !app.seen || app.seen.startsWith("0001") ? "unknown" : app.notifications === "authorized" || app.notifications === "provisional" ? "on" : "off";
+
 const section = (id, title, body) => `
     <section class="card set-card" id="set-${id}">
         <h2>${t(`settings.${id}.title`)}</h2>
@@ -64,7 +68,7 @@ function adminSection() {
 function notifySection() {
     const { notify: n, app } = S.settings;
     const hours = [...Array(24).keys()].map((h) => `<option value="${h}" ${n.hour === h ? "selected" : ""}>${new Intl.DateTimeFormat(lang, { hour: "numeric", minute: "2-digit" }).format(new Date(2026, 0, 1, h))}</option>`).join("");
-    const state = !app.seen || app.seen.startsWith("0001") ? "unknown" : app.notifications === "authorized" || app.notifications === "provisional" ? "on" : "off";
+    const state = notifyState(app);
     const appRows = inApp()
         ? `<div class="set-actions">
             <button class="btn" data-action="set-test">${t("settings.notify.test")}</button>
@@ -111,8 +115,12 @@ function dataSection() {
     );
 }
 
+function startSection() {
+    return section("start", t("settings.start.sub"), `<div class="set-actions"><button class="btn" data-action="ob-reopen">${t("settings.start.reopen")}</button></div>`);
+}
+
 export function viewSettings() {
     return `
     ${pageHead({ title: t("settings.title"), sub: t("settings.sub", { version: esc(S.settings.version) }) })}
-    <div class="settings">${langSection()}${folderSection()}${adminSection()}${notifySection()}${privacySection()}${dataSection()}</div>`;
+    <div class="settings">${langSection()}${folderSection()}${adminSection()}${notifySection()}${privacySection()}${dataSection()}${startSection()}</div>`;
 }

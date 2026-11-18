@@ -12,19 +12,20 @@ import (
 // DB is everything the folder itself cannot tell: planned payments, reminders
 // and the corrections made in the app. Saved as one JSON file.
 type DB struct {
-	Payments  []Payment           `json:"payments"`
-	Todos     []Todo              `json:"todos"`
-	Dismissed map[string]bool     `json:"dismissed"` // due keys with no invoice, ignored suggestions
-	Links     map[string]string   `json:"links"`     // due key → hash of the file dropped for it
-	Overrides map[string]Override `json:"overrides"` // file hash → corrected fields
-	Reserve   *Reserve            `json:"reserve,omitempty"`
-	Projects  []Project           `json:"projects"`
-	Assign    map[string]string   `json:"assign"` // « svc:<service> » or « inv:<invoice id> » → project id, « - » for none
-	Admin     *deadlines.Settings `json:"admin,omitempty"`
-	Done      map[string]bool     `json:"done"`           // administrative due dates ticked as done
-	Lang      string              `json:"lang,omitempty"` // the language chosen in the app; empty: the Mac's
-	Notify    *Notify             `json:"notify,omitempty"`
-	Privacy   *Privacy            `json:"privacy,omitempty"`
+	Payments   []Payment           `json:"payments"`
+	Todos      []Todo              `json:"todos"`
+	Dismissed  map[string]bool     `json:"dismissed"` // due keys with no invoice, ignored suggestions
+	Links      map[string]string   `json:"links"`     // due key → hash of the file dropped for it
+	Overrides  map[string]Override `json:"overrides"` // file hash → corrected fields
+	Reserve    *Reserve            `json:"reserve,omitempty"`
+	Projects   []Project           `json:"projects"`
+	Assign     map[string]string   `json:"assign"` // « svc:<service> » or « inv:<invoice id> » → project id, « - » for none
+	Admin      *deadlines.Settings `json:"admin,omitempty"`
+	Done       map[string]bool     `json:"done"`           // administrative due dates ticked as done
+	Lang       string              `json:"lang,omitempty"` // the language chosen in the app; empty: the Mac's
+	Notify     *Notify             `json:"notify,omitempty"`
+	Privacy    *Privacy            `json:"privacy,omitempty"`
+	Onboarding *Onboarding         `json:"onboarding,omitempty"`
 }
 
 // Notify says which reminders the Mac app shows, and at what hour.

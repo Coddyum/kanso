@@ -25,6 +25,7 @@ const ICONS = {
     chart: '<path d="M4 20.5h16"/><rect x="5" y="11" width="3.6" height="6.5" rx="1"/><rect x="10.2" y="5.5" width="3.6" height="12" rx="1"/><rect x="15.4" y="13.5" width="3.6" height="4" rx="1"/>',
     layers: '<path d="M12 3.5 3 8l9 4.5L21 8z"/><path d="m3 12.5 9 4.5 9-4.5"/><path d="m3 16.5 9 4.5 9-4.5"/>',
     settings: '<path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="18" r="2"/>',
+    lock: '<rect x="4.5" y="10.5" width="15" height="10.5" rx="2.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/>',
     flag: '<path d="M5.5 21V4"/><path d="M5.5 4.5h11.5l-2.4 4.2 2.4 4.3H5.5"/>',
 };
 

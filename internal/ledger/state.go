@@ -41,6 +41,7 @@ type State struct {
 	Admin       deadlines.Settings   `json:"admin"`
 	Billing     []BillingLink        `json:"billing"`    // where to fetch invoices, once per address
 	Currencies  []string             `json:"currencies"` // the codes a form offers
+	Onboarding  OnboardingView       `json:"onboarding"`
 }
 
 // State computes the main screens' data.
@@ -50,7 +51,7 @@ func (m *Model) State(r rates.Rates, tr i18n.Lang) State {
 		Missing: []DueItem{}, Upcoming: []DueItem{}, Suggestions: m.Suggestions, AutoAdded: m.Added,
 		Forecast: m.Forecast(r), Projects: m.DB.Projects,
 		Deadlines: m.Deadlines(m.Today.AddDate(0, 0, -100), m.Today.AddDate(1, 0, 0), tr), Admin: m.DB.Settings(),
-		Billing: m.billingLinks(), Currencies: currency.Codes,
+		Billing: m.billingLinks(), Currencies: currency.Codes, Onboarding: m.DB.OnboardingView(),
 	}
 	if res.AutoAdded == nil {
 		res.AutoAdded = []string{}

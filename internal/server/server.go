@@ -160,6 +160,7 @@ func (s *Server) Handler() http.Handler {
 	mux.HandleFunc("POST /api/folder", s.handleFolder)
 	mux.HandleFunc("GET /api/locale", s.handleLocale)
 	mux.HandleFunc("POST /api/locale", s.handleSetLocale)
+	mux.HandleFunc("POST /api/onboarding", s.handleOnboarding)
 
 	mux.Handle("GET /", noCache(http.FileServerFS(s.static)))
 	return guard(s.port, mux)

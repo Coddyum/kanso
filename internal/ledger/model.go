@@ -2,6 +2,8 @@ package ledger
 
 import (
 	"errors"
+	"io/fs"
+	"os"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -20,14 +22,21 @@ type Book struct {
 	vendors *vendor.Catalog
 }
 
-// Open reads the database at path, or starts an empty one. Every day's first
-// change saves the file as it was in backups/ beside it (the last 30 days).
+// Open reads the database at path, or starts an empty one, written at once
+// with the first-run checklist open. Every day's first change saves the file
+// as it was in backups/ beside it (the last 30 days).
 func Open(path string, vendors *vendor.Catalog) (*Book, error) {
+	_, missing := os.Stat(path)
 	s, err := store.Open(path, Fill)
 	if err != nil {
 		return nil, err
 	}
 	s.KeepBackups(filepath.Join(filepath.Dir(path), "backups"), 30)
+	if errors.Is(missing, fs.ErrNotExist) {
+		if err := s.Update(func(db *DB) error { db.onboarding(); return nil }); err != nil {
+			return nil, err
+		}
+	}
 	return &Book{store: s, vendors: vendors}, nil
 }
 

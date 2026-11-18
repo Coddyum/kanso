@@ -1,0 +1,30 @@
+/* Premiers pas : une colonne, une carte par étape, celle ouverte avec ses réglages. */
+
+.welcome { max-width: 720px; }
+.ob-local { display: flex; gap: 14px; align-items: flex-start; padding: 16px 18px; margin-bottom: 22px; border-color: color-mix(in srgb, var(--ok) 28%, transparent); }
+.ob-local .i { color: var(--ok); margin-top: 2px; }
+.ob-local b { display: block; margin-bottom: 2px; font-size: 14px; font-weight: 600; }
+.ob-local p { margin: 0; color: var(--ink-2); font-size: 12.5px; }
+.ob-steps { display: flex; flex-direction: column; gap: 10px; }
+.ob-step { overflow: hidden; }
+.ob-head { display: flex; align-items: center; gap: 12px; width: 100%; padding: 13px 18px; border: 0; background: none; text-align: start; cursor: pointer; }
+.ob-head:hover { background: var(--hover); }
+.ob-head h2 { flex: 1; margin: 0; font-size: 14px; font-weight: 600; }
+.ob-head small { color: var(--ink-3); font-size: 12px; }
+.ob-num {
+    flex: none; display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%;
+    border: 1px solid var(--line-2); color: var(--ink-2); font-size: 12px; font-weight: 600;
+}
+.ob-step.is-open .ob-num { border-color: var(--accent); color: var(--ink); }
+.ob-step.is-done .ob-num { background: var(--ok); border-color: transparent; color: #fff; }
+.ob-step.is-done .ob-head small { color: var(--ok); }
+.ob-step.is-skipped .ob-num { border-style: dashed; color: var(--ink-3); }
+.ob-body { padding: 0 18px 16px; padding-inline-start: 54px; }
+.ob-body > p { margin: 0 0 14px; color: var(--ink-2); font-size: 13px; }
+.ob-body .set-actions { padding-top: 10px; }
+.ob-body .set-row { border-top: 0; padding-top: 12px; }
+.ob-body .set-state { margin: 0; font-size: 12.5px; color: var(--ink-2); }
+.ob-fields { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; }
+.ob-fields .f input { width: 180px; }
+.ob-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
+.ob-foot { display: flex; align-items: center; gap: 10px; margin-top: 18px; color: var(--ink-3); font-size: 12.5px; }
