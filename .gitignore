@@ -2,7 +2,7 @@
 bin/
 
 # Données personnelles : jamais dans le dépôt (tools/privacy les refuse aussi au commit)
-.coddyum-inc/
+.kanso/
 renommage/
 db.json
 *.pdf

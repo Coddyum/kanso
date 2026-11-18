@@ -1,4 +1,4 @@
-// Coddyum Inc — front without framework: one state object, string templates,
+// Kanso — front without framework: one state object, string templates,
 // delegated events. The Go server is the only source of truth.
 
 // ---------- helpers ----------

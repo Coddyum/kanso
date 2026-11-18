@@ -1,9 +1,11 @@
 #!/bin/bash
-# Installe ou retire le LaunchAgent qui lance coddyum-inc à l'ouverture de session,
-# par son lanceur : il la relance après un arrêt et après chaque nouvelle version.
+# Installe ou retire le LaunchAgent qui lance le serveur à l'ouverture de session,
+# par son lanceur : il le relance après un arrêt et après chaque nouvelle version.
 set -euo pipefail
-LABEL="me.coddyum.inc"
+source "$(dirname "$0")/brand.sh"
+LABEL="$BUNDLE_ID.server"
 PLIST="$HOME/Library/LaunchAgents/$LABEL.plist"
+LOG="$HOME/Library/Logs/$ID.log"
 
 case "${1:-}" in
 install)
@@ -17,8 +19,8 @@ install)
     <key>Label</key><string>$LABEL</string>
     <key>ProgramArguments</key>
     <array>
-        <string>$DIR/bin/coddyum-inc-launcher</string>
-        <string>$DIR/bin/coddyum-inc</string>
+        <string>$DIR/bin/$ID-launcher</string>
+        <string>$DIR/bin/$ID</string>
         <string>-port</string><string>$PORT</string>
     </array>
     <key>WorkingDirectory</key><string>$DIR</string>
@@ -26,14 +28,14 @@ install)
     <key>KeepAlive</key><true/>
     <key>ProcessType</key><string>Background</string>
     <key>LowPriorityIO</key><true/>
-    <key>StandardOutPath</key><string>$HOME/Library/Logs/coddyum-inc.log</string>
-    <key>StandardErrorPath</key><string>$HOME/Library/Logs/coddyum-inc.log</string>
+    <key>StandardOutPath</key><string>$LOG</string>
+    <key>StandardErrorPath</key><string>$LOG</string>
 </dict>
 </plist>
 PLIST
     launchctl bootout "gui/$(id -u)/$LABEL" 2>/dev/null || true
     launchctl bootstrap "gui/$(id -u)" "$PLIST"
-    echo "coddyum-inc tourne : http://localhost:$PORT"
+    echo "$NAME tourne : http://localhost:$PORT"
     ;;
 uninstall)
     launchctl bootout "gui/$(id -u)/$LABEL" 2>/dev/null || true

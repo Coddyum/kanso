@@ -10,16 +10,16 @@ import (
 func TestPath(t *testing.T) {
 	c := checker{}
 	cases := map[string]string{
-		"main.go":                       "",
-		"web/icon.svg":                  "",
-		"README.md":                     "",
-		"2026/Cloudflare/facture.pdf":   "facture, reçu ou export bancaire",
-		"import/releve.CSV":             "facture, reçu ou export bancaire",
-		"ticket.heic":                   "facture, reçu ou export bancaire",
-		"db.json":                       "données de l'app ou du dossier perso",
-		"Inc/.coddyum-inc/vendors.json": "données de l'app ou du dossier perso",
-		"renommage/appliquer.py":        "données de l'app ou du dossier perso",
-		"extract/testdata/facture.pdf":  "",
+		"main.go":                      "",
+		"web/icon.svg":                 "",
+		"README.md":                    "",
+		"2026/Cloudflare/facture.pdf":  "facture, reçu ou export bancaire",
+		"import/releve.CSV":            "facture, reçu ou export bancaire",
+		"ticket.heic":                  "facture, reçu ou export bancaire",
+		"db.json":                      "données de l'app ou du dossier perso",
+		"Inc/.kanso/vendors.json":      "données de l'app ou du dossier perso",
+		"renommage/appliquer.py":       "données de l'app ou du dossier perso",
+		"extract/testdata/facture.pdf": "",
 	}
 	for p, want := range cases {
 		if got := c.path(p); got != want {

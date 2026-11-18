@@ -1,0 +1,84 @@
+package server
+
+import (
+	"errors"
+	"net/http"
+	"time"
+
+	"github.com/coddyum/kanso/internal/day"
+	"github.com/coddyum/kanso/internal/ledger"
+	"github.com/coddyum/kanso/internal/logo"
+	"github.com/coddyum/kanso/internal/vendor"
+)
+
+func (s *Server) handleState(w http.ResponseWriter, r *http.Request) {
+	m, err := s.model()
+	if err != nil {
+		fail(w, http.StatusInternalServerError, err)
+		return
+	}
+	writeJSON(w, struct {
+		Root      string `json:"root"`
+		Extractor bool   `json:"extractor"` // the PDF reader is there
+		ledger.State
+	}{s.root.Dir(), s.index.CanReadPDF(), m.State(s.rates.Get())})
+}
+
+// handleCalendar returns the events between ?from= and ?to=, at most 400 days apart.
+func (s *Server) handleCalendar(w http.ResponseWriter, r *http.Request) {
+	from, ok1 := day.Parse(r.URL.Query().Get("from"))
+	to, ok2 := day.Parse(r.URL.Query().Get("to"))
+	if !ok1 || !ok2 || to.Before(from) || to.Sub(from) > 400*24*time.Hour {
+		fail(w, http.StatusBadRequest, errors.New("from/to invalides"))
+		return
+	}
+	m, err := s.model()
+	if err != nil {
+		fail(w, http.StatusInternalServerError, err)
+		return
+	}
+	writeJSON(w, m.Calendar(from, to))
+}
+
+func (s *Server) handleAnalytics(w http.ResponseWriter, r *http.Request) {
+	m, err := s.model()
+	if err != nil {
+		fail(w, http.StatusInternalServerError, err)
+		return
+	}
+	writeJSON(w, m.Analytics(s.rates.Get()))
+}
+
+// handleReminders lists the notifications the Mac app schedules.
+func (s *Server) handleReminders(w http.ResponseWriter, r *http.Request) {
+	m, err := s.model()
+	if err != nil {
+		fail(w, http.StatusInternalServerError, err)
+		return
+	}
+	writeJSON(w, m.Reminders(s.rates.Get(), s.now()))
+}
+
+// handleSig is polled by the page: a new folder signature means reload the
+// data, a new boot means reload the page.
+func (s *Server) handleSig(w http.ResponseWriter, r *http.Request) {
+	sig, err := s.index.Signature()
+	if err != nil {
+		fail(w, http.StatusInternalServerError, err)
+		return
+	}
+	writeJSON(w, map[string]string{"sig": sig, "boot": s.boot})
+}
+
+// handleLogo serves the icon of ?d=, a domain; 404 when it has none.
+func (s *Server) handleLogo(w http.ResponseWriter, r *http.Request) {
+	data := s.logos.Get(vendor.CleanDomain(r.URL.Query().Get("d")))
+	if len(data) == 0 {
+		http.NotFound(w, r)
+		return
+	}
+	w.Header().Set("Content-Type", logo.ContentType(data))
+	w.Header().Set("Content-Security-Policy", "sandbox; default-src 'none'; style-src 'unsafe-inline'")
+	w.Header().Set("Cache-Control", "max-age=604800")
+	_, _ = w.Write(data)
+}

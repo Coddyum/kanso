@@ -39,7 +39,7 @@ var personalExt = map[string]bool{
 
 // The app's own data and the owner's renaming work.
 var personalName = map[string]bool{"db.json": true, "propositions.json": true, "annuler.json": true}
-var personalDir = map[string]bool{".coddyum-inc": true, "renommage": true}
+var personalDir = map[string]bool{".kanso": true, "renommage": true}
 
 var linePatterns = []struct {
 	rule string
