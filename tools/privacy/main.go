@@ -3,15 +3,16 @@
 // e-mail address, a home folder, a phone or SIRET number, or a word of the
 // private list kept outside the repository.
 //
-//	go run ./tools/privacy         # what is staged (the pre-commit hook)
-//	go run ./tools/privacy -all    # every file git would publish
+//	go run ./tools/privacy           # what is staged, and the commit's author (pre-commit hook)
+//	go run ./tools/privacy -msg FILE # a commit message (commit-msg hook)
+//	go run ./tools/privacy -all      # every file git would publish
 //
 // The private list is one word per line (# for a comment), in the file named by
-// $PRIVACY_WORDS, or ~/.config/git/private-words: your name, your address, your
-// SIRET… It never enters the repository.
+// $PRIVACY_WORDS, or ~/.config/git/private-words: your name, your address…
+// It never enters the repository.
 //
-// It prints where and which rule, never the value it found. A line that is a
-// false alarm carries « privacy:ok ».
+// It prints where and which rule, never the value it found. A line where a
+// pattern is a false alarm carries « privacy:ok »; nothing excuses a private word.
 package main
 
 import (
@@ -66,6 +67,7 @@ type finding struct {
 
 func main() {
 	all := flag.Bool("all", false, "check every file git would publish, not only what is staged")
+	msg := flag.String("msg", "", "check this commit message file instead")
 	flag.Parse()
 
 	words, err := loadWords(wordsFile())
@@ -75,10 +77,18 @@ func main() {
 	}
 	c := checker{words: words}
 	var found []finding
-	if *all {
+	switch {
+	case *msg != "":
+		found, err = c.message(*msg)
+	case *all:
 		found, err = c.tree()
-	} else {
+	default:
 		found, err = c.staged()
+		if err == nil {
+			var who []finding
+			who, err = c.author()
+			found = append(found, who...)
+		}
 	}
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "privacy:", err)
@@ -158,21 +168,25 @@ func (c checker) path(p string) string {
 	return ""
 }
 
-// line names the rules a line of p breaks. The private words apply everywhere;
-// the patterns spare testdata, whose values are made up.
-func (c checker) line(p, text string) []string {
-	if strings.Contains(text, allowMarker) {
-		return nil
-	}
-	var rules []string
+// hasPrivateWord tells whether text holds a word of the private list.
+func (c checker) hasPrivateWord(text string) bool {
 	lower := strings.ToLower(text)
 	for _, w := range c.words {
 		if strings.Contains(lower, w) {
-			rules = append(rules, "mot de la liste privée")
-			break
+			return true
 		}
 	}
-	if strings.Contains(filepath.ToSlash(p), "testdata/") {
+	return false
+}
+
+// line names the rules a line of p breaks. The private words apply everywhere;
+// the patterns spare testdata, whose values are made up, and marked lines.
+func (c checker) line(p, text string) []string {
+	var rules []string
+	if c.hasPrivateWord(text) {
+		rules = append(rules, "mot de la liste privée")
+	}
+	if strings.Contains(text, allowMarker) || strings.Contains(filepath.ToSlash(p), "testdata/") {
 		return rules
 	}
 	for _, lp := range linePatterns {
@@ -249,6 +263,41 @@ func (c checker) tree() ([]finding, error) {
 			for _, r := range c.line(p, l) {
 				found = append(found, finding{p, i + 1, r})
 			}
+		}
+	}
+	return found, nil
+}
+
+// author checks the name and address the commit is signed with, which GitHub
+// shows to everyone: only the private words apply.
+func (c checker) author() ([]finding, error) {
+	var found []finding
+	for _, who := range []string{"GIT_AUTHOR_IDENT", "GIT_COMMITTER_IDENT"} {
+		ident, err := git("var", who)
+		if err != nil {
+			return nil, err
+		}
+		if c.hasPrivateWord(ident) {
+			found = append(found, finding{"signature du commit (git config user.name / user.email)", 0, "mot de la liste privée"})
+			break
+		}
+	}
+	return found, nil
+}
+
+// message checks a commit message; git's own comment lines are left out.
+func (c checker) message(path string) ([]finding, error) {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil, fmt.Errorf("read %s: %w", path, err)
+	}
+	var found []finding
+	for i, l := range strings.Split(string(data), "\n") {
+		if strings.HasPrefix(l, "#") {
+			continue
+		}
+		for _, r := range c.line("message du commit", l) {
+			found = append(found, finding{"message du commit", i + 1, r})
 		}
 	}
 	return found, nil

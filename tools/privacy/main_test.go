@@ -1,6 +1,8 @@
 package main
 
 import (
+	"os"
+	"path/filepath"
 	"reflect"
 	"testing"
 )
@@ -46,6 +48,7 @@ func TestLine(t *testing.T) {
 		{"README.md", "IBAN FR76 3000 6000 0112 3456 7890 189 privacy:ok", nil}, // privacy:ok
 		{"x/testdata/a.txt", "FR76 3000 6000 0112 3456 7890 189", nil},          // privacy:ok
 		{"x/testdata/a.txt", "12 rue des Lilas", []string{"mot de la liste privée"}},
+		{"README.md", "M. Dupont privacy:ok", []string{"mot de la liste privée"}},
 	}
 	for _, tc := range cases {
 		if got := c.line(tc.file, tc.text); !reflect.DeepEqual(got, tc.want) {
@@ -59,5 +62,22 @@ func TestHunkStart(t *testing.T) {
 		if got := hunkStart(h); got != want {
 			t.Errorf("hunkStart(%q) = %d, want %d", h, got, want)
 		}
+	}
+}
+
+func TestMessage(t *testing.T) {
+	c := checker{words: []string{"dupont"}}
+	path := filepath.Join(t.TempDir(), "COMMIT_EDITMSG")
+	text := "fix: les factures de Dupont\n\nCorps sans rien\n# Commentaire de git : Dupont\n"
+	if err := os.WriteFile(path, []byte(text), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	got, err := c.message(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := []finding{{"message du commit", 1, "mot de la liste privée"}}
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("message = %v, want %v", got, want)
 	}
 }
