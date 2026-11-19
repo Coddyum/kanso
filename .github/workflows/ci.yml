@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    # "test" is the check main requires before a pull request can be merged.
+    name: test
+    # macOS runners are free for a public repository only: skipped while private.
+    if: ${{ !github.event.repository.private }}
+    runs-on: macos-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          # A Go release is taken once it is 14 days old.
+          go-version: "1.26.10"
+
+      - name: Privacy guard
+        run: go run ./tools/privacy -all
+
+      - name: Build (server, launcher, document reader)
+        run: make build
+
+      - name: Tests (gofmt, go vet, go test -race)
+        run: make test
+
+      - name: Mac app compiles
+        run: swiftc -O -swift-version 5 macos/app/main.swift -o "$RUNNER_TEMP/Kanso"

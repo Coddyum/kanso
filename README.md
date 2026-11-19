@@ -6,6 +6,7 @@
 
 **Abonnements, factures et démarches de ta micro-entreprise, réunis sur ton Mac.**
 
+[![CI](https://img.shields.io/github/actions/workflow/status/Coddyum/kanso/ci.yml?branch=main&style=flat-square&label=CI)](https://github.com/Coddyum/kanso/actions/workflows/ci.yml)
 [![Licence AGPL-3.0](https://img.shields.io/badge/licence-AGPL--3.0-7178f0?style=flat-square)](LICENSE)
 [![macOS 13+](https://img.shields.io/badge/macOS-13%2B-1d1e22?style=flat-square&logo=apple&logoColor=white)](#installation)
 [![Go](https://img.shields.io/badge/Go-biblioth%C3%A8que%20standard-00ADD8?style=flat-square&logo=go&logoColor=white)](docs/ARCHITECTURE.md)
@@ -192,7 +193,8 @@ dans Réglages.
 
 Les contributions sont les bienvenues, en particulier la relecture des traductions. Le guide est dans
 [CONTRIBUTING.md](CONTRIBUTING.md) ; l'architecture dans [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
-Une faille de sécurité se signale en privé : voir [SECURITY.md](SECURITY.md).
+Une faille de sécurité se signale en privé : voir [SECURITY.md](SECURITY.md). Chaque participant suit le
+[code de conduite](CODE_OF_CONDUCT.md).
 
 ## Licence
 

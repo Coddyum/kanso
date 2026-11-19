@@ -1,0 +1,47 @@
+name: Translation
+description: A sentence of the app that reads wrong in your language.
+labels: [translation]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you: reviews by native speakers are the most useful contribution.
+        Every text is in `web/locales/<language>.json`; a pull request that changes the values is welcome too.
+  - type: dropdown
+    id: language
+    attributes:
+      label: Language
+      options:
+        - English
+        - Español
+        - 日本語
+        - 中文
+        - العربية
+        - Français
+    validations:
+      required: true
+  - type: textarea
+    id: where
+    attributes:
+      label: Where in the app
+      description: The screen, and the key in the language file if you found it (for example `settings.privacy.title`).
+    validations:
+      required: true
+  - type: textarea
+    id: now
+    attributes:
+      label: What it says now
+    validations:
+      required: true
+  - type: textarea
+    id: better
+    attributes:
+      label: What it should say
+    validations:
+      required: true
+  - type: checkboxes
+    id: native
+    attributes:
+      label: Speaker
+      options:
+        - label: This is my native language.

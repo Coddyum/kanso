@@ -1,0 +1,33 @@
+name: Idea
+description: Something Kanso could do better, or does not do yet.
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Kanso stays small on purpose: local only, on the Mac, with no account and no server.
+        Ideas that keep it that way have the best chance. English or French, as you prefer.
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem
+      description: What is hard or missing today, in your own words.
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: What you suggest
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: What you do today instead
+  - type: checkboxes
+    id: scope
+    attributes:
+      label: Scope
+      options:
+        - label: My idea sends no data out of the Mac.
+          required: true

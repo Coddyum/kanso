@@ -62,13 +62,26 @@ Adding a language: add its file with every key of `fr.json`, add its code to `i1
 and its code to `CFBundleLocalizations` in `macos/app/Info.plist` (the Mac app reads its menus
 and notification buttons from the language files at run time).
 
+## Issues
+
+Use one of the forms: **Bug report**, **Idea** or **Translation**. Never paste personal data in an issue
+(an invoice, a bank line, a real amount, the path of your folder): reproduce in demo mode when you can.
+A security problem is reported privately, see [SECURITY.md](SECURITY.md).
+
+For a large change, open an issue first: it saves you work on something that would not be merged.
+
 ## Pull requests
 
-1. One subject per pull request, with what it changes and why.
-2. `make test` green, and the privacy guard green.
-3. Commit messages follow [Conventional Commits](https://www.conventionalcommits.org/)
+1. Fork the repository, create a branch, open a pull request against `main`.
+2. One subject per pull request, with what it changes and why. The template lists what to check.
+3. `make test` green, and the privacy guard green.
+4. Commit messages follow [Conventional Commits](https://www.conventionalcommits.org/)
    (`feat:`, `fix:`, `docs:`, `refactor:`…).
-4. For a change you can see, a screenshot taken in demo mode.
+5. For a change you can see, a screenshot taken in demo mode.
+
+How a change lands on `main`: nobody pushes to it, the maintainer included. Every change goes through a
+pull request whose CI check `test` is green, and is squash-merged by the maintainer. The CI of an
+outside contributor runs once the maintainer has approved it.
 
 By contributing, you agree that your contribution is released under the project's license, the
-[GNU AGPL-3.0](LICENSE).
+[GNU AGPL-3.0](LICENSE), and that you follow the [code of conduct](CODE_OF_CONDUCT.md).

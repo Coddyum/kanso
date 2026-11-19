@@ -6,6 +6,7 @@
 
 **Your micro-business's subscriptions, invoices and paperwork, together on your Mac.**
 
+[![CI](https://img.shields.io/github/actions/workflow/status/Coddyum/kanso/ci.yml?branch=main&style=flat-square&label=CI)](https://github.com/Coddyum/kanso/actions/workflows/ci.yml)
 [![License AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-7178f0?style=flat-square)](LICENSE)
 [![macOS 13+](https://img.shields.io/badge/macOS-13%2B-1d1e22?style=flat-square&logo=apple&logoColor=white)](#install)
 [![Go](https://img.shields.io/badge/Go-standard%20library-00ADD8?style=flat-square&logo=go&logoColor=white)](docs/ARCHITECTURE.md)
@@ -189,7 +190,8 @@ CFE, income tax) is that of a French micro-business; it can be turned off in Set
 
 Contributions are welcome, translation reviews above all. The guide is in
 [CONTRIBUTING.md](CONTRIBUTING.md); the architecture in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
-Security issues are reported privately: see [SECURITY.md](SECURITY.md).
+Security issues are reported privately: see [SECURITY.md](SECURITY.md). Everyone taking part follows the
+[code of conduct](CODE_OF_CONDUCT.md).
 
 ## License
 

@@ -1,0 +1,66 @@
+name: Bug report
+description: Something does not work as it should.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Never paste personal data**: no invoice, bank line, real amount, name or path of your folder.
+        When you can, reproduce the problem in demo mode (`./bin/kanso demo`).
+        A security problem? Do not open an issue: see [SECURITY.md](https://github.com/Coddyum/kanso/blob/main/SECURITY.md).
+        English or French, as you prefer.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you did, what you expected, what you got instead.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open …
+        2. Click …
+        3. See …
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Kanso version
+      description: The output of `./bin/kanso version`.
+    validations:
+      required: true
+  - type: input
+    id: macos
+    attributes:
+      label: macOS version and Mac
+      placeholder: macOS 15.3, Apple silicon
+    validations:
+      required: true
+  - type: dropdown
+    id: language
+    attributes:
+      label: Language of the app
+      options:
+        - Français
+        - English
+        - Español
+        - 日本語
+        - 中文
+        - العربية
+  - type: textarea
+    id: doctor
+    attributes:
+      label: Output of `./bin/kanso doctor`
+      description: Read it before pasting, and remove anything you do not want to share.
+      render: text
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Privacy
+      options:
+        - label: This report contains no invoice, no bank data and no other personal information.
+          required: true

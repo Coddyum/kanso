@@ -1,0 +1,12 @@
+version: 2
+updates:
+  # Kanso has no Go dependency: only the actions of the CI are kept up to date.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    # A release is proposed once it is 14 days old.
+    cooldown:
+      default-days: 14
+    commit-message:
+      prefix: ci
