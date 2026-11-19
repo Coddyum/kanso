@@ -170,6 +170,8 @@ func (s *Server) Handler() http.Handler {
 	mux.HandleFunc("POST /api/bank/preview", s.handleBankPreview)
 	mux.HandleFunc("POST /api/bank/apply", s.handleBankApply)
 	mux.HandleFunc("POST /api/intake", s.handleIntake)
+	mux.HandleFunc("POST /api/intake/peek", s.handleIntakePeek)
+	mux.HandleFunc("GET /api/intake/{id}", s.handleIntakeGet)
 	mux.HandleFunc("POST /api/intake/{id}/copy", s.handleIntakeCopy)
 	mux.HandleFunc("POST /api/intake/{id}/undo", s.handleIntakeUndo)
 	mux.HandleFunc("DELETE /api/intake/{id}", s.handleIntakeCancel)

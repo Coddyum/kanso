@@ -33,6 +33,74 @@ struct Reminder: Decodable {
     let view: String
 }
 
+/// DownloadsWatcher looks at the files that arrive in ~/Downloads while the
+/// user allows it (Settings › Privacy, off by default). A new PDF or picture
+/// is handed over once its size stops changing (a download in progress grows);
+/// nothing that was already there is looked at.
+final class DownloadsWatcher {
+    let folder = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Downloads")
+    static let kinds: Set<String> = ["pdf", "png", "jpg", "jpeg", "heic", "tif", "tiff"]
+    static let maxSize = 50 << 20
+    var source: DispatchSourceFileSystemObject?
+    var seen = Set<String>()
+    var pending: [String: Int] = [:]  // name → size at the last look
+    let onFile: (URL) -> Void
+    private(set) var state = "off"  // off | watching | denied (macOS refused the access)
+
+    init(onFile: @escaping (URL) -> Void) { self.onFile = onFile }
+
+    /// start lists the folder (macOS asks the user the first time), then follows its changes.
+    func start() {
+        guard source == nil else { return }
+        guard let names = try? FileManager.default.contentsOfDirectory(atPath: folder.path) else {
+            state = "denied"
+            return
+        }
+        seen = Set(names)
+        let fd = open(folder.path, O_EVTONLY)
+        guard fd >= 0 else {
+            state = "denied"
+            return
+        }
+        let src = DispatchSource.makeFileSystemObjectSource(fileDescriptor: fd, eventMask: .write, queue: .main)
+        src.setEventHandler { [weak self] in self?.look() }
+        src.setCancelHandler { close(fd) }
+        src.resume()
+        source = src
+        state = "watching"
+    }
+
+    func stop() {
+        source?.cancel()
+        source = nil
+        pending = [:]
+        state = "off"
+    }
+
+    /// look lists the folder: a new file of the kinds an invoice comes in waits until its size holds.
+    func look() {
+        guard let names = try? FileManager.default.contentsOfDirectory(atPath: folder.path) else { return }
+        for name in names where !seen.contains(name) && !name.hasPrefix(".") {
+            let url = folder.appendingPathComponent(name)
+            guard Self.kinds.contains(url.pathExtension.lowercased()) else {
+                seen.insert(name)  // a download in progress (.download, .crdownload) comes back under its final name
+                continue
+            }
+            let size = (try? url.resourceValues(forKeys: [.fileSizeKey]))?.fileSize ?? -1
+            if size > 0, pending[name] == size {
+                pending[name] = nil
+                seen.insert(name)
+                if size <= Self.maxSize { onFile(url) }
+            } else {
+                pending[name] = size
+            }
+        }
+        if !pending.isEmpty {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2) { [weak self] in self?.look() }
+        }
+    }
+}
+
 final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, WKNavigationDelegate, WKUIDelegate,
     WKScriptMessageHandler, UNUserNotificationCenterDelegate
 {
@@ -41,6 +109,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, WKNa
     var syncTimer: Timer?
     var pendingSync: DispatchWorkItem?
     var texts: [String: Any] = [:]
+    lazy var downloads = DownloadsWatcher { [weak self] url in self?.peek(url) }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         let config = WKWebViewConfiguration()
@@ -76,7 +145,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, WKNa
             NSLog("%@: notifications %@ %@", appName, granted ? "allowed" : "refused", error?.localizedDescription ?? "")
             DispatchQueue.main.async {
                 self.syncReminders()
-                self.reportStatus()
+                self.refreshDownloads()
             }
         }
         syncTimer = Timer.scheduledTimer(withTimeInterval: 30 * 60, repeats: true) { _ in self.syncReminders() }
@@ -138,6 +207,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, WKNa
         case "test": testReminder()
         case "pickFolder": pickFolder(move: body["move"] as? Bool ?? false)
         case "loginItem": setLoginItem(body["on"] as? Bool ?? false)
+        case "watchDownloads": refreshDownloads()
         case "openNotifications":
             let url = "x-apple.systempreferences:com.apple.Notifications-Settings.extension?id=\(Bundle.main.bundleIdentifier ?? "")"
             if let u = URL(string: url) { NSWorkspace.shared.open(u) }
@@ -165,6 +235,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, WKNa
             let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? ""
             request.httpBody = try? JSONSerialization.data(withJSONObject: [
                 "notifications": state, "loginItem": SMAppService.mainApp.status == .enabled, "version": version,
+                "downloads": self.downloads.state,
             ])
             URLSession.shared.dataTask(with: request) { _, _, _ in
                 DispatchQueue.main.async { self.web.evaluateJavaScript("window.kansoAppChanged && window.kansoAppChanged()") }
@@ -199,6 +270,75 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, WKNa
 
     func windowDidBecomeKey(_ notification: Notification) { reportStatus() }
 
+    // MARK: downloads
+
+    /// refreshDownloads reads in the settings whether to watch Downloads, starts or stops, then reports.
+    func refreshDownloads() {
+        URLSession.shared.dataTask(with: serverURL.appendingPathComponent("api/settings")) { data, _, _ in
+            let json = data.flatMap { try? JSONSerialization.jsonObject(with: $0) as? [String: Any] }
+            let on = (json?["privacy"] as? [String: Any])?["downloads"] as? Bool ?? false
+            DispatchQueue.main.async {
+                if on { self.downloads.start() } else { self.downloads.stop() }
+                self.reportStatus()
+            }
+        }.resume()
+    }
+
+    /// request is a call to the server in the Mac's languages (its answers are written in the first it speaks).
+    func request(_ path: String, method: String = "GET", query: [URLQueryItem] = [], body: Data? = nil) -> URLRequest {
+        var parts = URLComponents(url: serverURL.appendingPathComponent(path), resolvingAgainstBaseURL: false)!
+        if !query.isEmpty { parts.queryItems = query }
+        var r = URLRequest(url: parts.url!)
+        r.httpMethod = method
+        r.httpBody = body
+        r.setValue("1", forHTTPHeaderField: "X-Inc")
+        r.setValue(Locale.preferredLanguages.joined(separator: ","), forHTTPHeaderField: "Accept-Language")
+        return r
+    }
+
+    /// peek hands a new download to the server; an invoice it recognises comes back as a notification « file it? ».
+    func peek(_ url: URL) {
+        guard let data = try? Data(contentsOf: url) else { return }
+        let r = request("api/intake/peek", method: "POST", query: [URLQueryItem(name: "name", value: url.lastPathComponent)], body: data)
+        URLSession.shared.dataTask(with: r) { data, _, _ in
+            guard let data, let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+                json["invoice"] as? Bool == true, let id = json["id"] as? String
+            else { return }
+            let content = UNMutableNotificationContent()
+            content.title = json["title"] as? String ?? ""
+            content.body = json["body"] as? String ?? ""
+            content.sound = .default
+            content.categoryIdentifier = "invoice"
+            content.userInfo = ["intake": id]
+            UNUserNotificationCenter.current().add(UNNotificationRequest(identifier: "intake-" + id, content: content, trigger: nil))
+        }.resume()
+    }
+
+    /// fileIntake copies a download the user agreed to file, then says where it went.
+    func fileIntake(_ id: String) {
+        URLSession.shared.dataTask(with: request("api/intake/\(id)/copy", method: "POST")) { data, _, _ in
+            guard let data, let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+                let path = (json["paths"] as? [String])?.first
+            else { return }
+            DispatchQueue.main.async {
+                let content = UNMutableNotificationContent()
+                content.title = self.text("mac.filed").replacingOccurrences(of: "{{path}}", with: path)
+                content.userInfo = ["view": "files"]
+                UNUserNotificationCenter.current().add(UNNotificationRequest(identifier: "filed-" + id, content: content, trigger: nil))
+                self.web.evaluateJavaScript("window.kansoAppChanged && window.kansoAppChanged()")
+            }
+        }.resume()
+    }
+
+    /// registerActions names the buttons of « invoice found » in the page's language.
+    func registerActions() {
+        let file = UNNotificationAction(identifier: "file", title: text("mac.fileAction"), options: [])
+        let ignore = UNNotificationAction(identifier: "ignore", title: text("mac.ignoreAction"), options: [.destructive])
+        UNUserNotificationCenter.current().setNotificationCategories([
+            UNNotificationCategory(identifier: "invoice", actions: [file, ignore], intentIdentifiers: [], options: [])
+        ])
+    }
+
     // MARK: words
 
     /// loadTexts reads the page's language and its file, then names the menus in it.
@@ -215,6 +355,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, WKNa
                 DispatchQueue.main.async {
                     self.texts = dict
                     self.buildMenu()
+                    self.registerActions()
                 }
             }.resume()
         }.resume()
@@ -234,11 +375,26 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, WKNa
         done([.banner, .sound])
     }
 
-    /// A click on a notification opens the app on the screen it is about.
+    /// A click on a notification opens the app on the screen it is about; on
+    /// « invoice found », the buttons file it or let it be, a click shows its plan.
     func userNotificationCenter(
         _ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse,
         withCompletionHandler done: @escaping () -> Void
     ) {
+        if let id = response.notification.request.content.userInfo["intake"] as? String {
+            switch response.actionIdentifier {
+            case "file": fileIntake(id)
+            case "ignore": URLSession.shared.dataTask(with: request("api/intake/\(id)", method: "DELETE")).resume()
+            default:
+                DispatchQueue.main.async {
+                    self.window.makeKeyAndOrderFront(nil)
+                    NSApp.activate(ignoringOtherApps: true)
+                    let safe = id.filter(\.isHexDigit)
+                    self.web.evaluateJavaScript("window.kansoIntake && window.kansoIntake('\(safe)')")
+                }
+            }
+            return done()
+        }
         let view = (response.notification.request.content.userInfo["view"] as? String ?? "calendar").filter(\.isLetter)
         DispatchQueue.main.async {
             self.window.makeKeyAndOrderFront(nil)

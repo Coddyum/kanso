@@ -43,9 +43,11 @@ func runDoctor(args []string) error {
 		Version   string `json:"version"`
 		FolderOK  bool   `json:"folderOK"`
 		PDFReader bool   `json:"pdfReader"`
+		Downloads bool   `json:"downloads"`
 		App       struct {
 			Notifications string `json:"notifications"`
 			LoginItem     bool   `json:"loginItem"`
+			Downloads     string `json:"downloads"`
 			Seen          string `json:"seen"`
 		} `json:"app"`
 	}
@@ -87,6 +89,13 @@ func runDoctor(args []string) error {
 			c.warn("cli.doctor.noLoginItem")
 		}
 		c.warn("cli.doctor.focus")
+		switch {
+		case !d.Downloads:
+		case d.App.Downloads == "watching":
+			c.ok("cli.doctor.downloads")
+		case d.App.Downloads == "denied":
+			bad("cli.doctor.downloadsDenied")
+		}
 	}
 	if _, err := os.Stat(filepath.Join(c.cfg.Root, brand.DataDir, "db.json")); errors.Is(err, os.ErrNotExist) {
 		c.warn("cli.doctor.noData")

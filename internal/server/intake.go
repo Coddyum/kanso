@@ -4,6 +4,7 @@ import (
 	"errors"
 	"io"
 	"net/http"
+	"path"
 	"time"
 
 	"github.com/coddyum/kanso/internal/extract"
@@ -51,18 +52,83 @@ func (s *Server) handleIntake(w http.ResponseWriter, r *http.Request) {
 		fail(w, http.StatusBadRequest, err)
 		return
 	}
-	docs, err := s.index.Scan()
-	if err != nil {
+	if err := s.plan(b); err != nil {
 		fail(w, http.StatusInternalServerError, err)
 		return
+	}
+	writeJSON(w, b)
+}
+
+// plan sorts a drop against the files the folder holds now.
+func (s *Server) plan(b *intake.Batch) error {
+	docs, err := s.index.Scan()
+	if err != nil {
+		return err
 	}
 	known := make(map[string]string, len(docs))
 	for _, d := range docs {
 		known[d.Hash] = d.Path
 	}
-	err = s.desk.Plan(b, known, func(rel, text string) extract.Extracted { return extract.Extract(s.vendors, rel, text) })
+	return s.desk.Plan(b, known, func(rel, text string) extract.Extracted { return extract.Extract(s.vendors, rel, text) })
+}
+
+// maxPeek is the largest download looked at: an invoice weighs far less.
+const maxPeek = 50 << 20
+
+// peek is what the Mac app shows for a download: a notification when it is an invoice.
+type peek struct {
+	Invoice bool   `json:"invoice"`
+	ID      string `json:"id,omitempty"`
+	Title   string `json:"title,omitempty"`
+	Body    string `json:"body,omitempty"`
+	Target  string `json:"target,omitempty"`
+}
+
+// handleIntakePeek looks at one file just arrived in Downloads, sent by the
+// Mac app (?name= its name) while the user allows it. An invoice whose
+// vendor and date are read is kept aside as a drop of one file, and the
+// answer is the notification « invoice X found, file it? »; anything else
+// (another document, a file already in the folder) is forgotten at once.
+func (s *Server) handleIntakePeek(w http.ResponseWriter, r *http.Request) {
+	if !s.book.Privacy().Downloads {
+		http.Error(w, s.tr(r).T("error.downloadsOff"), http.StatusForbidden)
+		return
+	}
+	body, sent := http.MaxBytesReader(w, r.Body, maxPeek), false
+	b, err := s.desk.Receive(func() (intake.Incoming, error) {
+		if sent {
+			return intake.Incoming{}, io.EOF
+		}
+		sent = true
+		return intake.Incoming{Path: r.URL.Query().Get("name"), Body: body}, nil
+	})
 	if err != nil {
+		fail(w, http.StatusBadRequest, err)
+		return
+	}
+	if err := s.plan(b); err != nil {
+		_ = s.desk.Cancel(b.ID)
 		fail(w, http.StatusInternalServerError, err)
+		return
+	}
+	if len(b.Items) != 1 || !b.Items[0].Sorted {
+		_ = s.desk.Cancel(b.ID)
+		writeJSON(w, peek{})
+		return
+	}
+	it, tr := b.Items[0], s.tr(r)
+	writeJSON(w, peek{
+		Invoice: true, ID: b.ID, Target: it.Target,
+		Title: tr.T("downloads.title", "vendor", it.Vendor),
+		Body:  tr.T("downloads.body", "name", path.Base(it.Path), "dir", path.Dir(it.Target)),
+	})
+}
+
+// handleIntakeGet is a drop not copied yet: the page shows its plan (a click on the notification).
+func (s *Server) handleIntakeGet(w http.ResponseWriter, r *http.Request) {
+	b, err := s.desk.Pending(r.PathValue("id"))
+	if err != nil {
+		http.Error(w, s.tr(r).T("error.intakeUnknown"), http.StatusNotFound)
 		return
 	}
 	writeJSON(w, b)
@@ -80,7 +146,7 @@ func (s *Server) handleIntakeCopy(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	_ = s.book.SetOnboardingStep("invoices", "done")
-	writeJSON(w, map[string]any{"id": b.ID, "written": len(b.Written)})
+	writeJSON(w, map[string]any{"id": b.ID, "written": len(b.Written), "paths": b.Written})
 }
 
 // handleIntakeUndo removes what a drop's copy wrote, except the files changed since.

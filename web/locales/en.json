@@ -491,7 +491,8 @@
         "bankMapping": "With these columns, most lines cannot be read: check the date, the description and the amount.",
         "bankTooBig": "This file is over 20 MB.",
         "intakeTooMany": "More than 5,000 files at once: drop the folders in several goes.",
-        "intakeUnknown": "This drop no longer exists: start again."
+        "intakeUnknown": "This drop no longer exists: start again.",
+        "downloadsOff": "The watch of Downloads is off."
     },
     "cli": {
         "usage": "Kanso {{version}} — 100% local.\n\nUsage: kanso <command>\n\n  init       choose your invoices folder and have Kanso start with your Mac\n  update     get the latest version and build it\n  doctor     check that everything works\n  uninstall  remove Kanso from the Mac (your folder and your data are kept)\n  serve      start the server (automatic launch does this for you)\n  version    show the version",
@@ -552,7 +553,9 @@
             "noData": "No data yet: open the app to get started",
             "allGood": "All good.",
             "problems_one": "{{count}} issue to fix.",
-            "problems_other": "{{count}} issues to fix."
+            "problems_other": "{{count}} issues to fix.",
+            "downloads": "The app is watching Downloads",
+            "downloadsDenied": "macOS refuses Kanso access to Downloads: System Settings › Privacy & Security › Files and Folders"
         },
         "install": {
             "macos": "Kanso needs macOS 13 (Ventura) or later.",
@@ -626,7 +629,14 @@
             "rates": "Download exchange rates",
             "ratesHint": "Without them, amounts in another currency aren't counted in euros.",
             "logos": "Download brand logos",
-            "logosHint": "Fetched once from the brand's website; without them, its initials."
+            "logosHint": "Fetched once from the brand's website; without them, its initials.",
+            "downloads": "Watch the Downloads folder",
+            "downloadsHint": "When an invoice arrives there, Kanso offers to file it. Off by default.",
+            "downloadsApp": "The watch runs in the Mac app: open Kanso.app.",
+            "downloadsState": {
+                "watching": "The Mac app is watching Downloads",
+                "denied": "macOS refuses the access: System Settings › Privacy & Security › Files and Folders › Kanso"
+            }
         },
         "data": {
             "title": "Data",
@@ -669,7 +679,11 @@
         "minimize": "Minimize",
         "close": "Close",
         "testTitle": "Test reminder",
-        "testBody": "Reminders from {{name}} are getting through."
+        "testBody": "Reminders from {{name}} are getting through.",
+        "fileAction": "File it",
+        "ignoreAction": "Ignore",
+        "filed": "Invoice filed in {{path}}",
+        "downloadsUsage": "Kanso looks at new files in Downloads to offer to file your invoices. Nothing is sent anywhere."
     },
     "welcome": {
         "title": "Welcome to Kanso",
@@ -714,6 +728,11 @@
             "invoices": {
                 "title": "Existing invoices",
                 "text": "Your invoices already filed elsewhere on your Mac: drag their folders here. Kanso copies them into your folder, filed by year, vendor and month, and shows you the filing before writing anything."
+            },
+            "downloads": {
+                "title": "Downloads",
+                "text": "An invoice downloaded from your browser? Kanso can spot it in Downloads and offer, in a notification, to file it in your folder.",
+                "permission": "macOS will ask you to let Kanso read the Downloads folder: answer “Allow”."
             }
         }
     },
@@ -778,5 +797,9 @@
         "choose": "or click to choose one",
         "last_one": "{{count}} file, {{date}}",
         "last_other": "{{count}} files, {{date}}"
+    },
+    "downloads": {
+        "title": "{{vendor}} invoice found",
+        "body": "{{name}}: file it in {{dir}}?"
     }
 }

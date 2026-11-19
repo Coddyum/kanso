@@ -491,7 +491,8 @@
         "bankMapping": "Avec ces colonnes, la plupart des lignes ne se lisent pas : vérifie la date, le libellé et le montant.",
         "bankTooBig": "Ce fichier dépasse 20 Mo.",
         "intakeTooMany": "Plus de 5 000 fichiers d'un coup : dépose les dossiers en plusieurs fois.",
-        "intakeUnknown": "Ce dépôt n'existe plus : recommence."
+        "intakeUnknown": "Ce dépôt n'existe plus : recommence.",
+        "downloadsOff": "La surveillance de Téléchargements est désactivée."
     },
     "cli": {
         "usage": "Kanso {{version}} — 100 % local.\n\nUtilisation : kanso <commande>\n\n  init       choisir le dossier de tes factures et lancer Kanso avec ton Mac\n  update     récupérer la dernière version et la compiler\n  doctor     vérifier que tout marche\n  uninstall  retirer Kanso du Mac (ton dossier et tes données restent)\n  serve      lancer le serveur (le lancement automatique s'en charge)\n  version    afficher la version",
@@ -552,7 +553,9 @@
             "noData": "Aucune donnée encore : ouvre l'app pour commencer",
             "allGood": "Tout est en ordre.",
             "problems_one": "{{count}} point à corriger.",
-            "problems_other": "{{count}} points à corriger."
+            "problems_other": "{{count}} points à corriger.",
+            "downloads": "L'app surveille Téléchargements",
+            "downloadsDenied": "macOS refuse à Kanso l'accès à Téléchargements : Réglages Système › Confidentialité et sécurité › Fichiers et dossiers"
         },
         "install": {
             "macos": "Kanso demande macOS 13 (Ventura) ou plus récent.",
@@ -626,7 +629,14 @@
             "rates": "Télécharger les taux de change",
             "ratesHint": "Sans eux, les montants dans une autre devise ne sont pas comptés en euros.",
             "logos": "Télécharger les logos des marques",
-            "logosHint": "Pris sur le site de la marque, une fois ; sans eux, ses initiales."
+            "logosHint": "Pris sur le site de la marque, une fois ; sans eux, ses initiales.",
+            "downloads": "Surveiller le dossier Téléchargements",
+            "downloadsHint": "Quand une facture y arrive, Kanso te propose de la ranger. Désactivé par défaut.",
+            "downloadsApp": "La surveillance passe par l'app Mac : ouvre Kanso.app.",
+            "downloadsState": {
+                "watching": "L'app Mac surveille Téléchargements",
+                "denied": "macOS refuse l'accès : Réglages Système › Confidentialité et sécurité › Fichiers et dossiers › Kanso"
+            }
         },
         "data": {
             "title": "Données",
@@ -669,7 +679,11 @@
         "minimize": "Réduire",
         "close": "Fermer",
         "testTitle": "Rappel de test",
-        "testBody": "Les rappels de {{name}} arrivent bien."
+        "testBody": "Les rappels de {{name}} arrivent bien.",
+        "fileAction": "Ranger",
+        "ignoreAction": "Ignorer",
+        "filed": "Facture rangée dans {{path}}",
+        "downloadsUsage": "Kanso regarde les nouveaux fichiers de Téléchargements pour te proposer de ranger tes factures. Rien n'est envoyé nulle part."
     },
     "welcome": {
         "title": "Bienvenue dans Kanso",
@@ -714,6 +728,11 @@
             "invoices": {
                 "title": "Factures existantes",
                 "text": "Tes factures déjà rangées ailleurs sur ton Mac : glisse leurs dossiers ici. Kanso les copie dans ton dossier, classées par année, fournisseur et mois, et te montre le classement avant d'écrire."
+            },
+            "downloads": {
+                "title": "Téléchargements",
+                "text": "Une facture téléchargée depuis ton navigateur ? Kanso peut la repérer dans Téléchargements et te proposer, d'une notification, de la ranger dans ton dossier.",
+                "permission": "macOS te demandera d'autoriser Kanso à lire le dossier Téléchargements : réponds « Autoriser »."
             }
         }
     },
@@ -778,5 +797,9 @@
         "choose": "ou clique pour en choisir un",
         "last_one": "{{count}} fichier, {{date}}",
         "last_other": "{{count}} fichiers, {{date}}"
+    },
+    "downloads": {
+        "title": "Facture {{vendor}} détectée",
+        "body": "{{name}} : la ranger dans {{dir}} ?"
     }
 }

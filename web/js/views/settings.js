@@ -87,13 +87,23 @@ function notifySection() {
     );
 }
 
+// downloadsRow is the switch of the watch of Downloads, with what macOS lets the app do.
+export function downloadsRow() {
+    const { privacy, app } = S.settings;
+    const state = privacy.downloads && app.downloads === "denied" ? "denied" : privacy.downloads && app.downloads === "watching" ? "watching" : "";
+    const note = !inApp() ? t("settings.privacy.downloadsApp") : state ? t(`settings.privacy.downloadsState.${state}`) : "";
+    return `${row(t("settings.privacy.downloads"), toggle("privacy.downloads", privacy.downloads), t("settings.privacy.downloadsHint"))}
+        ${note ? `<p class="set-note set-state ${state === "watching" ? "on" : state === "denied" ? "off" : ""}">${note}</p>` : ""}`;
+}
+
 function privacySection() {
     const p = S.settings.privacy;
     return section(
         "privacy",
         t("settings.privacy.sub"),
         `${row(t("settings.privacy.rates"), toggle("privacy.rates", p.rates), t("settings.privacy.ratesHint"))}
-        ${row(t("settings.privacy.logos"), toggle("privacy.logos", p.logos), t("settings.privacy.logosHint"))}`,
+        ${row(t("settings.privacy.logos"), toggle("privacy.logos", p.logos), t("settings.privacy.logosHint"))}
+        ${downloadsRow()}`,
     );
 }
 

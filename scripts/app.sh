@@ -12,7 +12,18 @@ trap 'rm -rf "$TMP"' EXIT
 rm -rf "$OUT"
 mkdir -p "$OUT/Contents/MacOS" "$OUT/Contents/Resources"
 swiftc -O -swift-version 5 macos/app/main.swift -o "$OUT/Contents/MacOS/$NAME"
-sed -e "s|@NAME@|$NAME|g" -e "s|@BUNDLE_ID@|$BUNDLE_ID|g" macos/app/Info.plist > "$OUT/Contents/Info.plist"
+# The sentence macOS shows when it asks for the Downloads folder: English by
+# default, each language of web/locales in its own InfoPlist.strings.
+usage() { plutil -extract mac.downloadsUsage raw -o - "$1"; }
+sed -e "s|@NAME@|$NAME|g" -e "s|@BUNDLE_ID@|$BUNDLE_ID|g" -e "s|@DOWNLOADS@|$(usage web/locales/en.json | sed 's/[|&]/\\&/g')|" \
+    macos/app/Info.plist > "$OUT/Contents/Info.plist"
+for f in web/locales/*.json; do
+    lang=$(basename "$f" .json)
+    [ "$lang" = zh ] && lang=zh-Hans
+    mkdir -p "$OUT/Contents/Resources/$lang.lproj"
+    text=$(usage "$f")
+    printf '"NSDownloadsFolderUsageDescription" = "%s";\n' "${text//\"/\\\"}" > "$OUT/Contents/Resources/$lang.lproj/InfoPlist.strings"
+done
 
 swiftc -O -swift-version 5 macos/app/icon.swift -o "$TMP/icon"
 "$TMP/icon" "$TMP/icon.png"

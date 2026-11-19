@@ -28,6 +28,7 @@ import (
 type AppStatus struct {
 	Notifications string    `json:"notifications"` // authorized | denied | notDetermined | provisional
 	LoginItem     bool      `json:"loginItem"`     // opens at login
+	Downloads     string    `json:"downloads"`     // its watch of Downloads: off | watching | denied (macOS refused the access)
 	Version       string    `json:"version"`
 	Seen          time.Time `json:"seen"` // when it last reported; zero: never (no Mac app)
 }
@@ -202,6 +203,7 @@ type diagnostic struct {
 	RatesDate  string    `json:"ratesDate"`
 	Rates      bool      `json:"rates"`
 	Logos      bool      `json:"logos"`
+	Downloads  bool      `json:"downloads"` // the watch of Downloads is on
 	App        AppStatus `json:"app"`
 	Started    string    `json:"started"`
 	Reminders  int       `json:"reminders"`
@@ -212,7 +214,7 @@ type diagnostic struct {
 func (s *Server) handleDiagnostic(w http.ResponseWriter, r *http.Request) {
 	d := diagnostic{
 		Version: s.version, Root: s.root.Dir(), PDFReader: s.index.CanReadPDF(),
-		Rates: s.book.Privacy().Rates, Logos: s.book.Privacy().Logos, App: s.appStatus(),
+		Rates: s.book.Privacy().Rates, Logos: s.book.Privacy().Logos, Downloads: s.book.Privacy().Downloads, App: s.appStatus(),
 		Started: s.boot, Lang: s.lang(r), ConfigFile: config.Path(s.home),
 	}
 	_, err := os.ReadDir(s.root.Dir())

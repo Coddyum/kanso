@@ -37,10 +37,12 @@ type Notify struct {
 	Hour      int  `json:"hour"`      // 0 to 23
 }
 
-// Privacy says what the app may download: the ECB's rates, the brands' icons.
+// Privacy says what the app may download (the ECB's rates, the brands' icons)
+// and whether the Mac app looks at the files arriving in Downloads.
 type Privacy struct {
-	Rates bool `json:"rates"`
-	Logos bool `json:"logos"`
+	Rates     bool `json:"rates"`
+	Logos     bool `json:"logos"`
+	Downloads bool `json:"downloads"` // off until the user turns it on
 }
 
 // NotifySettings are the reminders chosen; all of them at 9:00 until the user chooses.

@@ -9,7 +9,7 @@ import { icon } from "../icons.js";
 import { S } from "../state.js";
 import { pageHead } from "../ui/parts.js";
 import { lastIntakeLabel } from "../modals/intake.js";
-import { inApp, notifyState } from "./settings.js";
+import { downloadsRow, inApp, notifyState } from "./settings.js";
 
 const step = (id, state, body) => `
     <div class="ob-actions">
@@ -79,7 +79,12 @@ function invoicesStep(state) {
         ${step("invoices", state, "")}`;
 }
 
-const BODIES = { lang: langStep, folder: folderStep, reserve: reserveStep, bank: bankStep, invoices: invoicesStep, notify: notifyStep };
+function downloadsStep(state) {
+    return `${downloadsRow()}<p class="set-note">${t("welcome.steps.downloads.permission")}</p>
+        ${step("downloads", state, doneButton("downloads", t("welcome.next")))}`;
+}
+
+const BODIES = { lang: langStep, folder: folderStep, reserve: reserveStep, bank: bankStep, invoices: invoicesStep, notify: notifyStep, downloads: downloadsStep };
 
 // openStep is the card shown open: the one clicked, or the first step still to do.
 const openStep = (steps) => (S.ob.open ? S.ob.open : steps.find((s) => s.state === "todo")?.id || "");

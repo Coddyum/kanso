@@ -317,6 +317,15 @@ func (d *Desk) Undo(id string) (removed, kept int, err error) {
 	return removed, kept, d.save(b)
 }
 
+// Pending is a drop not copied yet.
+func (d *Desk) Pending(id string) (*Batch, error) {
+	b, err := d.load(id)
+	if err != nil || !b.Copied.IsZero() {
+		return nil, ErrUnknown
+	}
+	return b, nil
+}
+
 // Cancel forgets a drop not copied yet, with its copies aside.
 func (d *Desk) Cancel(id string) error {
 	b, err := d.load(id)

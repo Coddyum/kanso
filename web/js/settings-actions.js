@@ -95,6 +95,8 @@ async function save(group, field, value) {
     else await api("POST", "/api/settings", { [group]: next });
     S.settings[group] = next;
     toast(t("settings.saved"));
+    // The Mac app starts or stops its watch of Downloads, then says how it went.
+    if (group === "privacy" && field === "downloads") toApp({ type: "watchDownloads" });
     await load();
 }
 

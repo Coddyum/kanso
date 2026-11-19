@@ -158,6 +158,12 @@ async function undo(id) {
 // lastIntakeLabel names the latest copy that can still be undone: « 12 files, 19 Nov 2026 ».
 export const lastIntakeLabel = (last) => t("intake.last", { count: last.written, date: fmtMod(last.copied) });
 
+// A click on « invoice found » opens the app on that file's plan.
+window.kansoIntake = (id) =>
+    api("GET", `/api/intake/${encodeURIComponent(id)}`)
+        .then(planScreen)
+        .catch((err) => toast(err.message, true));
+
 export const INTAKE_ACTIONS = {
     "intake-cancel": async (el) => {
         closeModal();
