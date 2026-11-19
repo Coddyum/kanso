@@ -495,7 +495,7 @@
         "downloadsOff": "La vigilancia de Descargas está desactivada."
     },
     "cli": {
-        "usage": "Kanso {{version}} — 100 % local.\n\nUso: kanso <comando>\n\n  init       elegir la carpeta de tus facturas y hacer que Kanso arranque con tu Mac\n  update     obtener la última versión y compilarla\n  doctor     comprobar que todo funciona\n  uninstall  quitar Kanso del Mac (tu carpeta y tus datos se conservan)\n  serve      lanzar el servidor (el inicio automático se encarga de ello)\n  version    mostrar la versión",
+        "usage": "Kanso {{version}} — 100 % local.\n\nUso: kanso <comando>\n\n  init       elegir la carpeta de tus facturas y hacer que Kanso arranque con tu Mac\n  update     obtener la última versión y compilarla\n  doctor     comprobar que todo funciona\n  uninstall  quitar Kanso del Mac (tu carpeta y tus datos se conservan)\n  demo       abrir una demo con datos ficticios, sin tocar tu carpeta\n  serve      lanzar el servidor (el inicio automático se encarga de ello)\n  version    mostrar la versión",
         "unknown": "Comando desconocido: {{name}}",
         "noFolder": "No has elegido ninguna carpeta: ejecuta primero «kanso init».",
         "yesNo": "[s/N]",
@@ -564,6 +564,10 @@
             "goOld": "Tu versión de Go es demasiado antigua: instala la última desde go.dev/dl (la página acaba de abrirse) y luego vuelve a ejecutar ./install.sh",
             "building": "Compilando Kanso…",
             "app": "Instalando la app del Mac en ~/Applications…"
+        },
+        "demo": {
+            "built": "Demo lista: {{path}}",
+            "open": "Abre {{url}} en tu navegador; ctrl-C para detenerla."
         }
     },
     "export": {
@@ -657,8 +661,10 @@
         },
         "start": {
             "title": "Primeros pasos",
-            "sub": "La lista de inicio, para retomar un paso saltado.",
-            "reopen": "Volver a abrir la lista"
+            "sub": "La lista de inicio, para retomar un paso saltado; y una demo con datos ficticios, sin tocar tu carpeta.",
+            "reopen": "Volver a abrir la lista",
+            "demo": "Probar con datos ficticios",
+            "demoQuit": "Salir de la demo"
         }
     },
     "mac": {
@@ -801,5 +807,16 @@
     "downloads": {
         "title": "Factura de {{vendor}} detectada",
         "body": "{{name}}: ¿archivarla en {{dir}}?"
+    },
+    "demo": {
+        "bar": "Modo demo: datos ficticios",
+        "quit": "Salir",
+        "starting": "Kanso se reinicia en la demo…",
+        "leaving": "Volviendo a tu carpeta…",
+        "product": "Producto",
+        "office": "Oficina",
+        "insurance": "Seguro de responsabilidad civil profesional",
+        "insuranceNote": "Contrato anual",
+        "todo": "Pedir el certificado de estar al corriente con la URSSAF"
     }
 }

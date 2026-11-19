@@ -22,6 +22,7 @@ const DefaultPort = 48219
 type Config struct {
 	Root string `json:"root"` // the user's folder, absolute; "" before `kanso init`
 	Port int    `json:"port"`
+	Demo bool   `json:"demo,omitempty"` // the app runs on the demo folder; Root is kept for when it stops
 }
 
 // Dir is the app's own folder in Application Support.

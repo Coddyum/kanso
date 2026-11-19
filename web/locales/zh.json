@@ -475,7 +475,7 @@
         "downloadsOff": "“下载”监视已关闭。"
     },
     "cli": {
-        "usage": "Kanso {{version}} — 100 % local.\n\n用法：kanso <命令>\n\n  init       选择存放发票的文件夹，并让 Kanso 随 Mac 启动\n  update     获取最新版本并编译\n  doctor     检查一切是否正常\n  uninstall  从 Mac 上移除 Kanso（你的文件夹和数据会保留）\n  serve      启动服务器（自动启动会负责这一步）\n  version    显示版本",
+        "usage": "Kanso {{version}} — 100 % local.\n\n用法：kanso <命令>\n\n  init       选择存放发票的文件夹，并让 Kanso 随 Mac 启动\n  update     获取最新版本并编译\n  doctor     检查一切是否正常\n  uninstall  从 Mac 上移除 Kanso（你的文件夹和数据会保留）\n  demo       用虚构数据打开演示，不会动你的文件夹\n  serve      启动服务器（自动启动会负责这一步）\n  version    显示版本",
         "unknown": "未知命令：{{name}}",
         "noFolder": "尚未选择文件夹：请先运行“kanso init”。",
         "yesNo": "[y/N]",
@@ -543,6 +543,10 @@
             "goOld": "你的 Go 版本太旧：请从 go.dev/dl 安装最新版本（页面已打开），然后重新运行 ./install.sh",
             "building": "正在编译 Kanso…",
             "app": "正在将 Mac 应用安装到 ~/Applications…"
+        },
+        "demo": {
+            "built": "演示已就绪：{{path}}",
+            "open": "在浏览器中打开 {{url}}；按 ctrl-C 停止。"
         }
     },
     "export": {
@@ -636,8 +640,10 @@
         },
         "start": {
             "title": "入门",
-            "sub": "入门清单，用来继续之前跳过的步骤。",
-            "reopen": "重新打开清单"
+            "sub": "入门清单，用来继续之前跳过的步骤；还有一个使用虚构数据的演示，不会动你的文件夹。",
+            "reopen": "重新打开清单",
+            "demo": "用虚构数据试用",
+            "demoQuit": "退出演示"
         }
     },
     "mac": {
@@ -769,5 +775,16 @@
     "downloads": {
         "title": "发现 {{vendor}} 的发票",
         "body": "{{name}}：归档到 {{dir}}？"
+    },
+    "demo": {
+        "bar": "演示模式：虚构数据",
+        "quit": "退出",
+        "starting": "Kanso 正在以演示模式重启…",
+        "leaving": "正在回到你的文件夹…",
+        "product": "产品",
+        "office": "办公",
+        "insurance": "职业责任保险",
+        "insuranceNote": "年度合同",
+        "todo": "向 URSSAF 申请缴费证明"
     }
 }

@@ -63,6 +63,7 @@ export function render() {
     hidePop();
     $$(".nav a").forEach((a) => a.classList.toggle("on", a.dataset.view === S.view));
     $("#n-missing").textContent = S.st.missing.length || "";
+    $("#demo-bar").hidden = !S.st.demo;
     $("#nav-files .tip").textContent = t("nav.folder", { name: rootName() });
     $("#nav-files").setAttribute("aria-label", t("nav.folder", { name: rootName() }));
     $("#sync").title = t("nav.synced", { path: S.st.root.replace(/^\/Users\/[^/]+/, "~") });

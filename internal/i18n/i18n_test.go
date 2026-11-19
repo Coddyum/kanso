@@ -300,8 +300,9 @@ func TestNoHardCodedText(t *testing.T) {
 			}
 		}
 	})
-	// day, extract, vendor and norm read French and English invoices: their words are data, not texts.
-	skip := regexp.MustCompile(`^(internal/(day|extract|vendor|norm)|tools)/`)
+	// day, extract, vendor, norm and bank read French and English invoices and bank labels, and demo
+	// writes made-up invoices: their words are data, not texts.
+	skip := regexp.MustCompile(`^(internal/(day|extract|vendor|norm|bank|demo)|tools)/`)
 	walkFiles(t, "../..", []string{".go"}, func(rel string, data []byte) {
 		if skip.MatchString(rel) {
 			return

@@ -129,7 +129,10 @@ function dataSection() {
 }
 
 function startSection() {
-    return section("start", t("settings.start.sub"), `<div class="set-actions"><button class="btn" data-action="ob-reopen">${t("settings.start.reopen")}</button></div>`);
+    const demo = S.st.demo
+        ? `<button class="btn ghost" data-action="demo-off">${t("settings.start.demoQuit")}</button>`
+        : `<button class="btn ghost" data-action="demo-on">${t("settings.start.demo")}</button>`;
+    return section("start", t("settings.start.sub"), `<div class="set-actions"><button class="btn" data-action="ob-reopen">${t("settings.start.reopen")}</button>${demo}</div>`);
 }
 
 export function viewSettings() {

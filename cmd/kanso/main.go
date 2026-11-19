@@ -30,6 +30,8 @@ func main() {
 		err = runUninstall(args)
 	case "doctor":
 		err = runDoctor(args)
+	case "demo":
+		err = runDemo(args)
 	case "version":
 		fmt.Println(version)
 	case "help", "-h", "--help":

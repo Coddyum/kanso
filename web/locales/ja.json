@@ -475,7 +475,7 @@
         "downloadsOff": "ダウンロードの監視はオフです。"
     },
     "cli": {
-        "usage": "Kanso {{version}} — 100 % local.\n\n使い方：kanso <コマンド>\n\n  init       請求書のフォルダを選び、Mac と一緒に Kanso を起動する\n  update     最新バージョンを取得してビルドする\n  doctor     すべて正常に動いているか確認する\n  uninstall  Mac から Kanso を削除する（フォルダとデータは残ります）\n  serve      サーバーを起動する（通常は自動起動が行います）\n  version    バージョンを表示する",
+        "usage": "Kanso {{version}} — 100 % local.\n\n使い方：kanso <コマンド>\n\n  init       請求書のフォルダを選び、Mac と一緒に Kanso を起動する\n  update     最新バージョンを取得してビルドする\n  doctor     すべて正常に動いているか確認する\n  uninstall  Mac から Kanso を削除する（フォルダとデータは残ります）\n  demo       架空のデータでデモを開く（フォルダには触れません）\n  serve      サーバーを起動する（通常は自動起動が行います）\n  version    バージョンを表示する",
         "unknown": "不明なコマンド：{{name}}",
         "noFolder": "フォルダが選択されていません。先に「kanso init」を実行してください。",
         "yesNo": "[y/N]",
@@ -543,6 +543,10 @@
             "goOld": "Go のバージョンが古すぎます。go.dev/dl（ページを開きました）から最新版をインストールしてから、もう一度 ./install.sh を実行してください",
             "building": "Kanso をビルド中…",
             "app": "Mac アプリを ~/Applications にインストール中…"
+        },
+        "demo": {
+            "built": "デモの準備ができました：{{path}}",
+            "open": "ブラウザで {{url}} を開いてください。停止は ctrl-C です。"
         }
     },
     "export": {
@@ -636,8 +640,10 @@
         },
         "start": {
             "title": "はじめに",
-            "sub": "スキップしたステップを再開するためのスタートリストです。",
-            "reopen": "リストをもう一度開く"
+            "sub": "スキップしたステップを再開するためのスタートリストと、フォルダに触れずに架空のデータで試せるデモです。",
+            "reopen": "リストをもう一度開く",
+            "demo": "架空のデータで試す",
+            "demoQuit": "デモを終了"
         }
     },
     "mac": {
@@ -769,5 +775,16 @@
     "downloads": {
         "title": "{{vendor}} の請求書を検出しました",
         "body": "{{name}}：{{dir}} に整理しますか？"
+    },
+    "demo": {
+        "bar": "デモモード：架空のデータ",
+        "quit": "終了",
+        "starting": "Kanso をデモで再起動しています…",
+        "leaving": "あなたのフォルダに戻ります…",
+        "product": "プロダクト",
+        "office": "オフィス",
+        "insurance": "業務賠償責任保険",
+        "insuranceNote": "年間契約",
+        "todo": "URSSAF に納付証明書を依頼する"
     }
 }

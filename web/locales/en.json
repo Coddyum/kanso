@@ -495,7 +495,7 @@
         "downloadsOff": "The watch of Downloads is off."
     },
     "cli": {
-        "usage": "Kanso {{version}} — 100% local.\n\nUsage: kanso <command>\n\n  init       choose your invoices folder and have Kanso start with your Mac\n  update     get the latest version and build it\n  doctor     check that everything works\n  uninstall  remove Kanso from the Mac (your folder and your data are kept)\n  serve      start the server (automatic launch does this for you)\n  version    show the version",
+        "usage": "Kanso {{version}} — 100% local.\n\nUsage: kanso <command>\n\n  init       choose your invoices folder and have Kanso start with your Mac\n  update     get the latest version and build it\n  doctor     check that everything works\n  uninstall  remove Kanso from the Mac (your folder and your data are kept)\n  demo       open a demo with made-up data, without touching your folder\n  serve      start the server (automatic launch does this for you)\n  version    show the version",
         "unknown": "Unknown command: {{name}}",
         "noFolder": "No folder chosen: run “kanso init” first.",
         "yesNo": "[y/N]",
@@ -564,6 +564,10 @@
             "goOld": "Your Go version is too old: install the latest one from go.dev/dl (the page has just opened), then run ./install.sh again",
             "building": "Building Kanso…",
             "app": "Installing the Mac app in ~/Applications…"
+        },
+        "demo": {
+            "built": "Demo ready: {{path}}",
+            "open": "Open {{url}} in your browser; ctrl-C to stop it."
         }
     },
     "export": {
@@ -657,8 +661,10 @@
         },
         "start": {
             "title": "Getting started",
-            "sub": "The getting-started list, to take up a skipped step.",
-            "reopen": "Open the list again"
+            "sub": "The getting-started list, to take up a skipped step; and a demo with made-up data, without touching your folder.",
+            "reopen": "Open the list again",
+            "demo": "Try it with made-up data",
+            "demoQuit": "Leave the demo"
         }
     },
     "mac": {
@@ -801,5 +807,16 @@
     "downloads": {
         "title": "{{vendor}} invoice found",
         "body": "{{name}}: file it in {{dir}}?"
+    },
+    "demo": {
+        "bar": "Demo mode: made-up data",
+        "quit": "Leave",
+        "starting": "Kanso is restarting on the demo…",
+        "leaving": "Back to your folder…",
+        "product": "Product",
+        "office": "Office",
+        "insurance": "Professional liability insurance",
+        "insuranceNote": "Yearly contract",
+        "todo": "Ask URSSAF for the certificate of compliance"
     }
 }

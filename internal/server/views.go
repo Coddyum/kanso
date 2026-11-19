@@ -20,8 +20,9 @@ func (s *Server) handleState(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, struct {
 		Root      string `json:"root"`
 		Extractor bool   `json:"extractor"` // the PDF reader is there
+		Demo      bool   `json:"demo"`      // the folder is the demo's: made-up data
 		ledger.State
-	}{s.root.Dir(), s.index.CanReadPDF(), m.State(s.currentRates(), s.tr(r))})
+	}{s.root.Dir(), s.index.CanReadPDF(), s.demo, m.State(s.currentRates(), s.tr(r))})
 }
 
 // handleCalendar returns the events between ?from= and ?to=, at most 400 days apart.
@@ -49,8 +50,13 @@ func (s *Server) handleAnalytics(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, m.Analytics(s.currentRates(), s.tr(r)))
 }
 
-// handleReminders lists the notifications the Mac app schedules.
+// handleReminders lists the notifications the Mac app schedules; none for
+// the demo's made-up payments.
 func (s *Server) handleReminders(w http.ResponseWriter, r *http.Request) {
+	if s.demo {
+		writeJSON(w, []ledger.Reminder{})
+		return
+	}
 	m, err := s.model()
 	if err != nil {
 		fail(w, http.StatusInternalServerError, err)

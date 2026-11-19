@@ -86,6 +86,15 @@ export const SETTINGS_ACTIONS = {
         });
     },
     "set-diagnostic": async () => diagnosticModal(await api("GET", "/api/diagnostic")),
+    // The server restarts on the demo folder, or back on the user's; the page reloads by itself.
+    "demo-on": async () => {
+        await api("POST", "/api/demo", { on: true });
+        toast(t("demo.starting"));
+    },
+    "demo-off": async () => {
+        await api("POST", "/api/demo", { on: false });
+        toast(t("demo.leaving"));
+    },
 };
 
 // save writes one group of settings: the field changed, the rest as it was.

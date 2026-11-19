@@ -495,7 +495,7 @@
         "downloadsOff": "La surveillance de Téléchargements est désactivée."
     },
     "cli": {
-        "usage": "Kanso {{version}} — 100 % local.\n\nUtilisation : kanso <commande>\n\n  init       choisir le dossier de tes factures et lancer Kanso avec ton Mac\n  update     récupérer la dernière version et la compiler\n  doctor     vérifier que tout marche\n  uninstall  retirer Kanso du Mac (ton dossier et tes données restent)\n  serve      lancer le serveur (le lancement automatique s'en charge)\n  version    afficher la version",
+        "usage": "Kanso {{version}} — 100 % local.\n\nUtilisation : kanso <commande>\n\n  init       choisir le dossier de tes factures et lancer Kanso avec ton Mac\n  update     récupérer la dernière version et la compiler\n  doctor     vérifier que tout marche\n  uninstall  retirer Kanso du Mac (ton dossier et tes données restent)\n  demo       ouvrir une démo aux données fictives, sans toucher à ton dossier\n  serve      lancer le serveur (le lancement automatique s'en charge)\n  version    afficher la version",
         "unknown": "Commande inconnue : {{name}}",
         "noFolder": "Aucun dossier choisi : lance d'abord « kanso init ».",
         "yesNo": "[o/N]",
@@ -564,6 +564,10 @@
             "goOld": "Ta version de Go est trop ancienne : installe la dernière depuis go.dev/dl (la page vient de s'ouvrir), puis relance ./install.sh",
             "building": "Compilation de Kanso…",
             "app": "Installation de l'app Mac dans ~/Applications…"
+        },
+        "demo": {
+            "built": "Démo prête : {{path}}",
+            "open": "Ouvre {{url}} dans ton navigateur ; ctrl-C pour l'arrêter."
         }
     },
     "export": {
@@ -657,8 +661,10 @@
         },
         "start": {
             "title": "Premiers pas",
-            "sub": "La liste de démarrage, pour reprendre une étape passée.",
-            "reopen": "Rouvrir la liste"
+            "sub": "La liste de démarrage, pour reprendre une étape passée ; et une démo aux données fictives, sans toucher à ton dossier.",
+            "reopen": "Rouvrir la liste",
+            "demo": "Essayer avec des données fictives",
+            "demoQuit": "Quitter la démo"
         }
     },
     "mac": {
@@ -801,5 +807,16 @@
     "downloads": {
         "title": "Facture {{vendor}} détectée",
         "body": "{{name}} : la ranger dans {{dir}} ?"
+    },
+    "demo": {
+        "bar": "Mode démo : données fictives",
+        "quit": "Quitter",
+        "starting": "Kanso redémarre sur la démo…",
+        "leaving": "Retour à ton dossier…",
+        "product": "Produit",
+        "office": "Bureau",
+        "insurance": "Assurance RC Pro",
+        "insuranceNote": "Contrat annuel",
+        "todo": "Demander l'attestation de vigilance URSSAF"
     }
 }

@@ -34,6 +34,7 @@ type Config struct {
 	Home     string // the user's home: where the config file is (a change of folder is saved there)
 	Version  string // the build, shown in the diagnostic
 	Restart  func() // stops the server so its launcher starts it again; nil when nothing restarts it
+	Demo     bool   // Root is the demo folder: made-up data, no reminders
 }
 
 // Server answers the web page and the Mac app.
@@ -53,6 +54,7 @@ type Server struct {
 	home    string
 	version string
 	restart func()
+	demo    bool
 
 	mu       sync.Mutex
 	cached   *ledger.Model
@@ -89,7 +91,7 @@ func New(cfg Config) (*Server, error) {
 		port:    cfg.Port,
 		boot:    time.Now().Format(time.RFC3339Nano),
 		now:     time.Now,
-		home:    cfg.Home, version: cfg.Version, restart: cfg.Restart,
+		home:    cfg.Home, version: cfg.Version, restart: cfg.Restart, demo: cfg.Demo,
 	}
 	s.logos = logo.NewSource(cfg.CacheDir, gate, s.knownDomain)
 	s.desk = intake.NewDesk(s.root, s.index.Texts)
@@ -167,6 +169,7 @@ func (s *Server) Handler() http.Handler {
 	mux.HandleFunc("GET /api/locale", s.handleLocale)
 	mux.HandleFunc("POST /api/locale", s.handleSetLocale)
 	mux.HandleFunc("POST /api/onboarding", s.handleOnboarding)
+	mux.HandleFunc("POST /api/demo", s.handleDemo)
 	mux.HandleFunc("POST /api/bank/preview", s.handleBankPreview)
 	mux.HandleFunc("POST /api/bank/apply", s.handleBankApply)
 	mux.HandleFunc("POST /api/intake", s.handleIntake)

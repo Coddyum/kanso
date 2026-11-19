@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"github.com/coddyum/kanso/internal/config"
+	"github.com/coddyum/kanso/internal/demo"
 	"github.com/coddyum/kanso/internal/server"
 	"github.com/coddyum/kanso/web"
 )
@@ -34,6 +35,15 @@ func serve(args []string) error {
 	port := fs.Int("port", cfg.Port, "HTTP port (listens on 127.0.0.1 only)")
 	root := fs.String("root", cfg.Root, "the folder the app keeps in step")
 	_ = fs.Parse(args)
+	rootSet := false
+	fs.Visit(func(f *flag.Flag) { rootSet = rootSet || f.Name == "root" })
+	if cfg.Demo && !rootSet {
+		// Demo mode (Settings): made-up data, rebuilt from today; the user's folder is not touched.
+		*root = demo.Dir(home)
+		if err := demo.Build(*root, time.Now(), newCLI().tr); err != nil {
+			return err
+		}
+	}
 	if *root == "" {
 		return errors.New(newCLI().tr.T("cli.noFolder"))
 	}
@@ -47,6 +57,7 @@ func serve(args []string) error {
 	srv, err := server.New(server.Config{
 		Root: *root, CacheDir: filepath.Join(home, "Library", "Caches", "kanso"),
 		PDFText: pdftext, Port: *port, Static: web.Files, Home: home, Version: version, Restart: stop,
+		Demo: demo.Is(*root),
 	})
 	if err != nil {
 		return err
