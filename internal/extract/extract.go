@@ -28,7 +28,7 @@ type Extracted struct {
 }
 
 // Extract reads what it can from a file's path (relative, slash-separated)
-// and its text (empty for a file that is not a PDF).
+// and its text (a PDF's, or what Vision read in a scan or a photo; empty otherwise).
 func Extract(vendors *vendor.Catalog, rel, text string) Extracted {
 	lines := splitLines(text)
 	e := Extracted{Kind: detectKind(lines, path.Base(rel), text)}
@@ -138,12 +138,18 @@ func detectLabel(lines []string) string {
 		if rest := strings.TrimSpace(l[len("description"):]); rest != "" && !header(rest) {
 			return norm.Clip(rest, 48)
 		}
-		if i+1 < len(lines) {
-			n := lines[i+1]
+		// The line under « Description »; a header's second line read by Vision (« (Incl. VAT) ») is skipped.
+		for _, n := range lines[i+1 : min(i+3, len(lines))] {
 			nl := strings.ToLower(n)
-			if !startsWithMoney(n) && !hasAny(nl, "subtotal", "sous-total", "total") && !header(n) {
-				return norm.Clip(n, 48)
+			if strings.HasPrefix(n, "(") {
+				continue
 			}
+			if !startsWithMoney(n) && !hasAny(nl, "subtotal", "sous-total", "total") && !header(n) {
+				// Vision writes a table's cells on one line, two spaces apart: the label is the first.
+				name, _, _ := strings.Cut(n, "  ")
+				return norm.Clip(name, 48)
+			}
+			break
 		}
 	}
 	return ""

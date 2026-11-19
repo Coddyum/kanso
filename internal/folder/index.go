@@ -45,7 +45,7 @@ type stamp struct {
 type Index struct {
 	root      string
 	cacheFile string
-	pdftext   string // the PDFKit helper; "" when missing: PDFs are listed without their text
+	pdftext   string // the reading helper (PDFKit, Vision for scans and pictures); "" when missing: files are listed without their text
 	vendors   *vendor.Catalog
 
 	mu     sync.Mutex
@@ -56,9 +56,14 @@ type Index struct {
 }
 
 type indexCache struct {
-	Stamps map[string]stamp  `json:"stamps"`
-	Texts  map[string]string `json:"texts"`
+	Version int               `json:"version"`
+	Stamps  map[string]stamp  `json:"stamps"`
+	Texts   map[string]string `json:"texts"`
 }
+
+// cacheVersion 2: pictures and scanned PDFs are read by Vision. A text left
+// empty by an older version (a scan PDFKit could not read) is read again.
+const cacheVersion = 2
 
 const maxText = 12000
 
@@ -67,7 +72,7 @@ func NewIndex(root, cacheFile, pdftext string, vendors *vendor.Catalog) *Index {
 	return &Index{root: root, cacheFile: cacheFile, pdftext: pdftext, vendors: vendors}
 }
 
-// CanReadPDF says whether the PDFKit helper was found.
+// CanReadPDF says whether the reading helper was found.
 func (ix *Index) CanReadPDF() bool { return ix.pdftext != "" }
 
 // Skip says whether a file or folder is left out: hidden, an Office lock file, a Finder icon.
@@ -76,6 +81,12 @@ func Skip(name string) bool {
 }
 
 func isPDF(name string) bool { return strings.EqualFold(filepath.Ext(name), ".pdf") }
+
+// pictures are the image files the helper reads with Vision: photos of receipts, scans.
+var pictures = map[string]bool{".png": true, ".jpg": true, ".jpeg": true, ".heic": true, ".heif": true, ".tif": true, ".tiff": true, ".gif": true, ".webp": true, ".bmp": true}
+
+// readable says whether the helper reads the file: a PDF (a scan through Vision too), or a picture.
+func readable(name string) bool { return isPDF(name) || pictures[strings.ToLower(filepath.Ext(name))] }
 
 // walk lists the files (hidden ones and the asset folders of saved web pages
 // excepted) and a signature that changes whenever a file is added, removed,
@@ -154,7 +165,7 @@ func (ix *Index) Scan() ([]Doc, error) {
 			dirty = true
 		}
 		d.Hash = st.Hash
-		if _, ok := ix.texts[d.Hash]; !ok && isPDF(d.Name) && ix.pdftext != "" {
+		if _, ok := ix.texts[d.Hash]; !ok && readable(d.Name) && ix.pdftext != "" {
 			toRead = append(toRead, i)
 		}
 	}
@@ -185,7 +196,7 @@ func (ix *Index) Scan() ([]Doc, error) {
 	return docs, nil
 }
 
-// readTexts runs the PDFKit helper on the new PDFs, 12 files per call, 4 calls at once.
+// readTexts runs the reading helper on the new PDFs and pictures, 12 files per call, 4 calls at once.
 func (ix *Index) readTexts(docs []Doc, idx []int) {
 	var wg sync.WaitGroup
 	var mu sync.Mutex
@@ -218,7 +229,7 @@ func (ix *Index) readTexts(docs []Doc, idx []int) {
 
 // runPDFText reads blocks « \x1e path \n text » from the helper; a failed call logs and reads nothing.
 func runPDFText(bin string, paths []string) map[string]string {
-	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 120*time.Second) // Vision takes a second or so a page
 	defer cancel()
 	out, err := exec.CommandContext(ctx, bin, paths...).Output()
 	if err != nil {
@@ -268,6 +279,13 @@ func (ix *Index) load() {
 	if c.Texts != nil {
 		ix.texts = c.Texts
 	}
+	if c.Version < cacheVersion {
+		for h, t := range ix.texts {
+			if strings.TrimSpace(t) == "" {
+				delete(ix.texts, h)
+			}
+		}
+	}
 }
 
 // prune forgets the texts of files that are gone.
@@ -285,7 +303,7 @@ func (ix *Index) prune() {
 
 // save writes the cache; a failure only costs reading the PDFs again next time.
 func (ix *Index) save() {
-	data, err := json.Marshal(indexCache{Stamps: ix.stamps, Texts: ix.texts})
+	data, err := json.Marshal(indexCache{Version: cacheVersion, Stamps: ix.stamps, Texts: ix.texts})
 	if err != nil {
 		return
 	}
@@ -308,7 +326,7 @@ func (ix *Index) Texts(paths []string) map[string]string {
 	}
 	var todo []string
 	for _, p := range paths {
-		if isPDF(p) {
+		if readable(p) {
 			todo = append(todo, p)
 		}
 	}

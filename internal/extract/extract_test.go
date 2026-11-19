@@ -169,3 +169,12 @@ func TestDetectVendor(t *testing.T) {
 		}
 	}
 }
+
+// TestLabelFromVision: Vision writes a table's cells on one line, two spaces
+// apart, and a header's second line on its own; the label is the item's name.
+func TestLabelFromVision(t *testing.T) {
+	text := "Invoice\nDescription  Qty  Unit price  Amount\n(Incl. VAT)\nMail Plus plan  1  4,99 €  4,99 €\nTotal  4,99 €"
+	if got := detectLabel(splitLines(text)); got != "Mail Plus plan" {
+		t.Errorf("label = %q", got)
+	}
+}
