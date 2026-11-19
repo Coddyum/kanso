@@ -119,6 +119,7 @@ type Payment struct {
 	Match         string  `json:"match,omitempty"`      // text its invoices carry (a domain name…); empty: any invoice of the vendor
 	AmountSet     string  `json:"amountSet,omitempty"`  // when Amount was typed (RFC 3339): it wins until a newer invoice arrives
 	Auto          bool    `json:"auto,omitempty"`       // added by the app from the invoices of the folder
+	AutoAt        string  `json:"autoAt,omitempty"`     // when the app added it (RFC 3339); cleared once the owner edits it
 	SuggestKey    string  `json:"suggestKey,omitempty"` // the detection it comes from, dismissed when it is deleted
 	Billing       string  `json:"billing,omitempty"`    // page of its invoices, typed by the owner; the vendor's known page otherwise
 }

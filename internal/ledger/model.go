@@ -146,6 +146,7 @@ func (b *Book) autoAdd(sugs []Suggestion) ([]string, error) {
 		return nil, nil
 	}
 	var added []string
+	now := time.Now().Format(time.RFC3339)
 	err := b.store.Update(func(db *DB) error {
 		added = nil
 		for _, s := range todo {
@@ -155,7 +156,7 @@ func (b *Book) autoAdd(sugs []Suggestion) ([]string, error) {
 			db.Payments = append(db.Payments, Payment{
 				ID: NewID(), Name: s.Name, Vendor: s.Vendor, Domain: s.Domain, Match: s.Match,
 				Amount: s.Amount, Currency: s.Currency, Cycle: s.Cycle, Start: s.Start,
-				ExpectInvoice: true, Auto: true, SuggestKey: s.Key,
+				ExpectInvoice: true, Auto: true, AutoAt: now, SuggestKey: s.Key,
 			})
 			added = append(added, s.Name)
 		}
