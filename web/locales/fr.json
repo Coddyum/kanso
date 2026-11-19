@@ -355,7 +355,6 @@
         "filed_other": "{{count}} fichiers rangés dans {{name}}"
     },
     "nav": {
-        "synced": "Synchronisé avec {{path}}",
         "calendar": "Calendrier",
         "analytics": "Analyse",
         "invoices": "Factures",

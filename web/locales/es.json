@@ -355,7 +355,6 @@
         "filed_other": "{{count}} archivos guardados en {{name}}"
     },
     "nav": {
-        "synced": "Sincronizado con {{path}}",
         "calendar": "Calendario",
         "analytics": "Análisis",
         "invoices": "Facturas",

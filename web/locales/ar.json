@@ -415,7 +415,6 @@
         "filed_other": "تم ترتيب {{count}} ملف في {{name}}"
     },
     "nav": {
-        "synced": "متزامن مع {{path}}",
         "calendar": "التقويم",
         "analytics": "التحليل",
         "invoices": "الفواتير",

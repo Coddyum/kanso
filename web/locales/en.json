@@ -355,7 +355,6 @@
         "filed_other": "{{count}} files put in {{name}}"
     },
     "nav": {
-        "synced": "Synced with {{path}}",
         "calendar": "Calendar",
         "analytics": "Analytics",
         "invoices": "Invoices",

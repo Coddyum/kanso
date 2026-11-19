@@ -340,7 +340,6 @@
         "filed_other": "{{count}} 件のファイルを {{name}} に整理しました"
     },
     "nav": {
-        "synced": "{{path}} と同期中",
         "calendar": "カレンダー",
         "analytics": "分析",
         "invoices": "請求書",

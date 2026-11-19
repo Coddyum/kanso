@@ -66,7 +66,6 @@ export function render() {
     $("#demo-bar").hidden = !S.st.demo;
     $("#nav-files .tip").textContent = t("nav.folder", { name: rootName() });
     $("#nav-files").setAttribute("aria-label", t("nav.folder", { name: rootName() }));
-    $("#sync").title = t("nav.synced", { path: S.st.root.replace(/^\/Users\/[^/]+/, "~") });
     const main = $("#main");
     main.classList.toggle("fit", S.view === "calendar");
     main.innerHTML = VIEWS[S.view]();
