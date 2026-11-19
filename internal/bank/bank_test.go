@@ -37,7 +37,7 @@ func TestRevolut(t *testing.T) {
 	}
 	subs := Recurring(st.Transactions, "", vendor.NewCatalog())
 	if len(subs) != 1 || subs[0].Name != "Notion" || subs[0].Cycle != "monthly" || subs[0].Amount != 10 ||
-		subs[0].Start != "2026-10-04" || subs[0].Domain != "notion.so" || subs[0].Count != 6 {
+		subs[0].Start != "2026-10-04" || subs[0].Domain != "notion.com" || subs[0].Count != 6 {
 		t.Errorf("subscriptions = %+v", subs)
 	}
 }

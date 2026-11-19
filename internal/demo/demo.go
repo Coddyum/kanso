@@ -37,6 +37,7 @@ func Is(dir string) bool {
 // service is a made-up subscription and how its invoices read.
 type service struct {
 	name, folder, legal string
+	domain              string // its site: the app shows its logo
 	amount              float64
 	currency            string
 	cycle               string // monthly | yearly
@@ -48,14 +49,14 @@ type service struct {
 }
 
 var services = []service{
-	{"Notion", "Notion", "Notion Labs, Inc.", 10, "USD", "monthly", 4, 0, true, "Plus plan (monthly)", "product", false},
-	{"Figma", "Figma", "Figma, Inc.", 15, "EUR", "monthly", 12, 0, true, "Professional plan, 1 editor", "product", true},
-	{"GitHub", "GitHub", "GitHub, Inc.", 4, "USD", "monthly", 21, 0, true, "GitHub Pro", "product", false},
-	{"Render", "Render", "Render Services, Inc.", 7, "USD", "monthly", 1, 0, true, "Starter web service", "product", false},
-	{"Free Mobile", "Free Mobile", "Free Mobile", 19.99, "EUR", "monthly", 5, 0, false, "Forfait Free 5G", "office", false},
-	{"SeDomicilier", "SeDomicilier", "SeDomicilier", 29, "EUR", "monthly", 10, 0, false, "Domiciliation commerciale", "office", false},
-	{"OVHcloud", "OVHcloud", "OVHcloud", 14.99, "EUR", "yearly", 8, 3, false, "Hébergement Perso", "product", false},
-	{"Apple", "Apple", "Apple Distribution International", 99, "EUR", "yearly", 15, 6, true, "Apple Developer Program", "product", false},
+	{"Notion", "Notion", "Notion Labs, Inc.", "notion.com", 10, "USD", "monthly", 4, 0, true, "Plus plan (monthly)", "product", false},
+	{"Figma", "Figma", "Figma, Inc.", "figma.com", 15, "EUR", "monthly", 12, 0, true, "Professional plan, 1 editor", "product", true},
+	{"GitHub", "GitHub", "GitHub, Inc.", "github.com", 4, "USD", "monthly", 21, 0, true, "GitHub Pro", "product", false},
+	{"Render", "Render", "Render Services, Inc.", "render.com", 7, "USD", "monthly", 1, 0, true, "Starter web service", "product", false},
+	{"Free Mobile", "Free Mobile", "Free Mobile", "free.fr", 19.99, "EUR", "monthly", 5, 0, false, "Forfait Free 5G", "office", false},
+	{"Proton", "Proton", "Proton AG", "proton.me", 9.99, "EUR", "monthly", 10, 0, true, "Proton Unlimited (monthly)", "office", false},
+	{"OVHcloud", "OVHcloud", "OVHcloud", "ovhcloud.com", 14.99, "EUR", "yearly", 8, 3, false, "Hébergement Perso", "product", false},
+	{"Apple", "Apple", "Apple Distribution International", "apple.com", 99, "EUR", "yearly", 15, 6, true, "Apple Developer Program", "product", false},
 }
 
 // Build writes the demo folder at dir, from scratch, dated from today; its
@@ -89,7 +90,7 @@ func Build(dir string, today time.Time, tr i18n.Lang) error {
 			}
 		}
 		db.Payments = append(db.Payments, ledger.Payment{
-			ID: ledger.NewID(), Name: s.name, Amount: s.amount, Currency: s.currency, Cycle: s.cycle,
+			ID: ledger.NewID(), Name: s.name, Domain: s.domain, Amount: s.amount, Currency: s.currency, Cycle: s.cycle,
 			Start: dates[0].Format(day.Format), ExpectInvoice: true,
 		})
 		db.Assign["svc:"+ledger.ServiceKey(s.name)] = projects[s.project]
@@ -97,10 +98,11 @@ func Build(dir string, today time.Time, tr i18n.Lang) error {
 	if err := laptop(dir, today, tr.List("folder.months")); err != nil {
 		return err
 	}
+	// A yearly payment with no invoice yet: the professional insurance, due next month.
 	insurance := time.Date(today.Year(), today.Month()+1, 15, 0, 0, 0, 0, time.Local)
 	db.Payments = append(db.Payments, ledger.Payment{
-		ID: ledger.NewID(), Name: tr.T("demo.insurance"), Amount: 180, Currency: "EUR", Cycle: "yearly",
-		Start: insurance.Format(day.Format), Note: tr.T("demo.insuranceNote"),
+		ID: ledger.NewID(), Name: "Hiscox", Domain: "hiscox.fr", Amount: 180, Currency: "EUR", Cycle: "yearly",
+		Start: insurance.Format(day.Format), Note: tr.T("demo.insurance"),
 	})
 	db.Reserve = &ledger.Reserve{Amount: 6840, Date: today.Format(day.Format)}
 	db.Admin = &deadlines.Settings{Urssaf: "quarterly", CFE: true, IR: true, Created: today.AddDate(-2, 0, 0).Format(day.Format)}

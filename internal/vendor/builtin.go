@@ -26,8 +26,9 @@ var builtin = []Vendor{
 	{"Resend", "resend.com", []string{"resend"}, true},
 	{"Expo", "expo.dev", []string{"expo"}, true},
 	{"Figma", "figma.com", []string{"figma"}, true},
-	{"Notion", "notion.so", []string{"notion"}, true},
+	{"Notion", "notion.com", []string{"notion"}, true}, // notion.so sends to notion.com: its icon is only there
 	{"Proton", "proton.me", []string{"proton"}, false}, // many customers have their own e-mail address on proton.me
+	{"LDLC", "ldlc.com", []string{"ldlc"}, true},
 }
 
 // builtinBilling is where each service keeps its invoices, by domain. Checked
