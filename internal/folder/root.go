@@ -144,7 +144,7 @@ func lessEntry(x, y Entry) bool {
 	if ex == nil && ey == nil {
 		return xy > yy
 	}
-	mx, my := day.MonthOf(x.Name), day.MonthOf(y.Name)
+	mx, my := day.MonthOfFolder(x.Name), day.MonthOfFolder(y.Name)
 	if mx > 0 && my > 0 && mx != my {
 		return mx < my
 	}
@@ -269,9 +269,11 @@ func (r Root) Write(dir, name string, src io.Reader) (string, error) {
 }
 
 // TargetDir is YEAR/Vendor/Month for a due date, created when missing; existing
-// folders are reused whatever their case or spelling (« aout », « OVH »…).
-func (r Root) TargetDir(vendorName, date string) (string, error) {
-	dir, err := r.PlanDir(vendorName, date)
+// folders are reused whatever their case, spelling or language (« aout »,
+// « OVH », « March »…). months are the names of new month folders, in the
+// user's language (web/locales, folder.months); nil: day.MonthFolders.
+func (r Root) TargetDir(vendorName, date string, months []string) (string, error) {
+	dir, err := r.PlanDir(vendorName, date, months)
 	if err != nil {
 		return "", err
 	}
@@ -283,8 +285,8 @@ func (r Root) TargetDir(vendorName, date string) (string, error) {
 
 // PlanDir is the absolute YEAR/Vendor/Month folder of a document, without
 // creating anything: the folders that exist are reused, the others named
-// the app's way. A date that cannot be read is today.
-func (r Root) PlanDir(vendorName, date string) (string, error) {
+// the app's way, a month by months (see TargetDir). A date that cannot be read is today.
+func (r Root) PlanDir(vendorName, date string, months []string) (string, error) {
 	t, ok := day.Parse(date)
 	if !ok {
 		t = time.Now()
@@ -303,9 +305,10 @@ func (r Root) PlanDir(vendorName, date string) (string, error) {
 		return norm.Key(n) == norm.Key(vendorName)
 	}))
 	month := int(t.Month())
-	dir = filepath.Join(dir, findChild(dir, day.MonthFolders[month-1], func(n string) bool {
-		return day.IsTimeName(n) && day.MonthOf(strings.Fields(norm.Words(n))[0]) == month
-	}))
+	if len(months) != 12 {
+		months = day.MonthFolders
+	}
+	dir = filepath.Join(dir, findChild(dir, months[month-1], func(n string) bool { return day.MonthOfFolder(n) == month }))
 	return dir, nil
 }
 

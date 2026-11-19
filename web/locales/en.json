@@ -818,5 +818,21 @@
         "insurance": "Professional liability insurance",
         "insuranceNote": "Yearly contract",
         "todo": "Ask URSSAF for the certificate of compliance"
+    },
+    "folder": {
+        "months": [
+            "January",
+            "February",
+            "March",
+            "April",
+            "May",
+            "June",
+            "July",
+            "August",
+            "September",
+            "October",
+            "November",
+            "December"
+        ]
     }
 }

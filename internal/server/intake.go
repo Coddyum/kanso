@@ -52,15 +52,16 @@ func (s *Server) handleIntake(w http.ResponseWriter, r *http.Request) {
 		fail(w, http.StatusBadRequest, err)
 		return
 	}
-	if err := s.plan(b); err != nil {
+	if err := s.plan(b, r); err != nil {
 		fail(w, http.StatusInternalServerError, err)
 		return
 	}
 	writeJSON(w, b)
 }
 
-// plan sorts a drop against the files the folder holds now.
-func (s *Server) plan(b *intake.Batch) error {
+// plan sorts a drop against the files the folder holds now; new month folders
+// are named in the request's language.
+func (s *Server) plan(b *intake.Batch, r *http.Request) error {
 	docs, err := s.index.Scan()
 	if err != nil {
 		return err
@@ -69,7 +70,7 @@ func (s *Server) plan(b *intake.Batch) error {
 	for _, d := range docs {
 		known[d.Hash] = d.Path
 	}
-	return s.desk.Plan(b, known, func(rel, text string) extract.Extracted { return extract.Extract(s.vendors, rel, text) })
+	return s.desk.Plan(b, known, s.tr(r).List("folder.months"), func(rel, text string) extract.Extracted { return extract.Extract(s.vendors, rel, text) })
 }
 
 // maxPeek is the largest download looked at: an invoice weighs far less.
@@ -106,7 +107,7 @@ func (s *Server) handleIntakePeek(w http.ResponseWriter, r *http.Request) {
 		fail(w, http.StatusBadRequest, err)
 		return
 	}
-	if err := s.plan(b); err != nil {
+	if err := s.plan(b, r); err != nil {
 		_ = s.desk.Cancel(b.ID)
 		fail(w, http.StatusInternalServerError, err)
 		return

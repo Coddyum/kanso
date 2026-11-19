@@ -818,5 +818,21 @@
         "insurance": "Seguro de responsabilidad civil profesional",
         "insuranceNote": "Contrato anual",
         "todo": "Pedir el certificado de estar al corriente con la URSSAF"
+    },
+    "folder": {
+        "months": [
+            "Enero",
+            "Febrero",
+            "Marzo",
+            "Abril",
+            "Mayo",
+            "Junio",
+            "Julio",
+            "Agosto",
+            "Septiembre",
+            "Octubre",
+            "Noviembre",
+            "Diciembre"
+        ]
     }
 }

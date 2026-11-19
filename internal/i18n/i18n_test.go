@@ -13,6 +13,8 @@ import (
 	"testing"
 	"time"
 	"unicode"
+
+	"github.com/coddyum/kanso/internal/day"
 )
 
 const web = "../../web"
@@ -318,6 +320,23 @@ func TestNoHardCodedText(t *testing.T) {
 			return true
 		})
 	})
+}
+
+// TestMonthFolders: the month folders of every language are read back as
+// their month, so a change of language never makes a second folder for a month.
+func TestMonthFolders(t *testing.T) {
+	c := catalog(t)
+	for _, code := range Langs {
+		names := c.Lang(code).List("folder.months")
+		if len(names) != 12 {
+			t.Fatalf("%s: folder.months has %d names", code, len(names))
+		}
+		for i, n := range names {
+			if got := day.MonthOfFolder(n); got != i+1 {
+				t.Errorf("%s: folder %q is read as month %d, want %d", code, n, got, i+1)
+			}
+		}
+	}
 }
 
 func TestPlural(t *testing.T) {

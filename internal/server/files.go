@@ -142,7 +142,7 @@ func (s *Server) handleUpload(w http.ResponseWriter, r *http.Request) {
 	var dir string
 	var err error
 	if q.Get("vendor") != "" {
-		dir, err = s.root.TargetDir(q.Get("vendor"), q.Get("date"))
+		dir, err = s.root.TargetDir(q.Get("vendor"), q.Get("date"), s.tr(r).List("folder.months"))
 	} else {
 		dir, err = s.root.Abs(q.Get("dir"))
 	}

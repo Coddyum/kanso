@@ -115,12 +115,29 @@ func TestTargetDirReusesFolders(t *testing.T) {
 	if err := os.MkdirAll(filepath.Join(r.Dir(), "2026", "OVH", "aout"), 0o755); err != nil {
 		t.Fatal(err)
 	}
-	got, err := r.TargetDir("OVHcloud", "2026-08-14")
+	got, err := r.TargetDir("OVHcloud", "2026-08-14", nil)
 	if err != nil || got != filepath.Join(r.Dir(), "2026", "OVH", "aout") {
 		t.Errorf("TargetDir = %q, %v; want the existing 2026/OVH/aout", got, err)
 	}
-	got, err = r.TargetDir("Nuage", "2026-03-02")
+	got, err = r.TargetDir("Nuage", "2026-03-02", nil)
 	if err != nil || got != filepath.Join(r.Dir(), "2026", "Nuage", "Mars") {
 		t.Errorf("TargetDir new = %q, %v", got, err)
+	}
+}
+
+// TestMonthFolderLanguage: a new month folder takes the user's language; one
+// already there is reused whatever its language.
+func TestMonthFolderLanguage(t *testing.T) {
+	r := newRoot(t)
+	english := []string{"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"}
+	got, err := r.PlanDir("Nuage", "2026-03-02", english)
+	if err != nil || got != filepath.Join(r.Dir(), "2026", "Nuage", "March") {
+		t.Errorf("new folder = %q, %v", got, err)
+	}
+	if err := os.MkdirAll(filepath.Join(r.Dir(), "2026", "Nuage", "3月"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if got, _ := r.PlanDir("Nuage", "2026-03-20", english); got != filepath.Join(r.Dir(), "2026", "Nuage", "3月") {
+		t.Errorf("an existing month folder in another language is reused, got %q", got)
 	}
 }

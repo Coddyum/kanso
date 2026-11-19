@@ -21,8 +21,8 @@ const cached = (Kind, opts) => {
 const dateFmt = (opts) => cached(Intl.DateTimeFormat, opts);
 const numFmt = (opts) => cached(Intl.NumberFormat, opts);
 
-// The month folders the server creates for a dropped invoice: folder names, the same in every language.
-export const MONTH_FOLDERS = ["Janvier", "Fevrier", "Mars", "Avril", "Mai", "Juin", "Juillet", "Aout", "Septembre", "Octobre", "Novembre", "Decembre"];
+// monthFolder names the folder the server creates for month m (0 to 11) in the page's language; an existing one is reused, whatever its name.
+export const monthFolder = (m) => t("folder.months")[m];
 
 // monthName is the name of month m (0 to 11): « novembre »; short: « nov. ».
 export const monthName = (m, short = false) => dateFmt({ month: short ? "short" : "long" }).format(new Date(2026, m, 1));

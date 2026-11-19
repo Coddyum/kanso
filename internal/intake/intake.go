@@ -154,10 +154,11 @@ func copyTo(dst string, src io.Reader) (int64, error) {
 var sortable = map[string]bool{"invoice": true, "receipt": true, "order": true, "statement": true}
 
 // Plan reads each file of a drop and says where it goes: an invoice whose
-// vendor and date were read goes to YEAR/Vendor/Month, any other file keeps
+// vendor and date were read goes to YEAR/Vendor/Month (a new month folder
+// named by months, the user's language), any other file keeps
 // the folders it was dropped in; a file whose content is already in the
 // folder (known: hash → path) or earlier in the drop is a duplicate, left out.
-func (d *Desk) Plan(b *Batch, known map[string]string, extractor func(rel, text string) extract.Extracted) error {
+func (d *Desk) Plan(b *Batch, known map[string]string, months []string, extractor func(rel, text string) extract.Extracted) error {
 	files := filepath.Join(d.dir, b.ID)
 	abs := make([]string, len(b.Items))
 	for i, it := range b.Items {
@@ -187,7 +188,7 @@ func (d *Desk) Plan(b *Batch, known map[string]string, extractor func(rel, text 
 		seen[hash] = it.Path
 		dir := path.Dir(it.Path)
 		if sortable[it.Kind] && it.Vendor != "" && it.Date != "" {
-			if planned, err := d.root.PlanDir(it.Vendor, it.Date); err == nil {
+			if planned, err := d.root.PlanDir(it.Vendor, it.Date, months); err == nil {
 				dir, it.Sorted = d.root.Rel(planned), true
 			}
 		}

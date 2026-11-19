@@ -68,7 +68,7 @@ func TestDropCopyUndo(t *testing.T) {
 	if h, err := folder.HashFile(filepath.Join(root, "2026", "OVHcloud", "Mars", "already.pdf")); err == nil {
 		known[h] = "2026/OVHcloud/Mars/already.pdf"
 	}
-	must(t, d.Plan(b, known, func(rel, text string) extract.Extracted { return extract.Extract(vendors, rel, text) }))
+	must(t, d.Plan(b, known, nil, func(rel, text string) extract.Extracted { return extract.Extract(vendors, rel, text) }))
 	want := []struct{ target, dup string }{
 		{"2026/OVHcloud/Mars/f-03.pdf", ""},
 		{"", "Factures/OVH/f-03.pdf"},

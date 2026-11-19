@@ -65,9 +65,14 @@ func TestMonths(t *testing.T) {
 			t.Errorf("MonthOf(%q) = %d, want %d", word, got, want)
 		}
 	}
-	for name, want := range map[string]bool{"2026": true, "Octobre": true, "10 - Octobre": true, "Cloudflare": false, "": false} {
+	for name, want := range map[string]bool{"2026": true, "Octobre": true, "10 - Octobre": true, "Cloudflare": false, "": false, "10月": true, "أكتوبر": true} {
 		if got := IsTimeName(name); got != want {
 			t.Errorf("IsTimeName(%q) = %v, want %v", name, got, want)
+		}
+	}
+	for name, want := range map[string]int{"Mars": 3, "03 - March": 3, "Marzo": 3, "3月": 3, "مارس": 3, "aout": 8, "13月": 0, "Cloudflare": 0, "2026": 0, "Mars Bar": 0} {
+		if got := MonthOfFolder(name); got != want {
+			t.Errorf("MonthOfFolder(%q) = %d, want %d", name, got, want)
 		}
 	}
 }

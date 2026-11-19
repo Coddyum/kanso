@@ -81,9 +81,54 @@ var monthWords = map[string]int{
 	"octobre": 10, "october": 10, "oct": 10,
 	"novembre": 11, "november": 11, "nov": 11,
 	"decembre": 12, "december": 12, "dec": 12,
+	// Spanish, for the folders of a user who speaks it (and dates written in it).
+	"enero": 1, "febrero": 2, "marzo": 3, "abril": 4, "mayo": 5, "junio": 6, "julio": 7, "agosto": 8,
+	"septiembre": 9, "setiembre": 9, "octubre": 10, "noviembre": 11, "diciembre": 12,
 }
 
-// MonthFolders names the month folders the app creates.
+// arabicMonths are the Arabic names of the months, with their spellings without hamza.
+var arabicMonths = map[string]int{
+	"يناير": 1, "فبراير": 2, "مارس": 3, "أبريل": 4, "ابريل": 4, "إبريل": 4, "مايو": 5, "يونيو": 6, "يوليو": 7,
+	"أغسطس": 8, "اغسطس": 8, "سبتمبر": 9, "أكتوبر": 10, "اكتوبر": 10, "نوفمبر": 11, "ديسمبر": 12,
+}
+
+// cjkMonth reads « 3月 » (Japanese and Chinese): 0 when s is not one.
+func cjkMonth(s string) int {
+	n, ok := strings.CutSuffix(s, "月")
+	if !ok {
+		return 0
+	}
+	m, err := strconv.Atoi(strings.TrimSpace(n))
+	if err != nil || m < 1 || m > 12 {
+		return 0
+	}
+	return m
+}
+
+// MonthOfFolder reads the month a folder's name holds, in any of the app's
+// languages (« Mars », « 03 - March », « Marzo », « 3月 », « مارس »): 0 when
+// the name holds no month, or holds anything but a year, a month or a day.
+func MonthOfFolder(name string) int {
+	name = strings.TrimSpace(name)
+	if m := cjkMonth(name); m > 0 {
+		return m
+	}
+	if m := arabicMonths[name]; m > 0 {
+		return m
+	}
+	if !IsTimeName(name) {
+		return 0
+	}
+	for _, w := range strings.Fields(norm.Words(name)) {
+		if m := monthWords[w]; m > 0 {
+			return m
+		}
+	}
+	return 0
+}
+
+// MonthFolders names the month folders the app creates when it is given no
+// language's names (web/locales, folder.months): the French ones, without accents.
 var MonthFolders = []string{"Janvier", "Fevrier", "Mars", "Avril", "Mai", "Juin", "Juillet", "Aout", "Septembre", "Octobre", "Novembre", "Decembre"}
 
 // MonthOf reads a month name, French or English, full or short: 0 when it is not one.
@@ -91,6 +136,9 @@ func MonthOf(word string) int { return monthWords[strings.TrimSpace(norm.Words(w
 
 // IsTimeName says whether a folder name only holds a year, a month or a day.
 func IsTimeName(s string) bool {
+	if t := strings.TrimSpace(s); cjkMonth(t) > 0 || arabicMonths[t] > 0 {
+		return true
+	}
 	ws := strings.Fields(norm.Words(s))
 	if len(ws) == 0 {
 		return false

@@ -84,7 +84,7 @@ func Build(dir string, today time.Time, tr i18n.Lang) error {
 			if s.missingLast && i == len(dates)-1 {
 				continue
 			}
-			if err := s.write(dir, d, i+1); err != nil {
+			if err := s.write(dir, d, i+1, tr.List("folder.months")); err != nil {
 				return err
 			}
 		}
@@ -94,7 +94,7 @@ func Build(dir string, today time.Time, tr i18n.Lang) error {
 		})
 		db.Assign["svc:"+ledger.ServiceKey(s.name)] = projects[s.project]
 	}
-	if err := laptop(dir, today); err != nil {
+	if err := laptop(dir, today, tr.List("folder.months")); err != nil {
 		return err
 	}
 	insurance := time.Date(today.Year(), today.Month()+1, 15, 0, 0, 0, 0, time.Local)
@@ -134,9 +134,9 @@ func (s service) dates(today time.Time) []time.Time {
 }
 
 // write files one invoice of a service in YEAR/Vendor/Month, dated d.
-func (s service) write(dir string, d time.Time, n int) error {
+func (s service) write(dir string, d time.Time, n int, months []string) error {
 	name, lines := s.invoice(d, n)
-	return file(dir, s.folder, d, name, lines)
+	return file(dir, s.folder, d, name, lines, months)
 }
 
 // invoice is the file name and the lines of a service's n-th invoice, dated d.
@@ -156,15 +156,19 @@ func (s service) invoice(d time.Time, n int) (name string, lines []string) {
 }
 
 // laptop is a one-off purchase two months ago: the analytics show more than subscriptions.
-func laptop(dir string, today time.Time) error {
+func laptop(dir string, today time.Time, months []string) error {
 	d := time.Date(today.Year(), today.Month()-2, 23, 0, 0, 0, 0, time.Local)
 	lines := []string{"LDLC.com", "Facture", "Numéro de facture : LD-" + d.Format("20060102") + "-7781", "Date : " + d.Format("02/01/2006"),
 		"Ordinateur portable 14 pouces", "Total TTC : " + euros(1249)}
-	return file(dir, "LDLC", d, "Facture-LDLC-"+d.Format("2006-01")+".pdf", lines)
+	return file(dir, "LDLC", d, "Facture-LDLC-"+d.Format("2006-01")+".pdf", lines, months)
 }
 
-func file(dir, vendor string, d time.Time, name string, lines []string) error {
-	folder := filepath.Join(dir, strconv.Itoa(d.Year()), vendor, day.MonthFolders[d.Month()-1])
+// file writes an invoice in YEAR/Vendor/Month, the month named by months (day.MonthFolders when not 12).
+func file(dir, vendor string, d time.Time, name string, lines []string, months []string) error {
+	if len(months) != 12 {
+		months = day.MonthFolders
+	}
+	folder := filepath.Join(dir, strconv.Itoa(d.Year()), vendor, months[d.Month()-1])
 	if err := os.MkdirAll(folder, 0o755); err != nil {
 		return fmt.Errorf("demo: %w", err)
 	}

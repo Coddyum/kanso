@@ -2,7 +2,7 @@
 // the pages where invoices are fetched, and the free reminders.
 
 import { esc } from "../dom.js";
-import { approx, capitalize, fmtDay, groupBy, money, monthLabel, MONTH_FOLDERS, parseISO } from "../format.js";
+import { approx, capitalize, fmtDay, groupBy, money, monthFolder, monthLabel, parseISO } from "../format.js";
 import { t } from "../i18n.js";
 import { icon } from "../icons.js";
 import { nextDue, S } from "../state.js";
@@ -13,7 +13,7 @@ const missCard = (m) => {
     const d = parseISO(m.date);
     return `
     <div class="mcard" data-drop="missing" data-key="${esc(m.key)}" data-vendor="${esc(m.vendor)}" data-date="${m.date}"
-        title="${esc(t("missing.filedIn", { path: `${d.getFullYear()} / ${m.vendor} / ${MONTH_FOLDERS[d.getMonth()]}` }))}">
+        title="${esc(t("missing.filedIn", { path: `${d.getFullYear()} / ${m.vendor} / ${monthFolder(d.getMonth())}` }))}">
         <span class="mc-month"><b>${capitalize(monthLabel(m.date.slice(0, 7)))}</b><span>${t("missing.dueOn", { date: fmtDay(m.date) })}</span></span>
         <span class="mc-amt">${approx(m)}${money(m.amount, m.currency)}</span>
         <label class="btn sm">${icon("upload", 13)}${t("missing.drop")}<input type="file" hidden data-upload="missing" accept=".pdf,image/*,.html"></label>
