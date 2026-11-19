@@ -486,7 +486,10 @@
         "folderNotWritable": "no se puede escribir en esta carpeta",
         "folderTaken": "ya hay ahí una carpeta con el mismo nombre",
         "otherDisk": "esta carpeta está en otro disco: muévela en Finder y luego elígela aquí",
-        "unknownStep": "Paso desconocido"
+        "unknownStep": "Paso desconocido",
+        "bankUnreadable": "Este archivo no es un CSV ni un OFX legible.",
+        "bankMapping": "Con estas columnas, la mayoría de las líneas no se pueden leer: revisa la fecha, el concepto y el importe.",
+        "bankTooBig": "Este archivo supera los 20 MB."
     },
     "cli": {
         "usage": "Kanso {{version}} — 100 % local.\n\nUso: kanso <comando>\n\n  init       elegir la carpeta de tus facturas y hacer que Kanso arranque con tu Mac\n  update     obtener la última versión y compilarla\n  doctor     comprobar que todo funciona\n  uninstall  quitar Kanso del Mac (tu carpeta y tus datos se conservan)\n  serve      lanzar el servidor (el inicio automático se encarga de ello)\n  version    mostrar la versión",
@@ -636,7 +639,8 @@
             "noBackup": "Aún no hay ninguna copia de seguridad: la primera se hará en el próximo cambio.",
             "restore": "Restaurar",
             "restoreConfirm": "¿Restaurar la copia de seguridad {{name}}? El estado actual se guarda en otra copia.",
-            "restored": "Copia de seguridad restaurada"
+            "restored": "Copia de seguridad restaurada",
+            "bank": "Importar un extracto bancario"
         },
         "start": {
             "title": "Primeros pasos",
@@ -698,7 +702,46 @@
                 "title": "Notificaciones",
                 "text": "Kanso te avisa la víspera de un pago, antes de un trámite y cuando faltan facturas, incluso con la app cerrada. macOS tiene que permitirlo.",
                 "ok": "Hecho"
+            },
+            "bank": {
+                "title": "Importación bancaria",
+                "text": "Un extracto de tu banco (CSV u OFX): Kanso detecta en él tus suscripciones y puede sacar de él tu reserva. Tú eliges lo que se añade.",
+                "open": "Importar un extracto…"
             }
         }
+    },
+    "bank": {
+        "title": "Importar un extracto bancario",
+        "intro": "Exporta un extracto CSV u OFX desde la web de tu banco, de 12 meses si es posible. Kanso deduce tus suscripciones (los cargos que se repiten) y el saldo de tu cuenta.",
+        "pick": "Elegir el archivo",
+        "formats": "CSV u OFX, de cualquier banco",
+        "private": "El archivo se lee en tu Mac y luego se olvida: ni se guarda ni se copia en tu carpeta. Solo se añaden las suscripciones que marques.",
+        "column": "Columna {{n}}",
+        "none": "Ninguna",
+        "role": {
+            "date": "Fecha",
+            "label": "Concepto",
+            "amount": "Importe, con su signo",
+            "debit": "Cargo",
+            "credit": "Abono",
+            "balance": "Saldo (opcional)",
+            "currency": "Moneda (opcional)"
+        },
+        "mapTitle": "¿Qué columna es cuál?",
+        "mapIntro": "Kanso no ha reconocido todas las columnas de este archivo. Indica la fecha, el concepto y el importe; estas son sus primeras líneas.",
+        "mapHint": "El importe: una columna con su signo (-12,50), o bien una columna Cargo y una columna Abono.",
+        "read": "Leer el archivo",
+        "known": "ya seguida",
+        "seen_one": "{{count}} cargo, el último el {{date}}",
+        "seen_other": "{{count}} cargos, el último el {{date}}",
+        "reserve": "Poner la reserva en {{amount}}, el saldo del {{date}}",
+        "noSub": "No se ha encontrado ninguna suscripción: hacen falta al menos tres cargos regulares del mismo servicio (dos para una trimestral o anual).",
+        "remap": "Cambiar las columnas",
+        "subsTitle": "Suscripciones encontradas",
+        "summary_one": "{{count}} movimiento del {{from}} al {{to}}",
+        "summary_other": "{{count}} movimientos del {{from}} al {{to}}",
+        "add": "Añadir",
+        "added_one": "{{count}} suscripción añadida",
+        "added_other": "{{count}} suscripciones añadidas"
     }
 }

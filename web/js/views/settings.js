@@ -108,6 +108,7 @@ function dataSection() {
         "data",
         t("settings.data.sub"),
         `<div class="set-actions">
+            <button class="btn" data-action="bank-import">${icon("wallet", 14)}${t("settings.data.bank")}</button>
             <button class="btn" data-action="set-export">${icon("upload", 14)}${t("settings.data.export")}</button>
             <button class="btn ghost" data-action="set-diagnostic">${t("settings.data.diagnostic")}</button>
         </div>

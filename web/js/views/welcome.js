@@ -60,7 +60,13 @@ function notifyStep(state) {
         ${step("notify", state, doneButton("notify", t("welcome.steps.notify.ok")))}`;
 }
 
-const BODIES = { lang: langStep, folder: folderStep, reserve: reserveStep, notify: notifyStep };
+function bankStep(state) {
+    return `<div class="set-actions"><button class="btn" data-action="bank-import">${icon("wallet", 14)}${t("welcome.steps.bank.open")}</button></div>
+        <p class="set-note">${icon("lock", 12)} ${t("bank.private")}</p>
+        ${step("bank", state, "")}`;
+}
+
+const BODIES = { lang: langStep, folder: folderStep, reserve: reserveStep, bank: bankStep, notify: notifyStep };
 
 // openStep is the card shown open: the one clicked, or the first step still to do.
 const openStep = (steps) => (S.ob.open ? S.ob.open : steps.find((s) => s.state === "todo")?.id || "");

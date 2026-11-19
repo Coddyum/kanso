@@ -6,6 +6,7 @@ import { load, loadCalendar, render, upload } from "./app.js";
 import { $ } from "./dom.js";
 import { encPath, fileURL, firstOfMonth } from "./format.js";
 import { t } from "./i18n.js";
+import { BANK_ACTIONS, onBankFile } from "./modals/bank.js";
 import { paymentModal } from "./modals/payment.js";
 import { dayModal, deadlinesModal, invoiceModal, projectModal, reserveModal } from "./modals/others.js";
 import { findInvoice, projectById, rootName, S } from "./state.js";
@@ -140,6 +141,7 @@ const ACTIONS = {
     },
     ...SETTINGS_ACTIONS,
     ...WELCOME_ACTIONS,
+    ...BANK_ACTIONS,
 };
 
 async function onClick(e) {
@@ -163,6 +165,8 @@ async function onChange(e) {
             await onSettingChange(t);
         } else if (t.dataset.ob === "lang") {
             await onWelcomeChange(t);
+        } else if (t.dataset.bank === "file") {
+            await onBankFile(t);
         } else if (t.dataset.assign) {
             await api("POST", "/api/assign", { kind: t.dataset.assign, ref: t.dataset.ref, project: t.value });
             await load();

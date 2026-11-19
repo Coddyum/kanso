@@ -50,3 +50,30 @@
     font-size: 13px; box-shadow: 0 14px 40px rgba(0, 0, 0, 0.5);
 }
 .toast.err { color: var(--danger); }
+
+/* ---------- import bancaire ---------- */
+.bank-drop {
+    position: relative; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 26px 16px; margin-bottom: 14px;
+    border: 1px dashed var(--line-2); border-radius: 10px; color: var(--ink-2); text-align: center; cursor: pointer;
+}
+.bank-drop:hover { border-color: var(--accent); color: var(--ink); }
+.bank-drop span { font-weight: 500; }
+.bank-drop small { color: var(--ink-3); font-size: 12px; }
+.bank-drop input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.note .i { display: inline-block; vertical-align: -2px; }
+.bank-sample { max-height: 180px; overflow: auto; margin-bottom: 16px; border: 1px solid var(--line); border-radius: 8px; }
+.bank-sample table { border-collapse: collapse; font-size: 11.5px; white-space: nowrap; }
+.bank-sample th, .bank-sample td { padding: 5px 9px; border-bottom: 1px solid var(--line); text-align: start; }
+.bank-sample th { position: sticky; top: 0; background: #16171a; color: var(--ink-2); font-weight: 500; }
+.bank-balance { margin-bottom: 14px; }
+.bank-h { margin: 6px 0 8px; font-size: 12.5px; font-weight: 500; color: var(--ink-2); }
+.bank-subs { max-height: 44vh; overflow: auto; margin: 0 -8px; }
+.bank-sub { display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 8px; cursor: pointer; }
+.bank-sub:hover { background: var(--hover); }
+.bank-sub input { width: 15px; height: 15px; accent-color: var(--accent); }
+.bank-sub.is-known { opacity: 0.55; cursor: default; }
+.bank-name { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.bank-name b { font-weight: 500; }
+.bank-name small, .bank-known { color: var(--ink-3); font-size: 12px; }
+.bank-amount { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.bank-amount small { color: var(--ink-3); font-size: 11.5px; }

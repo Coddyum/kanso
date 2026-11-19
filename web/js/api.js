@@ -17,6 +17,13 @@ export async function api(method, url, body) {
     return r.json();
 }
 
+// sendBody posts a file as the request's body and reads the JSON answer.
+export async function sendBody(url, blob) {
+    const r = await fetch(url, { method: "POST", headers: headers(), body: blob });
+    if (!r.ok) throw new Error((await r.text()).trim() || r.statusText);
+    return r.json();
+}
+
 // sendFiles uploads files to the folder: { dir } or, for a due date, { vendor, date, key }.
 export async function sendFiles(files, params) {
     const fd = new FormData();

@@ -486,7 +486,10 @@
         "folderNotWritable": "can't write to this folder",
         "folderTaken": "a folder with the same name is already there",
         "otherDisk": "this folder is on another disk: move it in Finder, then choose it here",
-        "unknownStep": "Unknown step"
+        "unknownStep": "Unknown step",
+        "bankUnreadable": "This file is neither a readable CSV nor a readable OFX.",
+        "bankMapping": "With these columns, most lines cannot be read: check the date, the description and the amount.",
+        "bankTooBig": "This file is over 20 MB."
     },
     "cli": {
         "usage": "Kanso {{version}} — 100% local.\n\nUsage: kanso <command>\n\n  init       choose your invoices folder and have Kanso start with your Mac\n  update     get the latest version and build it\n  doctor     check that everything works\n  uninstall  remove Kanso from the Mac (your folder and your data are kept)\n  serve      start the server (automatic launch does this for you)\n  version    show the version",
@@ -636,7 +639,8 @@
             "noBackup": "No backup yet: the first one will be made at the next change.",
             "restore": "Restore",
             "restoreConfirm": "Restore the backup {{name}}? The current state is kept in another backup.",
-            "restored": "Backup restored"
+            "restored": "Backup restored",
+            "bank": "Import a bank statement"
         },
         "start": {
             "title": "Getting started",
@@ -698,7 +702,46 @@
                 "title": "Notifications",
                 "text": "Kanso lets you know the day before a payment, before a deadline and when invoices are missing, even with the app closed. macOS has to allow it.",
                 "ok": "Done"
+            },
+            "bank": {
+                "title": "Bank import",
+                "text": "A statement from your bank (CSV or OFX): Kanso spots your subscriptions in it and can take your reserve from it. You choose what is added.",
+                "open": "Import a statement…"
             }
         }
+    },
+    "bank": {
+        "title": "Import a bank statement",
+        "intro": "Export a CSV or OFX statement from your bank's website, over 12 months if you can. Kanso works out your subscriptions (the debits that come back) and your account's balance.",
+        "pick": "Choose the file",
+        "formats": "CSV or OFX, from any bank",
+        "private": "The file is read on your Mac, then forgotten: it is neither kept nor copied into your folder. Only the subscriptions you tick are added.",
+        "column": "Column {{n}}",
+        "none": "None",
+        "role": {
+            "date": "Date",
+            "label": "Description",
+            "amount": "Amount, with its sign",
+            "debit": "Debit",
+            "credit": "Credit",
+            "balance": "Balance (optional)",
+            "currency": "Currency (optional)"
+        },
+        "mapTitle": "Which column is which?",
+        "mapIntro": "Kanso did not recognise every column of this file. Pick the date, the description and the amount; here are its first lines.",
+        "mapHint": "The amount: one column with its sign (-12.50), or a Debit column and a Credit column.",
+        "read": "Read the file",
+        "known": "already tracked",
+        "seen_one": "{{count}} debit, the latest on {{date}}",
+        "seen_other": "{{count}} debits, the latest on {{date}}",
+        "reserve": "Set the reserve to {{amount}}, the balance on {{date}}",
+        "noSub": "No subscription found: it takes at least three regular debits from the same service (two for a quarterly or yearly one).",
+        "remap": "Change the columns",
+        "subsTitle": "Subscriptions found",
+        "summary_one": "{{count}} transaction from {{from}} to {{to}}",
+        "summary_other": "{{count}} transactions from {{from}} to {{to}}",
+        "add": "Add",
+        "added_one": "{{count}} subscription added",
+        "added_other": "{{count}} subscriptions added"
     }
 }

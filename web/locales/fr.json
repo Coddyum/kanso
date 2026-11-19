@@ -486,7 +486,10 @@
         "folderNotWritable": "impossible d'écrire dans ce dossier",
         "folderTaken": "un dossier du même nom y est déjà",
         "otherDisk": "ce dossier est sur un autre disque : déplace-le dans le Finder, puis choisis-le ici",
-        "unknownStep": "Étape inconnue"
+        "unknownStep": "Étape inconnue",
+        "bankUnreadable": "Ce fichier n'est ni un CSV ni un OFX lisible.",
+        "bankMapping": "Avec ces colonnes, la plupart des lignes ne se lisent pas : vérifie la date, le libellé et le montant.",
+        "bankTooBig": "Ce fichier dépasse 20 Mo."
     },
     "cli": {
         "usage": "Kanso {{version}} — 100 % local.\n\nUtilisation : kanso <commande>\n\n  init       choisir le dossier de tes factures et lancer Kanso avec ton Mac\n  update     récupérer la dernière version et la compiler\n  doctor     vérifier que tout marche\n  uninstall  retirer Kanso du Mac (ton dossier et tes données restent)\n  serve      lancer le serveur (le lancement automatique s'en charge)\n  version    afficher la version",
@@ -636,7 +639,8 @@
             "noBackup": "Pas encore de sauvegarde : la première sera faite au prochain changement.",
             "restore": "Restaurer",
             "restoreConfirm": "Remettre la sauvegarde {{name}} ? L'état actuel est gardé dans une autre sauvegarde.",
-            "restored": "Sauvegarde remise"
+            "restored": "Sauvegarde remise",
+            "bank": "Importer un relevé bancaire"
         },
         "start": {
             "title": "Premiers pas",
@@ -698,7 +702,46 @@
                 "title": "Notifications",
                 "text": "Kanso te prévient la veille d'un paiement, avant une démarche et quand il manque des factures, même app fermée. macOS doit l'autoriser.",
                 "ok": "C'est fait"
+            },
+            "bank": {
+                "title": "Import bancaire",
+                "text": "Un relevé de ta banque (CSV ou OFX) : Kanso y repère tes abonnements et peut en tirer ta réserve. Tu choisis ce qui est ajouté.",
+                "open": "Importer un relevé…"
             }
         }
+    },
+    "bank": {
+        "title": "Importer un relevé bancaire",
+        "intro": "Exporte un relevé CSV ou OFX depuis le site de ta banque, sur 12 mois si possible. Kanso en déduit tes abonnements (les prélèvements qui reviennent) et le solde de ton compte.",
+        "pick": "Choisir le fichier",
+        "formats": "CSV ou OFX, de n'importe quelle banque",
+        "private": "Le fichier est lu sur ton Mac puis oublié : il n'est ni gardé, ni copié dans ton dossier. Seuls les abonnements que tu coches sont ajoutés.",
+        "column": "Colonne {{n}}",
+        "none": "Aucune",
+        "role": {
+            "date": "Date",
+            "label": "Libellé",
+            "amount": "Montant, avec son signe",
+            "debit": "Débit",
+            "credit": "Crédit",
+            "balance": "Solde (facultatif)",
+            "currency": "Devise (facultatif)"
+        },
+        "mapTitle": "Quelle colonne est quoi ?",
+        "mapIntro": "Kanso n'a pas reconnu toutes les colonnes de ce fichier. Indique la date, le libellé et le montant ; voici ses premières lignes.",
+        "mapHint": "Le montant : une colonne avec son signe (-12,50), ou bien une colonne Débit et une colonne Crédit.",
+        "read": "Lire le fichier",
+        "known": "déjà suivi",
+        "seen_one": "{{count}} prélèvement, le dernier le {{date}}",
+        "seen_other": "{{count}} prélèvements, le dernier le {{date}}",
+        "reserve": "Mettre la réserve à {{amount}}, le solde du {{date}}",
+        "noSub": "Aucun abonnement trouvé : il faut au moins trois prélèvements réguliers d'un même service (deux pour un trimestriel ou un annuel).",
+        "remap": "Changer les colonnes",
+        "subsTitle": "Abonnements trouvés",
+        "summary_one": "{{count}} opération du {{from}} au {{to}}",
+        "summary_other": "{{count}} opérations du {{from}} au {{to}}",
+        "add": "Ajouter",
+        "added_one": "{{count}} abonnement ajouté",
+        "added_other": "{{count}} abonnements ajoutés"
     }
 }

@@ -39,6 +39,7 @@ type Config struct {
 type Server struct {
 	root    folder.Root
 	index   *folder.Index
+	vendors *vendor.Catalog
 	book    *ledger.Book
 	rates   *rates.Source
 	logos   *logo.Source
@@ -76,16 +77,17 @@ func New(cfg Config) (*Server, error) {
 	cacheFile := filepath.Join(cfg.CacheDir, "index-"+hex.EncodeToString(sum[:4])+".json")
 	gate := netgate.New()
 	s := &Server{
-		root:   folder.NewRoot(cfg.Root, vendors),
-		index:  folder.NewIndex(cfg.Root, cacheFile, cfg.PDFText, vendors),
-		book:   book,
-		texts:  texts,
-		rates:  rates.NewSource(cfg.CacheDir, gate),
-		static: cfg.Static,
-		port:   cfg.Port,
-		boot:   time.Now().Format(time.RFC3339Nano),
-		now:    time.Now,
-		home:   cfg.Home, version: cfg.Version, restart: cfg.Restart,
+		root:    folder.NewRoot(cfg.Root, vendors),
+		index:   folder.NewIndex(cfg.Root, cacheFile, cfg.PDFText, vendors),
+		book:    book,
+		vendors: vendors,
+		texts:   texts,
+		rates:   rates.NewSource(cfg.CacheDir, gate),
+		static:  cfg.Static,
+		port:    cfg.Port,
+		boot:    time.Now().Format(time.RFC3339Nano),
+		now:     time.Now,
+		home:    cfg.Home, version: cfg.Version, restart: cfg.Restart,
 	}
 	s.logos = logo.NewSource(cfg.CacheDir, gate, s.knownDomain)
 	return s, nil
@@ -161,6 +163,8 @@ func (s *Server) Handler() http.Handler {
 	mux.HandleFunc("GET /api/locale", s.handleLocale)
 	mux.HandleFunc("POST /api/locale", s.handleSetLocale)
 	mux.HandleFunc("POST /api/onboarding", s.handleOnboarding)
+	mux.HandleFunc("POST /api/bank/preview", s.handleBankPreview)
+	mux.HandleFunc("POST /api/bank/apply", s.handleBankApply)
 
 	mux.Handle("GET /", noCache(http.FileServerFS(s.static)))
 	return guard(s.port, mux)

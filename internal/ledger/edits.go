@@ -33,6 +33,37 @@ var cycles = map[string]bool{"once": true, "weekly": true, "monthly": true, "qua
 // (amountChanged) wins over the invoices until a newer one arrives; a renamed
 // payment keeps its project. Name, cycle, start date and a positive amount are required.
 func (b *Book) SavePayment(p Payment, amountChanged bool) (Payment, error) {
+	p, err := b.cleanPayment(p)
+	if err != nil {
+		return p, err
+	}
+	if amountChanged {
+		p.AmountSet = time.Now().Format(time.RFC3339)
+	}
+	err = b.store.Update(func(db *DB) error {
+		if p.ID == "" {
+			p.ID = NewID()
+			db.Payments = append(db.Payments, p)
+			return nil
+		}
+		for i := range db.Payments {
+			if db.Payments[i].ID == p.ID {
+				if !amountChanged {
+					p.AmountSet = db.Payments[i].AmountSet
+				}
+				moveServiceProject(db, db.Payments[i].Name, p.Name, p.ID)
+				db.Payments[i] = p
+				return nil
+			}
+		}
+		return Invalid("error.paymentNotFound")
+	})
+	return p, err
+}
+
+// cleanPayment trims a payment's texts, finds its domain, and refuses it
+// without a name, a known cycle, a start date, a known currency or with a negative amount.
+func (b *Book) cleanPayment(p Payment) (Payment, error) {
 	p.Name, p.Vendor, p.Note = strings.TrimSpace(p.Name), strings.TrimSpace(p.Vendor), strings.TrimSpace(p.Note)
 	p.Match = strings.TrimSpace(p.Match)
 	p.Billing = vendor.CleanURL(p.Billing)
@@ -52,28 +83,46 @@ func (b *Book) SavePayment(p Payment, amountChanged bool) (Payment, error) {
 	if _, ok := day.Parse(p.End); p.End != "" && !ok {
 		p.End = ""
 	}
-	if amountChanged {
-		p.AmountSet = time.Now().Format(time.RFC3339)
+	return p, nil
+}
+
+// AddPayments adds new payments at once, all or none (one invalid refuses
+// them all); one a payment of the same name already stands for is left out.
+// It returns how many were added.
+func (b *Book) AddPayments(list []Payment) (int, error) {
+	clean := make([]Payment, 0, len(list))
+	for _, p := range list {
+		p.ID = ""
+		p, err := b.cleanPayment(p)
+		if err != nil {
+			return 0, err
+		}
+		clean = append(clean, p)
 	}
+	added := 0
 	err := b.store.Update(func(db *DB) error {
-		if p.ID == "" {
+		added = 0
+		for _, p := range clean {
+			if Tracked(db.Payments, p.Name) {
+				continue
+			}
 			p.ID = NewID()
 			db.Payments = append(db.Payments, p)
-			return nil
+			added++
 		}
-		for i := range db.Payments {
-			if db.Payments[i].ID == p.ID {
-				if !amountChanged {
-					p.AmountSet = db.Payments[i].AmountSet
-				}
-				moveServiceProject(db, db.Payments[i].Name, p.Name, p.ID)
-				db.Payments[i] = p
-				return nil
-			}
-		}
-		return Invalid("error.paymentNotFound")
+		return nil
 	})
-	return p, err
+	return added, err
+}
+
+// Tracked says whether a payment already stands for a service named name.
+func Tracked(payments []Payment, name string) bool {
+	for _, p := range payments {
+		if vendor.Matches(p.Name, name) || vendor.Matches(p.InvoiceName(), name) {
+			return true
+		}
+	}
+	return false
 }
 
 // moveServiceProject keeps the project of a renamed payment, unless another

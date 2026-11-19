@@ -7,6 +7,8 @@ import "strings"
 var accents = strings.NewReplacer(
 	"é", "e", "è", "e", "ê", "e", "ë", "e", "à", "a", "â", "a", "ä", "a", "î", "i", "ï", "i",
 	"ô", "o", "ö", "o", "û", "u", "ù", "u", "ü", "u", "ç", "c",
+	"á", "a", "ã", "a", "å", "a", "í", "i", "ì", "i", "ó", "o", "ò", "o", "õ", "o", "ø", "o",
+	"ú", "u", "ñ", "n", "ÿ", "y", "ß", "ss", "œ", "oe", "æ", "ae",
 )
 
 // Words lowercases s, drops accents and turns every other character run into
