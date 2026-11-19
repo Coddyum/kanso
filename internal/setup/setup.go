@@ -11,6 +11,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strconv"
+	"time"
 
 	"github.com/coddyum/kanso/internal/brand"
 	"github.com/coddyum/kanso/internal/config"
@@ -83,10 +84,23 @@ func InstallAgent(p Paths, binDir, workDir string) error {
 		return err
 	}
 	_ = exec.Command("launchctl", "bootout", domain()+"/"+Label).Run()
-	if out, err := exec.Command("launchctl", "bootstrap", domain(), p.Agent).CombinedOutput(); err != nil {
-		return fmt.Errorf("launchctl bootstrap: %v: %s", err, bytes.TrimSpace(out))
+	// bootout returns before launchd lets go of the old server: a bootstrap
+	// right after it fails with « 5: Input/output error ». Wait, then retry.
+	err := fmt.Errorf("launchctl bootstrap: %s is still loaded", Label)
+	for try := 0; try < 20; try++ {
+		if try > 0 {
+			time.Sleep(250 * time.Millisecond)
+		}
+		if AgentLoaded() {
+			continue
+		}
+		out, e := exec.Command("launchctl", "bootstrap", domain(), p.Agent).CombinedOutput()
+		if e == nil {
+			return nil
+		}
+		err = fmt.Errorf("launchctl bootstrap: %v: %s", e, bytes.TrimSpace(out))
 	}
-	return nil
+	return err
 }
 
 // UninstallAgent stops the server and removes the LaunchAgent.
