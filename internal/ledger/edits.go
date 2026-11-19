@@ -40,6 +40,7 @@ func (b *Book) SavePayment(p Payment, amountChanged bool) (Payment, error) {
 	if amountChanged {
 		p.AmountSet = time.Now().Format(time.RFC3339)
 	}
+	p.AutoAt = "" // edited, it is the owner's: undoing a copy no longer takes it away
 	err = b.store.Update(func(db *DB) error {
 		if p.ID == "" {
 			p.ID = NewID()
@@ -159,6 +160,29 @@ func (b *Book) DeletePayment(id string) error {
 		db.Payments = kept
 		return nil
 	})
+}
+
+// DropAutoSince removes the subscriptions the app added from the invoices at t
+// or later, and not edited since: an undone copy takes back what its invoices
+// brought. Unlike DeletePayment it dismisses nothing, so one that other
+// invoices still show comes back with the next model.
+func (b *Book) DropAutoSince(t time.Time) ([]string, error) {
+	since := t.Truncate(time.Second)
+	var dropped []string
+	err := b.store.Update(func(db *DB) error {
+		dropped = nil
+		kept := db.Payments[:0]
+		for _, p := range db.Payments {
+			if at, err := time.Parse(time.RFC3339, p.AutoAt); p.Auto && err == nil && !at.Before(since) {
+				dropped = append(dropped, p.Name)
+				continue
+			}
+			kept = append(kept, p)
+		}
+		db.Payments = kept
+		return nil
+	})
+	return dropped, err
 }
 
 // SaveTodo creates a reminder (unknown id) or changes its text and state.

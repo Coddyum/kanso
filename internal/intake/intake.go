@@ -318,6 +318,15 @@ func (d *Desk) Undo(id string) (removed, kept int, err error) {
 	return removed, kept, d.save(b)
 }
 
+// CopiedAt is when a drop was copied into the folder; zero when it was not.
+func (d *Desk) CopiedAt(id string) time.Time {
+	b, err := d.load(id)
+	if err != nil {
+		return time.Time{}
+	}
+	return b.Copied
+}
+
 // Pending is a drop not copied yet.
 func (d *Desk) Pending(id string) (*Batch, error) {
 	b, err := d.load(id)

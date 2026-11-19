@@ -150,14 +150,20 @@ func (s *Server) handleIntakeCopy(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, map[string]any{"id": b.ID, "written": len(b.Written), "paths": b.Written})
 }
 
-// handleIntakeUndo removes what a drop's copy wrote, except the files changed since.
+// handleIntakeUndo removes what a drop's copy wrote, except the files changed
+// since, and the subscriptions the app added from its invoices since the copy.
 func (s *Server) handleIntakeUndo(w http.ResponseWriter, r *http.Request) {
+	copied := s.desk.CopiedAt(r.PathValue("id"))
 	removed, kept, err := s.desk.Undo(r.PathValue("id"))
 	if errors.Is(err, intake.ErrUnknown) {
 		http.Error(w, s.tr(r).T("error.intakeUnknown"), http.StatusBadRequest)
 		return
 	}
 	if err != nil {
+		fail(w, http.StatusInternalServerError, err)
+		return
+	}
+	if _, err := s.book.DropAutoSince(copied); err != nil {
 		fail(w, http.StatusInternalServerError, err)
 		return
 	}
