@@ -489,7 +489,9 @@
         "unknownStep": "Étape inconnue",
         "bankUnreadable": "Ce fichier n'est ni un CSV ni un OFX lisible.",
         "bankMapping": "Avec ces colonnes, la plupart des lignes ne se lisent pas : vérifie la date, le libellé et le montant.",
-        "bankTooBig": "Ce fichier dépasse 20 Mo."
+        "bankTooBig": "Ce fichier dépasse 20 Mo.",
+        "intakeTooMany": "Plus de 5 000 fichiers d'un coup : dépose les dossiers en plusieurs fois.",
+        "intakeUnknown": "Ce dépôt n'existe plus : recommence."
     },
     "cli": {
         "usage": "Kanso {{version}} — 100 % local.\n\nUtilisation : kanso <commande>\n\n  init       choisir le dossier de tes factures et lancer Kanso avec ton Mac\n  update     récupérer la dernière version et la compiler\n  doctor     vérifier que tout marche\n  uninstall  retirer Kanso du Mac (ton dossier et tes données restent)\n  serve      lancer le serveur (le lancement automatique s'en charge)\n  version    afficher la version",
@@ -640,7 +642,8 @@
             "restore": "Restaurer",
             "restoreConfirm": "Remettre la sauvegarde {{name}} ? L'état actuel est gardé dans une autre sauvegarde.",
             "restored": "Sauvegarde remise",
-            "bank": "Importer un relevé bancaire"
+            "bank": "Importer un relevé bancaire",
+            "undoIntake": "Annuler la dernière copie de factures"
         },
         "start": {
             "title": "Premiers pas",
@@ -707,6 +710,10 @@
                 "title": "Import bancaire",
                 "text": "Un relevé de ta banque (CSV ou OFX) : Kanso y repère tes abonnements et peut en tirer ta réserve. Tu choisis ce qui est ajouté.",
                 "open": "Importer un relevé…"
+            },
+            "invoices": {
+                "title": "Factures existantes",
+                "text": "Tes factures déjà rangées ailleurs sur ton Mac : glisse leurs dossiers ici. Kanso les copie dans ton dossier, classées par année, fournisseur et mois, et te montre le classement avant d'écrire."
             }
         }
     },
@@ -743,5 +750,33 @@
         "add": "Ajouter",
         "added_one": "{{count}} abonnement ajouté",
         "added_other": "{{count}} abonnements ajoutés"
+    },
+    "intake": {
+        "title": "Ranger des dossiers de factures",
+        "reading_one": "Lecture de {{count}} fichier…",
+        "reading_other": "Lecture de {{count}} fichiers…",
+        "summary_one": "{{count}} fichier reçu. Rien n'est encore dans ton dossier : vérifie le classement, puis copie.",
+        "summary_other": "{{count}} fichiers reçus. Rien n'est encore dans ton dossier : vérifie le classement, puis copie.",
+        "sorted": "Classés par année, fournisseur et mois",
+        "kept": "Gardés dans leurs dossiers (pas reconnus comme factures)",
+        "dups": "Doublons, pas copiés",
+        "dupOf": "{{name}} : déjà dans {{path}}",
+        "files_one": "{{count}} fichier",
+        "files_other": "{{count}} fichiers",
+        "copy_one": "Copier {{count}} fichier",
+        "copy_other": "Copier {{count}} fichiers",
+        "nothing": "Rien à copier : tout est déjà dans ton dossier.",
+        "done_one": "{{count}} fichier copié dans ton dossier. Les originaux n'ont pas bougé.",
+        "done_other": "{{count}} fichiers copiés dans ton dossier. Les originaux n'ont pas bougé.",
+        "undo": "Annuler la copie",
+        "undone_one": "Copie annulée : {{count}} fichier retiré",
+        "undone_other": "Copie annulée : {{count}} fichiers retirés",
+        "undoKept_one": "{{count}} fichier modifié depuis, gardé",
+        "undoKept_other": "{{count}} fichiers modifiés depuis, gardés",
+        "private": "Une copie seulement : rien n'est déplacé ni écrasé, et chaque doublon est repéré à son contenu.",
+        "drop": "Dépose ici un ou plusieurs dossiers",
+        "choose": "ou clique pour en choisir un",
+        "last_one": "{{count}} fichier, {{date}}",
+        "last_other": "{{count}} fichiers, {{date}}"
     }
 }

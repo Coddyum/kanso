@@ -271,6 +271,20 @@ func (r Root) Write(dir, name string, src io.Reader) (string, error) {
 // TargetDir is YEAR/Vendor/Month for a due date, created when missing; existing
 // folders are reused whatever their case or spelling (« aout », « OVH »…).
 func (r Root) TargetDir(vendorName, date string) (string, error) {
+	dir, err := r.PlanDir(vendorName, date)
+	if err != nil {
+		return "", err
+	}
+	if err := os.MkdirAll(dir, 0o755); err != nil {
+		return "", fmt.Errorf("create %s: %w", dir, err)
+	}
+	return dir, nil
+}
+
+// PlanDir is the absolute YEAR/Vendor/Month folder of a document, without
+// creating anything: the folders that exist are reused, the others named
+// the app's way. A date that cannot be read is today.
+func (r Root) PlanDir(vendorName, date string) (string, error) {
 	t, ok := day.Parse(date)
 	if !ok {
 		t = time.Now()
@@ -292,9 +306,6 @@ func (r Root) TargetDir(vendorName, date string) (string, error) {
 	dir = filepath.Join(dir, findChild(dir, day.MonthFolders[month-1], func(n string) bool {
 		return day.IsTimeName(n) && day.MonthOf(strings.Fields(norm.Words(n))[0]) == month
 	}))
-	if err := os.MkdirAll(dir, 0o755); err != nil {
-		return "", fmt.Errorf("create %s: %w", dir, err)
-	}
 	return dir, nil
 }
 

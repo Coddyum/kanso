@@ -5,6 +5,7 @@ import { api } from "./api.js";
 import { load, upload } from "./app.js";
 import { $, $$ } from "./dom.js";
 import { t } from "./i18n.js";
+import { droppedEntries, intakeEntries } from "./modals/intake.js";
 import { rootName, S } from "./state.js";
 import { toast } from "./ui/toast.js";
 
@@ -35,6 +36,11 @@ function onDragOver(e) {
     if (!hasFiles(e) && !isInternal(e)) return;
     const card = hasFiles(e) && e.target.closest(".mcard[data-drop]");
     const dir = e.target.closest("[data-dropdir]");
+    const zone = hasFiles(e) && e.target.closest("[data-intake-zone]");
+    if (zone) {
+        clearDrag();
+        return zone.classList.add("drag");
+    }
     const target = card || dir;
     if (target && target.classList.contains(card ? "drag" : "drop-target")) return;
     clearDrag();
@@ -45,6 +51,12 @@ function onDragOver(e) {
 
 async function onDrop(e) {
     e.preventDefault();
+    // A dropped folder, wherever it lands, or anything dropped on a « drop your folders here » zone, is sorted before it is copied.
+    const entries = droppedEntries(e);
+    if (entries.some((x) => x.isDirectory) || (entries.length && e.target.closest("[data-intake-zone]"))) {
+        clearDrag();
+        return intakeEntries(entries).catch((err) => toast(err.message, true));
+    }
     const files = droppedFiles(e);
     const internal = e.dataTransfer.getData(INTERNAL);
     const card = e.target.closest(".mcard[data-drop]");

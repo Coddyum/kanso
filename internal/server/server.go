@@ -16,6 +16,7 @@ import (
 	"github.com/coddyum/kanso/internal/day"
 	"github.com/coddyum/kanso/internal/folder"
 	"github.com/coddyum/kanso/internal/i18n"
+	"github.com/coddyum/kanso/internal/intake"
 	"github.com/coddyum/kanso/internal/ledger"
 	"github.com/coddyum/kanso/internal/logo"
 	"github.com/coddyum/kanso/internal/netgate"
@@ -40,6 +41,7 @@ type Server struct {
 	root    folder.Root
 	index   *folder.Index
 	vendors *vendor.Catalog
+	desk    *intake.Desk
 	book    *ledger.Book
 	rates   *rates.Source
 	logos   *logo.Source
@@ -90,6 +92,8 @@ func New(cfg Config) (*Server, error) {
 		home:    cfg.Home, version: cfg.Version, restart: cfg.Restart,
 	}
 	s.logos = logo.NewSource(cfg.CacheDir, gate, s.knownDomain)
+	s.desk = intake.NewDesk(s.root, s.index.Texts)
+	s.desk.Tidy()
 	return s, nil
 }
 
@@ -165,6 +169,10 @@ func (s *Server) Handler() http.Handler {
 	mux.HandleFunc("POST /api/onboarding", s.handleOnboarding)
 	mux.HandleFunc("POST /api/bank/preview", s.handleBankPreview)
 	mux.HandleFunc("POST /api/bank/apply", s.handleBankApply)
+	mux.HandleFunc("POST /api/intake", s.handleIntake)
+	mux.HandleFunc("POST /api/intake/{id}/copy", s.handleIntakeCopy)
+	mux.HandleFunc("POST /api/intake/{id}/undo", s.handleIntakeUndo)
+	mux.HandleFunc("DELETE /api/intake/{id}", s.handleIntakeCancel)
 
 	mux.Handle("GET /", noCache(http.FileServerFS(s.static)))
 	return guard(s.port, mux)

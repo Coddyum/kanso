@@ -8,6 +8,7 @@ import { t } from "../i18n.js";
 import { icon } from "../icons.js";
 import { S } from "../state.js";
 import { pageHead } from "../ui/parts.js";
+import { lastIntakeLabel } from "../modals/intake.js";
 import { inApp, notifyState } from "./settings.js";
 
 const step = (id, state, body) => `
@@ -66,7 +67,19 @@ function bankStep(state) {
         ${step("bank", state, "")}`;
 }
 
-const BODIES = { lang: langStep, folder: folderStep, reserve: reserveStep, bank: bankStep, notify: notifyStep };
+// intakeZone takes folders dropped on it, or picked with the button.
+const intakeZone = () => `
+    <label class="bank-drop in-zone" data-intake-zone>${icon("folderPlus", 18)}<span>${t("intake.drop")}</span><small>${t("intake.choose")}</small>
+        <input type="file" data-intake="dir" webkitdirectory multiple></label>`;
+
+function invoicesStep(state) {
+    const last = S.settings.intake;
+    const undo = last ? `<div class="set-actions"><button class="btn ghost" data-action="intake-undo" data-id="${last.id}">${t("intake.undo")} · ${lastIntakeLabel(last)}</button></div>` : "";
+    return `${intakeZone()}<p class="set-note">${icon("lock", 12)} ${t("intake.private")}</p>${undo}
+        ${step("invoices", state, "")}`;
+}
+
+const BODIES = { lang: langStep, folder: folderStep, reserve: reserveStep, bank: bankStep, invoices: invoicesStep, notify: notifyStep };
 
 // openStep is the card shown open: the one clicked, or the first step still to do.
 const openStep = (steps) => (S.ob.open ? S.ob.open : steps.find((s) => s.state === "todo")?.id || "");

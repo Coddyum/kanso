@@ -489,7 +489,9 @@
         "unknownStep": "Paso desconocido",
         "bankUnreadable": "Este archivo no es un CSV ni un OFX legible.",
         "bankMapping": "Con estas columnas, la mayoría de las líneas no se pueden leer: revisa la fecha, el concepto y el importe.",
-        "bankTooBig": "Este archivo supera los 20 MB."
+        "bankTooBig": "Este archivo supera los 20 MB.",
+        "intakeTooMany": "Más de 5000 archivos a la vez: suelta las carpetas en varias veces.",
+        "intakeUnknown": "Este envío ya no existe: vuelve a empezar."
     },
     "cli": {
         "usage": "Kanso {{version}} — 100 % local.\n\nUso: kanso <comando>\n\n  init       elegir la carpeta de tus facturas y hacer que Kanso arranque con tu Mac\n  update     obtener la última versión y compilarla\n  doctor     comprobar que todo funciona\n  uninstall  quitar Kanso del Mac (tu carpeta y tus datos se conservan)\n  serve      lanzar el servidor (el inicio automático se encarga de ello)\n  version    mostrar la versión",
@@ -640,7 +642,8 @@
             "restore": "Restaurar",
             "restoreConfirm": "¿Restaurar la copia de seguridad {{name}}? El estado actual se guarda en otra copia.",
             "restored": "Copia de seguridad restaurada",
-            "bank": "Importar un extracto bancario"
+            "bank": "Importar un extracto bancario",
+            "undoIntake": "Deshacer la última copia de facturas"
         },
         "start": {
             "title": "Primeros pasos",
@@ -707,6 +710,10 @@
                 "title": "Importación bancaria",
                 "text": "Un extracto de tu banco (CSV u OFX): Kanso detecta en él tus suscripciones y puede sacar de él tu reserva. Tú eliges lo que se añade.",
                 "open": "Importar un extracto…"
+            },
+            "invoices": {
+                "title": "Facturas existentes",
+                "text": "Tus facturas ya guardadas en otro lugar de tu Mac: arrastra aquí sus carpetas. Kanso las copia en tu carpeta, clasificadas por año, proveedor y mes, y te muestra la clasificación antes de escribir nada."
             }
         }
     },
@@ -743,5 +750,33 @@
         "add": "Añadir",
         "added_one": "{{count}} suscripción añadida",
         "added_other": "{{count}} suscripciones añadidas"
+    },
+    "intake": {
+        "title": "Archivar carpetas de facturas",
+        "reading_one": "Leyendo {{count}} archivo…",
+        "reading_other": "Leyendo {{count}} archivos…",
+        "summary_one": "{{count}} archivo recibido. Aún no hay nada en tu carpeta: revisa la clasificación y después copia.",
+        "summary_other": "{{count}} archivos recibidos. Aún no hay nada en tu carpeta: revisa la clasificación y después copia.",
+        "sorted": "Clasificados por año, proveedor y mes",
+        "kept": "Conservados en sus carpetas (no reconocidos como facturas)",
+        "dups": "Duplicados, no copiados",
+        "dupOf": "{{name}}: ya está en {{path}}",
+        "files_one": "{{count}} archivo",
+        "files_other": "{{count}} archivos",
+        "copy_one": "Copiar {{count}} archivo",
+        "copy_other": "Copiar {{count}} archivos",
+        "nothing": "Nada que copiar: todo está ya en tu carpeta.",
+        "done_one": "{{count}} archivo copiado en tu carpeta. Los originales no se han movido.",
+        "done_other": "{{count}} archivos copiados en tu carpeta. Los originales no se han movido.",
+        "undo": "Deshacer la copia",
+        "undone_one": "Copia deshecha: {{count}} archivo retirado",
+        "undone_other": "Copia deshecha: {{count}} archivos retirados",
+        "undoKept_one": "{{count}} archivo modificado desde entonces, conservado",
+        "undoKept_other": "{{count}} archivos modificados desde entonces, conservados",
+        "private": "Solo una copia: nada se mueve ni se sobrescribe, y cada duplicado se detecta por su contenido.",
+        "drop": "Suelta aquí una o varias carpetas",
+        "choose": "o haz clic para elegir una",
+        "last_one": "{{count}} archivo, {{date}}",
+        "last_other": "{{count}} archivos, {{date}}"
     }
 }

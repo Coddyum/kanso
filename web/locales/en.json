@@ -489,7 +489,9 @@
         "unknownStep": "Unknown step",
         "bankUnreadable": "This file is neither a readable CSV nor a readable OFX.",
         "bankMapping": "With these columns, most lines cannot be read: check the date, the description and the amount.",
-        "bankTooBig": "This file is over 20 MB."
+        "bankTooBig": "This file is over 20 MB.",
+        "intakeTooMany": "More than 5,000 files at once: drop the folders in several goes.",
+        "intakeUnknown": "This drop no longer exists: start again."
     },
     "cli": {
         "usage": "Kanso {{version}} — 100% local.\n\nUsage: kanso <command>\n\n  init       choose your invoices folder and have Kanso start with your Mac\n  update     get the latest version and build it\n  doctor     check that everything works\n  uninstall  remove Kanso from the Mac (your folder and your data are kept)\n  serve      start the server (automatic launch does this for you)\n  version    show the version",
@@ -640,7 +642,8 @@
             "restore": "Restore",
             "restoreConfirm": "Restore the backup {{name}}? The current state is kept in another backup.",
             "restored": "Backup restored",
-            "bank": "Import a bank statement"
+            "bank": "Import a bank statement",
+            "undoIntake": "Undo the latest copy of invoices"
         },
         "start": {
             "title": "Getting started",
@@ -707,6 +710,10 @@
                 "title": "Bank import",
                 "text": "A statement from your bank (CSV or OFX): Kanso spots your subscriptions in it and can take your reserve from it. You choose what is added.",
                 "open": "Import a statement…"
+            },
+            "invoices": {
+                "title": "Existing invoices",
+                "text": "Your invoices already filed elsewhere on your Mac: drag their folders here. Kanso copies them into your folder, filed by year, vendor and month, and shows you the filing before writing anything."
             }
         }
     },
@@ -743,5 +750,33 @@
         "add": "Add",
         "added_one": "{{count}} subscription added",
         "added_other": "{{count}} subscriptions added"
+    },
+    "intake": {
+        "title": "File folders of invoices",
+        "reading_one": "Reading {{count}} file…",
+        "reading_other": "Reading {{count}} files…",
+        "summary_one": "{{count}} file received. Nothing is in your folder yet: check the filing, then copy.",
+        "summary_other": "{{count}} files received. Nothing is in your folder yet: check the filing, then copy.",
+        "sorted": "Filed by year, vendor and month",
+        "kept": "Kept in their own folders (not recognised as invoices)",
+        "dups": "Duplicates, not copied",
+        "dupOf": "{{name}}: already in {{path}}",
+        "files_one": "{{count}} file",
+        "files_other": "{{count}} files",
+        "copy_one": "Copy {{count}} file",
+        "copy_other": "Copy {{count}} files",
+        "nothing": "Nothing to copy: everything is already in your folder.",
+        "done_one": "{{count}} file copied into your folder. The originals did not move.",
+        "done_other": "{{count}} files copied into your folder. The originals did not move.",
+        "undo": "Undo the copy",
+        "undone_one": "Copy undone: {{count}} file removed",
+        "undone_other": "Copy undone: {{count}} files removed",
+        "undoKept_one": "{{count}} file changed since, kept",
+        "undoKept_other": "{{count}} files changed since, kept",
+        "private": "A copy only: nothing is moved or overwritten, and every duplicate is spotted by its content.",
+        "drop": "Drop one or more folders here",
+        "choose": "or click to choose one",
+        "last_one": "{{count}} file, {{date}}",
+        "last_other": "{{count}} files, {{date}}"
     }
 }

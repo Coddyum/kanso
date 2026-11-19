@@ -10,7 +10,7 @@ type Onboarding struct {
 }
 
 // OnboardingSteps are the steps of the checklist, in the order they are shown.
-var OnboardingSteps = []string{"lang", "folder", "reserve", "bank", "notify"}
+var OnboardingSteps = []string{"lang", "folder", "reserve", "bank", "invoices", "notify"}
 
 var stepStates = map[string]bool{"todo": true, "done": true, "skipped": true}
 

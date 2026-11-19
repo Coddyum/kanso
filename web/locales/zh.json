@@ -469,7 +469,9 @@
         "unknownStep": "未知的步骤",
         "bankUnreadable": "这个文件既不是可读的 CSV，也不是可读的 OFX。",
         "bankMapping": "按这些列，大多数行都无法读取：请检查日期、摘要和金额。",
-        "bankTooBig": "这个文件超过 20 MB。"
+        "bankTooBig": "这个文件超过 20 MB。",
+        "intakeTooMany": "一次超过 5000 个文件：请分几次拖放文件夹。",
+        "intakeUnknown": "这次拖放已不存在：请重新开始。"
     },
     "cli": {
         "usage": "Kanso {{version}} — 100 % local.\n\n用法：kanso <命令>\n\n  init       选择存放发票的文件夹，并让 Kanso 随 Mac 启动\n  update     获取最新版本并编译\n  doctor     检查一切是否正常\n  uninstall  从 Mac 上移除 Kanso（你的文件夹和数据会保留）\n  serve      启动服务器（自动启动会负责这一步）\n  version    显示版本",
@@ -619,7 +621,8 @@
             "restore": "恢复",
             "restoreConfirm": "要恢复备份 {{name}} 吗？当前状态会保存为另一个备份。",
             "restored": "已恢复备份",
-            "bank": "导入银行对账单"
+            "bank": "导入银行对账单",
+            "undoIntake": "撤销最近一次发票复制"
         },
         "start": {
             "title": "入门",
@@ -686,6 +689,10 @@
                 "title": "导入银行对账单",
                 "text": "一份银行对账单（CSV 或 OFX）：Kanso 会从中找出你的订阅，并可据此设置储备金。添加什么由你决定。",
                 "open": "导入对账单…"
+            },
+            "invoices": {
+                "title": "已有发票",
+                "text": "已存放在 Mac 其他位置的发票：把它们的文件夹拖到这里。Kanso 会按年份、供应商和月份归档并复制到你的文件夹，写入之前先给你看归档方式。"
             }
         }
     },
@@ -719,5 +726,25 @@
         "summary_other": "{{from}} 至 {{to}} 共 {{count}} 笔交易",
         "add": "添加",
         "added_other": "已添加 {{count}} 个订阅"
+    },
+    "intake": {
+        "title": "整理发票文件夹",
+        "reading_other": "正在读取 {{count}} 个文件…",
+        "summary_other": "已收到 {{count}} 个文件。你的文件夹里还没有任何变化：请先检查归档方式，再复制。",
+        "sorted": "按年份、供应商和月份归档",
+        "kept": "保留在原来的文件夹中（未识别为发票）",
+        "dups": "重复文件，不复制",
+        "dupOf": "{{name}}：已在 {{path}} 中",
+        "files_other": "{{count}} 个文件",
+        "copy_other": "复制 {{count}} 个文件",
+        "nothing": "没有需要复制的：所有文件都已在你的文件夹中。",
+        "done_other": "已将 {{count}} 个文件复制到你的文件夹。原文件没有移动。",
+        "undo": "撤销复制",
+        "undone_other": "已撤销复制：移除了 {{count}} 个文件",
+        "undoKept_other": "之后被修改的 {{count}} 个文件已保留",
+        "private": "只是复制：不移动、不覆盖任何文件，重复文件按内容识别。",
+        "drop": "将一个或多个文件夹拖放到这里",
+        "choose": "或点击选择一个",
+        "last_other": "{{count}} 个文件，{{date}}"
     }
 }

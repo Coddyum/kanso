@@ -24,6 +24,13 @@ export async function sendBody(url, blob) {
     return r.json();
 }
 
+// sendForm posts a form of fields and files and reads the JSON answer.
+export async function sendForm(url, fd) {
+    const r = await fetch(url, { method: "POST", headers: headers(), body: fd });
+    if (!r.ok) throw new Error((await r.text()).trim() || r.statusText);
+    return r.json();
+}
+
 // sendFiles uploads files to the folder: { dir } or, for a due date, { vendor, date, key }.
 export async function sendFiles(files, params) {
     const fd = new FormData();

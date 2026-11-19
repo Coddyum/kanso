@@ -72,6 +72,7 @@ type settings struct {
 	Privacy ledger.Privacy     `json:"privacy"`
 	App     AppStatus          `json:"app"`
 	Backups []store.Backup     `json:"backups"`
+	Intake  *lastIntake        `json:"intake"` // the latest copy of a drop, which can be undone
 	Version string             `json:"version"`
 }
 
@@ -85,7 +86,7 @@ func (s *Server) handleSettings(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, settings{
 		Lang: s.lang(r), Chosen: db.Lang, Langs: i18n.Langs, Root: s.root.Dir(), Port: s.port,
 		Admin: db.Settings(), Notify: db.NotifySettings(), Privacy: db.PrivacySettings(),
-		App: s.appStatus(), Backups: backups, Version: s.version,
+		App: s.appStatus(), Backups: backups, Version: s.version, Intake: s.lastIntake(),
 	})
 }
 

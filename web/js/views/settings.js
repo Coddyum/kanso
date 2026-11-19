@@ -7,6 +7,7 @@ import { capitalize, fmtMod, fmtSize } from "../format.js";
 import { lang, t } from "../i18n.js";
 import { icon } from "../icons.js";
 import { S } from "../state.js";
+import { lastIntakeLabel } from "../modals/intake.js";
 import { pageHead } from "../ui/parts.js";
 
 // inApp says whether the page runs in the Mac app, which alone can test a notification or pick a folder.
@@ -112,6 +113,7 @@ function dataSection() {
             <button class="btn" data-action="set-export">${icon("upload", 14)}${t("settings.data.export")}</button>
             <button class="btn ghost" data-action="set-diagnostic">${t("settings.data.diagnostic")}</button>
         </div>
+        ${S.settings.intake ? `<div class="set-actions"><button class="btn ghost" data-action="intake-undo" data-id="${S.settings.intake.id}">${t("settings.data.undoIntake")} · ${lastIntakeLabel(S.settings.intake)}</button></div>` : ""}
         <h3>${t("settings.data.backups")}</h3>${list}`,
     );
 }

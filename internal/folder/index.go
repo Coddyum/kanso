@@ -297,3 +297,43 @@ func (ix *Index) save() {
 		log.Printf("folder: write cache: %v", err)
 	}
 }
+
+// Texts reads the text of files that are not in the folder yet (a drop being
+// sorted), with the same helper and limits as the folder's own files; a file
+// it cannot read has no entry.
+func (ix *Index) Texts(paths []string) map[string]string {
+	out := map[string]string{}
+	if ix.pdftext == "" {
+		return out
+	}
+	var todo []string
+	for _, p := range paths {
+		if isPDF(p) {
+			todo = append(todo, p)
+		}
+	}
+	var mu sync.Mutex
+	var wg sync.WaitGroup
+	sem := make(chan struct{}, 4)
+	for start := 0; start < len(todo); start += 12 {
+		batch := todo[start:min(start+12, len(todo))]
+		wg.Add(1)
+		sem <- struct{}{}
+		go func() {
+			defer wg.Done()
+			defer func() { <-sem }()
+			texts := runPDFText(ix.pdftext, batch)
+			mu.Lock()
+			defer mu.Unlock()
+			for _, p := range batch {
+				t := texts[p]
+				if len(t) > maxText {
+					t = t[:maxText]
+				}
+				out[p] = t
+			}
+		}()
+	}
+	wg.Wait()
+	return out
+}

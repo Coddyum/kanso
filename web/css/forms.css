@@ -77,3 +77,18 @@
 .bank-name small, .bank-known { color: var(--ink-3); font-size: 12px; }
 .bank-amount { font-variant-numeric: tabular-nums; white-space: nowrap; }
 .bank-amount small { color: var(--ink-3); font-size: 11.5px; }
+
+/* ---------- dossiers de factures déposés ---------- */
+.in-zone.drag { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 8%, transparent); color: var(--ink); }
+.in-plan { max-height: 48vh; overflow: auto; margin-bottom: 14px; }
+.in-year { margin-bottom: 10px; }
+.in-year h4 { margin: 0 0 4px; font-size: 13px; font-weight: 600; }
+.in-year h4 small, .in-year small, .in-kept small, .in-dups small { color: var(--ink-3); font-weight: 400; font-size: 11.5px; }
+.in-year ul, .in-kept, .in-dups ul { list-style: none; margin: 0; padding: 0; }
+.in-year li { display: flex; gap: 12px; padding: 4px 0; border-top: 1px solid var(--line); font-size: 12.5px; }
+.in-year li b { flex: none; width: 150px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.in-year li span { color: var(--ink-2); }
+.in-kept li { display: flex; justify-content: space-between; gap: 12px; padding: 4px 0; border-top: 1px solid var(--line); font-size: 12.5px; }
+.in-dups { margin-top: 12px; font-size: 12.5px; color: var(--ink-2); }
+.in-dups summary { cursor: pointer; }
+.in-dups li { padding: 3px 0; overflow-wrap: anywhere; color: var(--ink-3); font-size: 12px; }
