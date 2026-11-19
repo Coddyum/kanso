@@ -340,7 +340,6 @@
         "filed_other": "已将 {{count}} 个文件归入 {{name}}"
     },
     "nav": {
-        "synced": "已与 {{path}} 同步",
         "calendar": "日历",
         "analytics": "分析",
         "invoices": "发票",

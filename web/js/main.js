@@ -6,7 +6,7 @@ import { initActions } from "./actions.js";
 import { api } from "./api.js";
 import { fetchView, load, render } from "./app.js";
 import { initDragDrop } from "./dnd.js";
-import { $, $$ } from "./dom.js";
+import { $$ } from "./dom.js";
 import { icon } from "./icons.js";
 import { loadLocale, translatePage } from "./i18n.js";
 import { readHash, S } from "./state.js";
@@ -28,10 +28,6 @@ async function poll() {
         const { sig, boot } = await api("GET", "/api/sig");
         if (S.boot && boot !== S.boot) return location.reload();
         if (sig === S.sig) return;
-        const dot = $("#sync-dot");
-        dot.classList.remove("pulse");
-        void dot.offsetWidth;
-        dot.classList.add("pulse");
         await load();
     } catch {
         /* the server may be restarting: next tick */

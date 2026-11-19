@@ -18,9 +18,7 @@
     .rail { position: static; height: auto; flex-direction: row; padding: 8px 14px; border-inline-end: 0; border-bottom: 1px solid var(--line); }
     .nav { flex-direction: row; }
     .tip { display: none; }
-    .rail-foot { margin: 0; margin-inline-start: auto; }
     .nav-end { margin: 0; margin-inline-start: auto; }
-    .nav-end + .rail-foot { margin-inline-start: 0; }
     .set-row { flex-direction: column; align-items: stretch; }
     .main { padding: 20px 16px 50px; }
     .kpi { border-inline-end: 0; }
