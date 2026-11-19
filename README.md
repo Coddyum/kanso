@@ -1,61 +1,124 @@
-# Kanso
+# 100 % local. Tes factures, ta banque et tes chiffres restent sur ton Mac : rien n'est envoyé nulle part. Pour être plus agréable, l'app télécharge seulement deux choses publiques : les taux de change de la Banque centrale européenne et les logos des marques.
 
-Petite app locale pour suivre les dépenses pro : paiements à venir, factures déjà rangées, factures à
-récupérer. Elle lit et écrit directement dans `~/Documents/Inc`.
+**Kanso** (簡素, « sobriété ») suit les dépenses d'une micro-entreprise sur Mac : les abonnements et
+paiements à venir, les factures déjà rangées dans un dossier, celles qui manquent, la réserve du compte
+pro et les démarches (URSSAF, CFE, impôt sur le revenu).
 
-```bash
-make run          # compile puis lance http://localhost:48219
-```
+[English version](README.en.md)
 
-## Ce qu'elle fait
+![Le calendrier : paiements à venir, factures trouvées, réserve](docs/images/fr-calendar.png)
 
-| Vue | Contenu |
+## Ce que fait l'app
+
+Ton dossier de factures reste la vérité : ce que tu ranges dans le Finder apparaît dans l'app en quelques
+secondes, et ce que tu déposes dans l'app est rangé dans le dossier, dans `Année/Fournisseur/Mois`.
+
+| Écran | Ce qu'il montre |
 | --- | --- |
-| Calendrier | les échéances de tes abonnements et paiements prévus, les factures du dossier, le total du mois |
-| Analyse | les dépenses en euros par mois, par projet et par service ; chaque service ou facture se classe dans un projet (ou tout seul, par un mot de son nom) |
-| Factures | toutes les factures lues dans `Inc`, par mois ; facture + reçu (ou commande + relevé) = une seule ligne |
-| Démarches | déclarations URSSAF (chaque trimestre ou chaque mois), CFE (15 décembre), déclaration de revenus (fin mai) : dans le calendrier, à cocher une fois faites |
-| À récupérer | chaque échéance passée sans facture ; dépose le PDF sur la carte, il est rangé dans `Année/Fournisseur/Mois` |
-| Dossier Inc | le dossier tel quel : créer un dossier, déposer, renommer, déplacer (glisser sur un dossier) |
+| Calendrier | les échéances de tes abonnements et paiements prévus, les factures trouvées, le total du mois, la réserve jour après jour |
+| Analyse | les dépenses en euros par mois, par projet et par service ; les montants en devises sont convertis aux taux de la BCE |
+| Factures | toutes les factures lues dans le dossier : fournisseur, date, montant, numéro ; facture + reçu = une seule ligne |
+| À récupérer | chaque échéance passée sans facture ; dépose le PDF sur la carte, il est rangé au bon endroit |
+| Dossier | le dossier tel quel : créer, déposer, renommer, déplacer |
+| Réglages | langue, dossier, démarches, notifications, confidentialité, données (export, sauvegardes, diagnostic) |
 
-- **Le dossier est la vérité.** Ce que tu ajoutes dans le Finder apparaît dans l'app en 4 s, et inversement.
-- **Lecture des PDF** : `bin/pdftext`, un mini outil Swift basé sur PDFKit (fourni par macOS). Montant, date,
-  numéro et fournisseur sont lus une fois par fichier, puis gardés en cache.
-- **Ce que le dossier ne dit pas** (abonnements, projets, pense-bête, corrections) : `Inc/.kanso/db.json` (et tes fournisseurs perso dans `Inc/.kanso/vendors.json`).
-- **Cache** (texte des PDF, logos) : `~/Library/Caches/kanso/` — supprimable sans perte.
-- **Logos** : téléchargés une fois depuis le site du fournisseur (sinon le service d'icônes de Google), puis gardés en cache.
+![L'analyse des dépenses par mois, par projet et par service](docs/images/fr-analytics.png)
 
-## Stack
+- **Premiers pas** : au premier lancement, une liste à cocher (langue, dossier, réserve, import bancaire,
+  factures existantes, notifications, Téléchargements) ; chaque étape se passe et se reprend depuis
+  Réglages.
+- **Import bancaire** : un relevé CSV ou OFX de n'importe quelle banque. Les colonnes sont reconnues
+  (sinon tu dis laquelle est la date, le libellé, le montant), la colonne solde remplit la réserve, et
+  les prélèvements réguliers deviennent des abonnements proposés. Le fichier est lu en mémoire puis oublié.
+- **Dossiers de factures déjà rangés ailleurs** : glisse-les dans l'app. Elle les copie (jamais de
+  déplacement ni d'écrasement), repère les doublons à leur contenu, montre le classement avant d'écrire,
+  et la copie s'annule d'un bouton.
+- **Téléchargements** (désactivé par défaut) : une facture qui arrive dans Téléchargements donne une
+  notification « facture X détectée, la ranger ? ».
+- **Scans et photos de tickets** : lus par Vision, la reconnaissance de texte d'Apple, sur ton Mac.
+- **Rappels** : l'app Mac programme des notifications macOS — la veille d'un paiement, avant une
+  démarche, quand il manque des factures, avant que la réserve tombe à zéro —, même app fermée.
+- **Mode démo** : Réglages › Premiers pas › « Essayer avec des données fictives ». Toutes les captures
+  de cette page viennent de là.
 
-Go, bibliothèque standard uniquement (aucune dépendance), front HTML/CSS/JS sans framework embarqué dans le
-binaire. Écoute sur `127.0.0.1` seulement ; les écritures exigent l'en-tête `X-Inc` (un autre site ne peut pas
-les déclencher), les chemins hors du dossier sont refusés.
+![Les factures lues dans le dossier](docs/images/fr-invoices.png)
 
-## Lancement automatique
+## Installation
 
-```bash
-make install-agent      # une fois : l'app démarre avec le Mac, sans terminal
-make build              # après une modification : l'app redémarre seule en 2-3 s, la page se recharge
-make logs               # les dernières lignes du journal (~/Library/Logs/kanso.log)
-make uninstall-agent    # retire le lancement automatique
-```
-
-launchd lance `bin/kanso-launcher`, un petit lanceur qui ne change pas d'une version à l'autre : il
-démarre l'app, la relance si elle s'arrête, et la redémarre dès que `bin/kanso` est recompilé. La page
-ouverte se recharge d'elle-même quand le serveur a redémarré. macOS ne demande l'accès au dossier Documents
-qu'une fois, pour le lanceur.
-
-## App Mac et rappels
+Il faut un Mac sous macOS 13 ou plus récent, les outils en ligne de commande d'Apple
+(`xcode-select --install`) et [Go](https://go.dev/dl/) dans la version indiquée par `go.mod` ou plus
+récente. Pas de Homebrew, pas d'autre dépendance : l'app est compilée sur ton Mac.
 
 ```bash
-make app                # construit « Kanso.app » et l'installe dans ~/Applications
+git clone https://github.com/Coddyum/kanso.git
+cd kanso
+./install.sh
 ```
 
-Une fenêtre sur le serveur local (plus besoin d'onglet de navigateur) et des notifications macOS, programmées
-dans le système : elles arrivent même app fermée. À 9 h : la veille d'un paiement, 7 jours puis 1 jour avant
-une démarche, chaque lundi tant qu'il reste des factures à récupérer, et 30, 14, 7 et 1 jours avant que la
-réserve tombe à zéro. L'app relit la liste au démarrage, toutes les 30 minutes et à chaque changement fait
-dans sa fenêtre (`GET /api/reminders`). Menu « Kanso › Envoyer un rappel de test » pour vérifier que
-macOS les laisse passer. Fermer la fenêtre garde l'app ouverte ; pour l'ouvrir avec le Mac : clic droit sur
-son icône du Dock › Options › Ouvrir à l'ouverture de session.
+`install.sh` vérifie macOS, les outils d'Apple et Go (il ne télécharge rien : s'il manque quelque
+chose, il dit où le prendre), compile, installe l'app `Kanso.app` dans `~/Applications`, puis lance
+`kanso init` : il te demande le nom ou le chemin de ton dossier de factures (`~/Documents/Factures` par
+défaut), le crée s'il n'existe pas, installe le lancement automatique et ouvre l'app sur les premiers pas.
+macOS demande une fois l'accès au dossier Documents.
 
+![Les premiers pas](docs/images/fr-welcome.png)
+
+## Commandes
+
+```bash
+./bin/kanso init        # choisir le dossier et lancer Kanso avec le Mac
+./bin/kanso update      # récupérer la dernière version (git pull) et la compiler
+./bin/kanso doctor      # vérifier que tout marche, une ligne par point
+./bin/kanso uninstall   # retirer Kanso du Mac ; ton dossier et tes données restent
+./bin/kanso demo        # une démo aux données fictives sur son propre port, sans toucher à ton dossier
+./bin/kanso version
+```
+
+Le reste se règle dans l'app (Réglages).
+
+## Confidentialité
+
+- **Tout reste sur ton Mac.** Le serveur n'écoute que sur `127.0.0.1` ; tes factures, ton relevé
+  bancaire et tes chiffres ne sortent jamais.
+- **Deux téléchargements publics seulement**, chacun avec son interrupteur dans Réglages ›
+  Confidentialité : les taux de change de la BCE, et le logo d'une marque, pris sur le site de la marque
+  elle-même (jamais un service d'icônes tiers), seulement pour un fournisseur de tes données.
+- **Une seule porte de sortie dans le code** (`internal/netgate`) et un test qui casse si un autre appel
+  réseau apparaît, dans le serveur, la page ou l'app Mac.
+- **Le relevé bancaire** est lu en mémoire et oublié : ni gardé, ni copié dans ton dossier.
+- **Téléchargements** n'est jamais lu sans ton accord : la surveillance est éteinte par défaut, et macOS
+  demande l'autorisation.
+- **Où sont les données** : ton dossier (les factures) et son sous-dossier caché `.kanso` (la base
+  `db.json`, ses sauvegardes des 30 derniers jours, tes corrections) ; les réglages dans
+  `~/Library/Application Support/Kanso` ; le cache (textes des PDF, logos, taux) dans
+  `~/Library/Caches/kanso`, supprimable sans perte.
+
+## Langues
+
+L'app parle français, anglais, espagnol, japonais, chinois et arabe (interface de droite à gauche). Les
+règles administratives restent celles d'une micro-entreprise française, quelle que soit la langue.
+
+> **À relire par des locuteurs natifs.** Les traductions anglaise, espagnole, japonaise, chinoise et
+> arabe n'ont pas encore été relues par des natifs. Une correction est la bienvenue : chaque texte est
+> dans `web/locales/<langue>.json`.
+
+## Contribuer
+
+```bash
+git config core.hooksPath .githooks   # install.sh le fait pour toi
+make test                             # gofmt, go vet, go test -race
+```
+
+- **Aucune donnée personnelle dans le dépôt.** Le hook de commit lance `tools/privacy`, qui refuse les
+  PDF, CSV, OFX, photos et bases de données, ainsi que les IBAN, adresses e-mail, téléphones, numéros
+  SIRET et chemins de dossier personnel. `go run ./tools/privacy -all` passe tout le dépôt en revue.
+- **Chaque texte visible passe par `web/locales`.** `fr.json` est la référence ; les autres langues ont
+  exactement les mêmes clés. Le test `internal/i18n` refuse une clé manquante, une clé inutilisée ou un
+  texte écrit en dur dans la page, le serveur ou l'app Mac.
+- **Le réseau passe par `internal/netgate`**, sinon son test casse.
+- Go, bibliothèque standard seulement ; la page sans framework ni étape de build. L'architecture est
+  décrite dans [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+
+## Licence
+
+[AGPL-3.0](LICENSE).
