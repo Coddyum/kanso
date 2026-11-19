@@ -101,11 +101,11 @@ EOF
 call PUT "/topics" "topics" <<'EOF'
 {"names": ["macos", "local-first", "privacy", "invoices", "expense-tracker", "micro-entreprise", "go", "swift"]}
 EOF
-if gh label create translation --repo "$REPO" --color 7178f0 \
-	--description "A text of the app in one of its languages" --force >/dev/null 2>&1; then
+if out=$(gh label create translation --repo "$REPO" --color 7178f0 \
+	--description "A text of the app in one of its languages" --force 2>&1 >/dev/null); then
 	ok "label translation"
 else
-	fail "label translation"
+	fail "label translation: $out"
 fi
 if ! others=$(gh api "repos/$REPO/collaborators" --jq "[.[] | select(.login != \"$OWNER\") | .login] | join(\", \")"); then
 	fail "could not list who has access (Settings › Collaborators)"
@@ -144,8 +144,10 @@ call PATCH "" "secret scanning, with push protection" <<'EOF'
 {"security_and_analysis": {"secret_scanning": {"status": "enabled"}, "secret_scanning_push_protection": {"status": "enabled"}}}
 EOF
 enable "/private-vulnerability-reporting" "private vulnerability reporting"
-call PATCH "/code-scanning/default-setup" "CodeQL" <<'EOF'
-{"state": "configured", "query_suite": "default"}
+# Swift is left out: CodeQL builds it only from an Xcode project or a Swift
+# package, and Kanso compiles its two Swift files with swiftc.
+call PATCH "/code-scanning/default-setup" "CodeQL on Go, JavaScript and the workflows" <<'EOF'
+{"state": "configured", "query_suite": "default", "languages": ["actions", "go", "javascript-typescript"]}
 EOF
 
 echo "Rules"
