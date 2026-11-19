@@ -82,7 +82,9 @@ function sortedTree(items) {
                 .sort()
                 .map((v) => {
                     const months = groupBy(byVendor[v], (it) => it.target.split("/")[2]);
+                    // In calendar order: a month folder's files share its month.
                     const list = Object.keys(months)
+                        .sort((a, b) => months[a][0].date.localeCompare(months[b][0].date))
                         .map((m) => `${esc(m)} <small>${months[m].length}</small>`)
                         .join(" · ");
                     return `<li><b>${esc(v)}</b><span>${list}</span></li>`;
